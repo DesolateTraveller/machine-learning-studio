@@ -103,10 +103,11 @@ st.divider()
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
 
-col1, col2, col3, col4 = st.columns((0.2,0.4,0.3,0.1))
+col1, col2, col3 = st.columns((0.2,0.6,0.2))
 
 with col1:
-    problem_type = st.selectbox("Pick your Problem Type", ["Regression", "Classification", "Clustering", "Image Classification"])
+    problem_type = st.selectbox("**Pick your Problem Type**", ["Regression", "Classification", "Clustering", "Image Classification"])
+    train_btn = st.button("Train")
 
 with col2:
     if problem_type == "Regression":
@@ -119,21 +120,15 @@ with col2:
         state = 4
 
     if state == 4:
-        img_zip_file = st.file_uploader("Upload your Dataset", type=['zip'])
+        img_zip_file = st.file_uploader("**Upload your Dataset**", type=['zip'])
     else:
-        dataset_file = st.file_uploader("Upload your Dataset", type=['csv'])
+        dataset_file = st.file_uploader("**Upload your Dataset**", type=['csv'])
     
-with col3:
-    if state != 4:
-        if dataset_file:
-            df = pd.read_csv(dataset_file)
-            if state == 1 or state == 2:
-                target_y = st.multiselect("**2.1 Target (Dependent) Variable**", df.columns)
+    with col3:
+        if state != 4:
+            if dataset_file:
+                df = pd.read_csv(dataset_file)
+                if state == 1 or state == 2:
+                    target_y = st.multiselect("**Target (Dependent) Variable**", df.columns)
 
-with col4:
-    train_btn = st.button("Train")
 
-#----------------------------------------
-stats_expander = st.expander("**Input Information**", expanded=False)
-with stats_expander:  
-    st.dataframe(df)
