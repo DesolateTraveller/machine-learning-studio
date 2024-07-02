@@ -9,7 +9,7 @@ import streamlit.components.v1 as components
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Import Libraries
 #---------------------------------------------------------------------------------------------------------------------------------
-from streamlit_extras.stoggle import stoggle
+#from streamlit_extras.stoggle import stoggle
 #from ydata_profiling import ProfileReport
 #from streamlit_pandas_profiling import st_profile_report
 #----------------------------------------
