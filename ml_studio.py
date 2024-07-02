@@ -106,7 +106,7 @@ st.divider()
 col1, col2, col3, col4 = st.columns((0.2,0.4,0.3,0.1))
 
 with col1:
-    problem_type = st.sidebar.selectbox("Pick your Problem Type", ["Regression", "Classification", "Clustering", "Image Classification"])
+    problem_type = st.selectbox("Pick your Problem Type", ["Regression", "Classification", "Clustering", "Image Classification"])
 
 with col2:
     if problem_type == "Regression":
@@ -128,7 +128,12 @@ with col3:
         if dataset_file:
             df = pd.read_csv(dataset_file)
             if state == 1 or state == 2:
-                target_y = st.sidebar.multiselect("**2.1 Target (Dependent) Variable**", df.columns)
+                target_y = st.multiselect("**2.1 Target (Dependent) Variable**", df.columns)
 
 with col4:
     train_btn = st.button("Train")
+
+#----------------------------------------
+stats_expander = st.expander("**Input Information**", expanded=False)
+with stats_expander:  
+    st.dataframe(df)
