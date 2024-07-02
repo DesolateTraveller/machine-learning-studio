@@ -131,7 +131,7 @@ with col2:
                 if state == 1 or state == 2:
                     target_y = st.multiselect("**Target (Dependent) Variable**", df.columns)
 
-if st.button("train_btn"):
+if st.button(train_btn):
 
     st.dataframe(df)
 
