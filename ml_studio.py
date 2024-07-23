@@ -17,10 +17,13 @@ st.set_page_config(page_title="Interactive Data Visualization with Pygwalker", l
 st.title("Interactive Data Visualization with Pygwalker")
 
 st.sidebar.title("Configuration")
-selected_columns = st.sidebar.multiselect("Select columns to visualize", options=df.columns, default=df.columns)
+selected_columns = st.sidebar.multiselect("Select columns to visualize", options=df.columns.tolist(), default=df.columns.tolist())
 
 # Filter the DataFrame based on the selected columns
-filtered_df = df[selected_columns]
+if selected_columns:
+    filtered_df = df[selected_columns]
+else:
+    filtered_df = df  # Fallback to full DataFrame if no columns are selected
 
 st.sidebar.write("## Filtered DataFrame")
 st.sidebar.write(filtered_df)
