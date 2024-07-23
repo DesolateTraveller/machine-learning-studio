@@ -1,5 +1,3 @@
-
-
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Authenticator
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -105,26 +103,26 @@ st.divider()
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
 
+col1, col2 = st.columns((0.3,0.7))
+with col1:
+        problem_type = st.selectbox("**Pick your Problem Type**", ["Regression", "Classification", "Clustering", "Image Classification"])
+with col2:
+        if problem_type == "Regression":
+                state = 1
+        elif problem_type == "Classification":
+                state = 2
+        elif problem_type == "Clustering":
+                state = 3
+        else:
+                state = 4
 
-problem_type = st.sidebar.selectbox("**Pick your Problem Type**", ["Regression", "Classification", "Clustering", "Image Classification"])
-
-
-if problem_type == "Regression":
-        state = 1
-elif problem_type == "Classification":
-        state = 2
-elif problem_type == "Clustering":
-        state = 3
-else:
-        state = 4
-
-if state == 4:
-        img_zip_file = st.file_uploader("**Upload your Dataset**", type=['zip'])
-else:
-        dataset_file = st.file_uploader("**Upload your Dataset**", type=['csv'])
+        if state == 4:
+                img_zip_file = st.file_uploader("**Upload your Dataset**", type=['zip'])
+        else:
+                dataset_file = st.file_uploader("**Upload your Dataset**", type=['csv'])
     
 
-if state != 4:
+        if state != 4:
             if dataset_file:
                 df = pd.read_csv(dataset_file)
                 if state == 1 or state == 2:
