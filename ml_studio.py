@@ -103,7 +103,7 @@ st.divider()
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
 
-col1, col2 = st.columns((0.3,0.7))
+col1, col2 = st.columns((0.15,0.85))
 with col1:
         problem_type = st.selectbox("**Pick your Problem Type**", ["Regression", "Classification", "Clustering", "Image Classification"])
 with col2:
