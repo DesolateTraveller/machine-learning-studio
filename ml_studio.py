@@ -17,9 +17,6 @@ st.markdown(
 
 st.write("Click on a project name to navigate to the specific webpage:")
 
-# Display the project names as clickable links
-for project in projects:
-    st.markdown(f"[{project['name']}]({project['url']})")
 
 # Additional information about developer, preparer, and forecasting app button on the same line
 st.markdown(
