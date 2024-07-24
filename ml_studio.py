@@ -124,7 +124,7 @@ st.sidebar.header("Input", divider='blue')
 st.sidebar.info('Please choose from the following options to start the application.', icon="ℹ️")
 ml_type = st.sidebar.selectbox("**:blue[Pick your Problem Type]**", ["None", "Classification", "Clustering", "Image Classification","Regression"])
 if ml_type == "None":
-        st.warning("Please choose an algorithm to proceed with the analysis.")
+        st.warning("Please choose an algorithm in the sidebar to proceed with the analysis.")
 else:        
     file = st.sidebar.file_uploader("**:blue[Choose a file]**",
                                     type=["csv", "xls", "xlsx"], 
