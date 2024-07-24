@@ -128,11 +128,11 @@ with col2:
                                     type=["csv", "xls", "xlsx"], 
                                     accept_multiple_files=False, 
                                     key="file_upload")
-    if file:
-        df = load_file(file)
-stats_expander = st.expander("**Preview of Data**", expanded=False)
-with stats_expander:  
-    st.table(df.head(2))
+if file:
+    df = load_file(file)
+    stats_expander = st.expander("**Preview of Data**", expanded=False)
+    with stats_expander:  
+        st.table(df.head(2))
 
 st.divider()
 
