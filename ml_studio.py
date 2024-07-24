@@ -124,7 +124,7 @@ col1, col2 = st.columns((0.15,0.85))
 with col1:
     ml_type = st.selectbox("**Pick your Problem Type**", ["Regression", "Classification", "Clustering", "Image Classification"])
 with col2:
-    file = st.sidebar.file_uploader("**:blue[Choose a file]**",
+    file = st.file_uploader("**:blue[Choose a file]**",
                                     type=["csv", "xls", "xlsx"], 
                                     accept_multiple_files=False, 
                                     key="file_upload")
