@@ -91,7 +91,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, RocCurveDi
 st.set_page_config(page_title="ML Studio",
                    layout="wide",
                    #page_icon=               
-                   initial_sidebar_state="collapsed")
+                   initial_sidebar_state="auto")
 #----------------------------------------
 st.title(f""":rainbow[Machine Learning (ML) Studio | v0.1]""")
 st.markdown('Created by | <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a>', 
@@ -123,115 +123,118 @@ def load_file(file):
 st.sidebar.header("Input", divider='blue')
 st.sidebar.info('Please choose from the following options to start the application.', icon="ℹ️")
 ml_type = st.sidebar.selectbox("**:blue[Pick your Problem Type]**", ["None", "Classification", "Clustering", "Image Classification","Regression"])
-file = st.sidebar.file_uploader("**:blue[Choose a file]**",
+if ml_type == "None":
+        st.warning("Please choose an algorithm to proceed with the analysis.")
+else:        
+    file = st.sidebar.file_uploader("**:blue[Choose a file]**",
                                     type=["csv", "xls", "xlsx"], 
                                     accept_multiple_files=False, 
                                     key="file_upload")
-if file is not None:
-    df = load_file(file)
-    col1, col2 = st.columns ((0.9,0.1))
-    with col1:
-        stats_expander = st.expander("**Preview of Data**", expanded=True)
-        with stats_expander:  
-            st.table(df.head(1))
-    with col2:
-        target_variable = st.selectbox("**:blue[Choose Target Variable]**", options=["None"] + list(df.columns), key="target_variable")
-    st.divider()
-    if target_variable == "None":
-        st.warning("Please choose a target variable to proceed with the analysis.")
+    if file is not None:
+        df = load_file(file)
+        col1, col2 = st.columns ((0.9,0.1))
+        with col1:
+            stats_expander = st.expander("**Preview of Data**", expanded=True)
+            with stats_expander:  
+                st.table(df.head(1))
+        with col2:
+            target_variable = st.selectbox("**:blue[Choose Target Variable]**", options=["None"] + list(df.columns), key="target_variable")
+        st.divider()
+        if target_variable == "None":
+            st.warning("Please choose a target variable to proceed with the analysis.")
 
 #---------------------------------------------------------------------------------------------------------------------------------
-    else:  
-        tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["**Information**",
+        else:  
+            tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["**Information**",
                                              "**Visualizations**",
                                             "**Transformation**",
                                             "**Development**",
                                             "**Performance**",
                                             "**Importance**",])
 #---------------------------------------------------------------------------------------------------------------------------------
-        with tab1:
+            with tab1:
 
-            st.subheader("**Data Analysis**",divider='blue')
+                st.subheader("**Data Analysis**",divider='blue')
 
-            col1, col2, col3, col4, col5, col6 = st.columns(6)
+                col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-            col1.metric('**Number of input values (rows)**', df.shape[0], help='number of rows in the dataframe')
-            col2.metric('**Number of variables (columns)**', df.shape[1], help='number of columns in the dataframe')     
-            col3.metric('**Number of numerical variables**', len(df.select_dtypes(include=['float64', 'int64']).columns), help='number of numerical variables')
-            col4.metric('**Number of categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
-            #st.divider()           
+                col1.metric('**Number of input values (rows)**', df.shape[0], help='number of rows in the dataframe')
+                col2.metric('**Number of variables (columns)**', df.shape[1], help='number of columns in the dataframe')     
+                col3.metric('**Number of numerical variables**', len(df.select_dtypes(include=['float64', 'int64']).columns), help='number of numerical variables')
+                col4.metric('**Number of categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
+                #st.divider()           
 
-            stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
-            with stats_expander:        
-                #pr = df.profile_report()
-                #st_profile_report(pr)
-                st.table(df.head()) 
+                stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
+                with stats_expander:        
+                    #pr = df.profile_report()
+                    #st_profile_report(pr)
+                    st.table(df.head()) 
 
 #---------------------------------------------------------------------------------------------------------------------------------
-        with tab2:
+            with tab2:
 
-            plot_option = st.selectbox("**Choose Plot**", ["Line Chart", "Histogram", "Scatter Plot", "Bar Chart", "Box Plot"])
-            columns = list(df.columns)
-            col1, col2 = st.columns((0.1,0.9))
+                plot_option = st.selectbox("**Choose Plot**", ["Line Chart", "Histogram", "Scatter Plot", "Bar Chart", "Box Plot"])
+                columns = list(df.columns)
+                col1, col2 = st.columns((0.1,0.9))
                     
-            if plot_option == "Line Chart":
+                if plot_option == "Line Chart":
 
-                with col1:
+                    with col1:
                             x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="date_1", )
                             y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="values_1")
                         
-                with col2:
+                    with col2:
                             line_chart = alt.Chart(df).mark_line().encode(
                             x=alt.X(x_column, type='temporal' if pd.api.types.is_datetime64_any_dtype(df[x_column]) else 'ordinal'),
                             y=alt.Y(y_column, type='quantitative'),
                             tooltip=[x_column, y_column]).interactive()
                             st.altair_chart(line_chart, use_container_width=True)
 
-            elif plot_option == "Histogram":
+                elif plot_option == "Histogram":
                         
-                with col1:
+                    with col1:
                             x_column = st.selectbox("**:blue[Select column for histogram]**", options=columns, key="hist_1",)
                         
-                with col2:
+                    with col2:
                             histogram = alt.Chart(df).mark_bar().encode(
                             x=alt.X(x_column, bin=True),
                             y=alt.Y('count()', type='quantitative'),
                             tooltip=[x_column, 'count()']).interactive()
                             st.altair_chart(histogram, use_container_width=True)
 
-            elif plot_option == "Scatter Plot":
+                elif plot_option == "Scatter Plot":
                         
-                with col1:
+                    with col1:
                             x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="scatter_x", )
                             y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="scatter_y", )
                         
-                with col2:
+                    with col2:
                             scatter_plot = alt.Chart(df).mark_point().encode(
                             x=alt.X(x_column, type='quantitative' if pd.api.types.is_numeric_dtype(df[x_column]) else 'ordinal'),
                             y=alt.Y(y_column, type='quantitative'),
                             tooltip=[x_column, y_column]).interactive()
                             st.altair_chart(scatter_plot, use_container_width=True)
 
-            elif plot_option == "Bar Chart":
+                elif plot_option == "Bar Chart":
                     
-                with col1:
+                    with col1:
                             x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="bar_x", )
                             y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="bar_y", )
                         
-                with col2:
+                    with col2:
                             bar_chart = alt.Chart(df).mark_bar().encode(
                             x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
                             y=alt.Y(y_column, type='quantitative'),
                             tooltip=[x_column, y_column]).interactive()
                             st.altair_chart(bar_chart, use_container_width=True)
 
-            elif plot_option == "Box Plot":
+                elif plot_option == "Box Plot":
                     
-                with col1:
+                    with col1:
                             x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="box_x",)
                             y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="box_y", )
                         
-                with col2:
+                    with col2:
                             box_plot = alt.Chart(df).mark_boxplot().encode(
                             x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
                             y=alt.Y(y_column, type='quantitative'),
@@ -240,21 +243,21 @@ if file is not None:
 
 
 #---------------------------------------------------------------------------------------------------------------------------------
-        with tab3:
+                with tab3:
                 
-                st.subheader("Missing Values Check & Treatment",divider='blue')
-                col1, col2 = st.columns((0.2,0.8))
+                    st.subheader("Missing Values Check & Treatment",divider='blue')
+                    col1, col2 = st.columns((0.2,0.8))
 
-                with col1:
-                    def check_missing_values(data):
+                    with col1:
+                        def check_missing_values(data):
                             missing_values = data.isnull().sum()
                             missing_values = missing_values[missing_values > 0]
                             return missing_values 
-                    missing_values = check_missing_values(df)
+                        missing_values = check_missing_values(df)
 
-                    if missing_values.empty:
+                        if missing_values.empty:
                             st.success("**No missing values found!**")
-                    else:
+                        else:
                             st.warning("**Missing values found!**")
                             st.write("**Number of missing values:**")
                             st.table(missing_values)
@@ -304,24 +307,24 @@ if file is not None:
                                 # Download link for treated data
                                 st.download_button("**Download Treated Data**", cleaned_df.to_csv(index=False), file_name="treated_data.csv")
 
-                #with col2:
+                    #with col2:
 
-                st.subheader("Duplicate Values Check",divider='blue') 
-                if st.checkbox("Show Duplicate Values"):
-                    if missing_values.empty:
-                        st.table(df[df.duplicated()].head(2))
-                    else:
-                        st.table(cleaned_df[cleaned_df.duplicated()].head(2))
+                    st.subheader("Duplicate Values Check",divider='blue') 
+                    if st.checkbox("Show Duplicate Values"):
+                        if missing_values.empty:
+                            st.table(df[df.duplicated()].head(2))
+                        else:
+                            st.table(cleaned_df[cleaned_df.duplicated()].head(2))
 
-                #with col4:
+                    #with col4:
 
-                    #x_column = st.selectbox("Select x-axis column:", options = df.columns.tolist()[0:], index = 0)
-                    #y_column = st.selectbox("Select y-axis column:", options = df.columns.tolist()[0:], index = 1)
-                    #chart = alt.Chart(df).mark_boxplot(extent='min-max').encode(x=x_column,y=y_column)
-                    #st.altair_chart(chart, theme=None, use_container_width=True)  
+                        #x_column = st.selectbox("Select x-axis column:", options = df.columns.tolist()[0:], index = 0)
+                        #y_column = st.selectbox("Select y-axis column:", options = df.columns.tolist()[0:], index = 1)
+                        #chart = alt.Chart(df).mark_boxplot(extent='min-max').encode(x=x_column,y=y_column)
+                        #st.altair_chart(chart, theme=None, use_container_width=True)  
 
-                st.subheader("Outliers Check & Treatment",divider='blue')
-                def check_outliers(data):
+                    st.subheader("Outliers Check & Treatment",divider='blue')
+                    def check_outliers(data):
                                 # Assuming we're checking for outliers in numerical columns
                                 numerical_columns = data.select_dtypes(include=[np.number]).columns
                                 outliers = pd.DataFrame(columns=['Column', 'Number of Outliers'])
@@ -343,14 +346,14 @@ if file is not None:
 
                                 return outliers
                 
-                if missing_values.empty:
-                    df = df.copy()
-                else:
-                    df = cleaned_df.copy()
+                    if missing_values.empty:
+                        df = df.copy()
+                    else:
+                        df = cleaned_df.copy()
 
-                col1, col2 = st.columns((0.2,0.8))
+                    col1, col2 = st.columns((0.2,0.8))
 
-                with col1:
+                    with col1:
                         # Check for outliers
                         outliers = check_outliers(df)
 
@@ -362,7 +365,7 @@ if file is not None:
                             st.write("**Number of outliers:")
                             st.table(outliers)
                     
-                with col2:
+                    with col2:
                         # Treatment options
                         treatment_option = st.selectbox("**Select a treatment option:**", ["Cap Outliers","Drop Outliers", ])
 
