@@ -131,9 +131,9 @@ with col2:
     if file:
         df = load_file(file)
 
-stats_expander = st.expander("**Preview of Data**", expanded=False)
-with stats_expander:  
-    st.table(df.head(2))
-    st.divider()
+        stats_expander = st.expander("**Preview of Data**", expanded=False)
+        with stats_expander:  
+            st.table(df.head(2))
+st.divider()
 
 #----------------------------------------
