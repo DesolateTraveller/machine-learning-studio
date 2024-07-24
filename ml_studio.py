@@ -166,13 +166,14 @@ if file is not None:
     with tab2:
 
         plot_option = st.selectbox("**Choose Plot**", ["Line Chart", "Histogram", "Scatter Plot", "Bar Chart", "Box Plot"])
+        columns = list(df.columns)
         col1, col2 = st.columns((0.1,0.9))
                     
         if plot_option == "Line Chart":
 
             with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="date_1", index=df.columns.get_loc(date_col) if date_col else 0)
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="values_1", index=df.columns.get_loc(metric_col) if metric_col else 1)
+                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="date_1", )
+                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="values_1")
                         
             with col2:
                             line_chart = alt.Chart(df).mark_line().encode(
@@ -184,7 +185,7 @@ if file is not None:
         elif plot_option == "Histogram":
                         
             with col1:
-                            x_column = st.selectbox("**:blue[Select column for histogram]**", options=columns, key="hist_1", index=df.columns.get_loc(metric_col) if metric_col else 1)
+                            x_column = st.selectbox("**:blue[Select column for histogram]**", options=columns, key="hist_1",)
                         
             with col2:
                             histogram = alt.Chart(df).mark_bar().encode(
@@ -196,8 +197,8 @@ if file is not None:
         elif plot_option == "Scatter Plot":
                         
             with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="scatter_x", index=df.columns.get_loc(date_col) if date_col else 0)
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="scatter_y", index=df.columns.get_loc(metric_col) if metric_col else 1)
+                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="scatter_x", )
+                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="scatter_y", )
                         
             with col2:
                             scatter_plot = alt.Chart(df).mark_point().encode(
@@ -209,8 +210,8 @@ if file is not None:
         elif plot_option == "Bar Chart":
                     
             with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="bar_x", index=df.columns.get_loc(date_col) if date_col else 0)
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="bar_y", index=df.columns.get_loc(metric_col) if metric_col else 1)
+                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="bar_x", )
+                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="bar_y", )
                         
             with col2:
                             bar_chart = alt.Chart(df).mark_bar().encode(
@@ -222,8 +223,8 @@ if file is not None:
         elif plot_option == "Box Plot":
                     
             with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="box_x", index=df.columns.get_loc(date_col) if date_col else 0)
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="box_y", index=df.columns.get_loc(metric_col) if metric_col else 1)
+                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="box_x",)
+                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="box_y", )
                         
             with col2:
                             box_plot = alt.Chart(df).mark_boxplot().encode(
