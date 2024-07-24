@@ -132,14 +132,14 @@ else:
                                     key="file_upload")
     if file is not None:
         df = load_file(file)
-        col1, col2 = st.columns ((0.9,0.1))
-        with col1:
-            stats_expander = st.expander("**Preview of Data**", expanded=True)
-            with stats_expander:  
-                st.table(df.head(1))
-        with col2:
-            target_variable = st.selectbox("**:blue[Choose Target Variable]**", options=["None"] + list(df.columns), key="target_variable")
+        st.sidebar.divider()
+
+        stats_expander = st.expander("**Preview of Data**", expanded=True)
+        with stats_expander:  
+            st.table(df.head(1))
         st.divider()
+
+        target_variable = st.sidebar.selectbox("**:blue[Choose Target Variable]**", options=["None"] + list(df.columns), key="target_variable")
         if target_variable == "None":
             st.warning("Please choose a target variable to proceed with the analysis.")
 
