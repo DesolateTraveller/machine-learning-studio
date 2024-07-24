@@ -18,6 +18,7 @@ sweetviz
 pygwalker
 #-----------------------------
 holidays
+openpyxl
 #-----------------------------
 tensorflow
 keras
