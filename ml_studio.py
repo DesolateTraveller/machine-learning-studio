@@ -123,8 +123,9 @@ def load_file(file):
 col1, col2 = st.columns((0.15,0.85))
 with col1:
     ml_type = st.selectbox("**:blue[Pick your Problem Type]**", ["None","Regression", "Classification", "Clustering", "Image Classification"])
-    with col2:
-        file = st.file_uploader("**:blue[Choose a file]**",
+    if ml_type :
+        with col2:
+            file = st.file_uploader("**:blue[Choose a file]**",
                                     type=["csv", "xls", "xlsx"], 
                                     accept_multiple_files=False, 
                                     key="file_upload")
