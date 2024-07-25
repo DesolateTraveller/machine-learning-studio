@@ -422,11 +422,11 @@ else:
 #---------------------------------------------------------------------------------------------------------------------------------
                 with tab4:
                      
-                    col1, col2, col3, col4 = st.columns((0.15,0.15,0.5,0.2))  
+                    col1, col2, col3, col4 = st.columns((0.2,0.2,0.4,0.2))  
 
                     with col1:
                         
-                        st.subheader("Feature Encoding:",divider='blue') 
+                        st.subheader("Feature Encoding",divider='blue') 
                         categorical_columns = df.select_dtypes(include=['object']).columns
 
                         if len(categorical_columns) == 0:
@@ -449,7 +449,7 @@ else:
 
                     with col2:   
                          
-                        st.subheader("Feature Scaling:",divider='blue')
+                        st.subheader("Feature Scaling",divider='blue')
 
                         scaling_method = st.sidebar.selectbox("**:blue[Choose a Scaling Method]**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
                         df = scale_features(df,scaling_method)
@@ -463,7 +463,7 @@ else:
 
                     with col3:
 
-                        st.subheader("Feature Selection:",divider='blue')
+                        st.subheader("Feature Selection",divider='blue')
 
                         f_sel_method = ['Method 1 : VIF', 
                                         'Method 2 : Selectkbest',
