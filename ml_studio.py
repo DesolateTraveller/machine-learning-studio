@@ -423,5 +423,5 @@ else:
                                     print(pd.Categorical(df[feature].unique()))
                                     print(pd.Categorical(df[feature].unique()).codes)
                                     df[feature] = pd.Categorical(df[feature]).codes
-                                  st.info("Categorical variables are encoded")
+                                st.info("Categorical variables are encoded")
 
