@@ -38,30 +38,40 @@ if file is not None:
     if target_variable == "None":
         st.warning("Please choose a target variable to proceed with the encoding.")
     else:
-        # Display the dataframe's column names
-        st.write("Dataframe Columns")
-        st.write(df.columns.tolist())
+        # Identify categorical columns
+        categorical_columns = df.select_dtypes(include=['object']).columns
 
-        # Select columns to encode
-        columns_to_encode = st.multiselect("Select columns to encode", options=df.select_dtypes(include=['object']).columns)
-
-        if len(columns_to_encode) > 0:
-            encoding_method = st.selectbox("Choose Encoding Method", ["Label Encoding", "One-Hot Encoding"])
-
-            if st.button("Encode"):
-                if encoding_method == "Label Encoding":
-                    for col in columns_to_encode:
-                        df = label_encode(df, col)
-                elif encoding_method == "One-Hot Encoding":
-                    for col in columns_to_encode:
-                        df = onehot_encode(df, col)
-                st.write("Encoded Data")
+        if len(categorical_columns) == 0:
+            st.info("There are no categorical variables in the dataset.")
+            proceed_with_original = st.checkbox("Proceed with the original DataFrame")
+            if proceed_with_original:
+                st.write("Original Data")
                 st.dataframe(df.head())
-        else:
-            st.info("Please select at least one categorical column to encode.")
 
-        # Provide an option to download the encoded dataset
-        csv = df.to_csv(index=False).encode('utf-8')
-        st.download_button("Download Encoded Data", data=csv, file_name='encoded_data.csv', mime='text/csv')
+                # Provide an option to download the original dataset
+                csv = df.to_csv(index=False).encode('utf-8')
+                st.download_button("Download Original Data", data=csv, file_name='original_data.csv', mime='text/csv')
+        else:
+            # Select columns to encode
+            columns_to_encode = st.multiselect("Select columns to encode", options=categorical_columns)
+
+            if len(columns_to_encode) > 0:
+                encoding_method = st.selectbox("Choose Encoding Method", ["Label Encoding", "One-Hot Encoding"])
+
+                if st.button("Encode"):
+                    if encoding_method == "Label Encoding":
+                        for col in columns_to_encode:
+                            df = label_encode(df, col)
+                    elif encoding_method == "One-Hot Encoding":
+                        for col in columns_to_encode:
+                            df = onehot_encode(df, col)
+                    st.write("Encoded Data")
+                    st.dataframe(df.head())
+
+                    # Provide an option to download the encoded dataset
+                    csv = df.to_csv(index=False).encode('utf-8')
+                    st.download_button("Download Encoded Data", data=csv, file_name='encoded_data.csv', mime='text/csv')
+            else:
+                st.info("Please select at least one categorical column to encode.")
 else:
     st.info("Please upload a file to start the encoding process.")
