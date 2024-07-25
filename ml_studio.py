@@ -118,6 +118,20 @@ def load_file(file):
     return df
 
 @st.cache_data(ttl="2h")
+def handle_numerical_missing_values(data, numerical_strategy):
+    imputer = SimpleImputer(strategy=numerical_strategy)
+    numerical_features = data.select_dtypes(include=['number']).columns
+    data[numerical_features] = imputer.fit_transform(data[numerical_features])
+    return data
+
+@st.cache_data(ttl="2h")
+def handle_categorical_missing_values(data, categorical_strategy):
+    imputer = SimpleImputer(strategy=categorical_strategy, fill_value='no_info')
+    categorical_features = data.select_dtypes(exclude=['number']).columns
+    data[categorical_features] = imputer.fit_transform(data[categorical_features])
+    return data  
+
+@st.cache_data(ttl="2h")
 def label_encode(df, column):
     le = LabelEncoder()
     df[column] = le.fit_transform(df[column])
@@ -130,6 +144,22 @@ def onehot_encode(df, column):
     encoded_df = pd.DataFrame(encoded_cols, columns=[f"{column}_{cat}" for cat in ohe.categories_[0]])
     df = df.drop(column, axis=1).join(encoded_df)
     return df
+
+@st.cache_data(ttl="2h")
+def calculate_vif(data):
+    X = data.values
+    vif_data = pd.DataFrame()
+    vif_data["Variable"] = data.columns
+    vif_data["VIF"] = [variance_inflation_factor(X, i) for i in range(X.shape[1])]
+    vif_data = vif_data.sort_values(by="VIF", ascending=False)
+    return vif_data
+
+@st.cache_data(ttl="2h")
+def drop_high_vif_variables(data, threshold):
+    vif_data = calculate_vif(data)
+    high_vif_variables = vif_data[vif_data["VIF"] > threshold]["Variable"].tolist()
+    data = data.drop(columns=high_vif_variables)
+    return data
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -275,34 +305,7 @@ else:
                             st.write("**Number of missing values:**")
                             st.table(missing_values)
 
-                            with col2:        
-                                #treatment_option = st.selectbox("**Select a treatment option**:", ["Impute with Mean","Drop Missing Values", ])
-        
-                                # Perform treatment based on user selection
-                                #if treatment_option == "Drop Missing Values":
-                                    #df = df.dropna()
-                                    #st.success("Missing values dropped. Preview of the cleaned dataset:")
-                                    #st.table(df.head())
-            
-                                #elif treatment_option == "Impute with Mean":
-                                    #df = df.fillna(df.mean())
-                                    #st.success("Missing values imputed with mean. Preview of the imputed dataset:")
-                                    #st.table(df.head())
-                                 
-                                # Function to handle missing values for numerical variables
-                                def handle_numerical_missing_values(data, numerical_strategy):
-                                    imputer = SimpleImputer(strategy=numerical_strategy)
-                                    numerical_features = data.select_dtypes(include=['number']).columns
-                                    data[numerical_features] = imputer.fit_transform(data[numerical_features])
-                                    return data
-
-                                # Function to handle missing values for categorical variables
-                                def handle_categorical_missing_values(data, categorical_strategy):
-                                    imputer = SimpleImputer(strategy=categorical_strategy, fill_value='no_info')
-                                    categorical_features = data.select_dtypes(exclude=['number']).columns
-                                    data[categorical_features] = imputer.fit_transform(data[categorical_features])
-                                    return data            
-
+                            with col2:                 
                                 numerical_strategies = ['mean', 'median', 'most_frequent']
                                 categorical_strategies = ['constant','most_frequent']
                                 st.write("**Missing Values Treatment:**")
@@ -380,7 +383,7 @@ else:
                     
                     with col2:
                         # Treatment options
-                        treatment_option = st.selectbox("**Select a treatment option:**", ["Cap Outliers","Drop Outliers", ])
+                        treatment_option = st.selectbox("**:blue[Select a treatment option:]**", ["Cap Outliers","Drop Outliers", ])
 
                             # Perform treatment based on user selection
                         if treatment_option == "Drop Outliers":
@@ -426,3 +429,77 @@ else:
                                     df[feature] = pd.Categorical(df[feature]).codes
                             st.info("Categorical variables are encoded")
 
+                        #----------------------------------------
+                        st.subheader("Feature Selection:",divider='blue')
+
+                        f_sel_method = ['Method 1 : VIF', 
+                                        'Method 2 : Selectkbest',
+                                        'Method 3 : VarianceThreshold']
+                        f_sel_method = st.sidebar.selectbox("**:blue[Select a feature selection method]**", f_sel_method)
+                        st.divider()                    
+
+                        if f_sel_method == 'Method 1 : VIF':
+
+                            #st.subheader("Feature Selection (Method 1):",divider='blue')
+                            st.markdown("**Method 1 : VIF**")
+                            vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)
+
+             
+                            st.markdown(f"Iterative VIF Thresholding (Threshold: {vif_threshold})")
+                            #X = df.drop(columns = target_variable)
+                            vif_data = drop_high_vif_variables(df, vif_threshold)
+                            #vif_data = vif_data.drop(columns = target_variable)
+                            selected_features = vif_data.columns
+                            st.markdown("**Selected Features (considering VIF values in ascending orders)**")
+                            st.table(selected_features)
+                            #st.table(vif_data)
+
+                        if f_sel_method == 'Method 2 : Selectkbest':
+
+                            #st.subheader("Feature Selection (Method 2):",divider='blue')                        
+                            st.markdown("**Method 2 : Selectkbest**")          
+                            method = st.selectbox("**Select kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
+                            num_features_to_select = st.slider("**Select Number of Independent Features**", min_value=1, max_value=len(df.columns), value=5)
+
+                            if "f_classif" in method:
+                                feature_selector = SelectKBest(score_func=f_classif, k=num_features_to_select)
+
+                            elif "f_regression" in method:
+                                feature_selector = SelectKBest(score_func=f_regression, k=num_features_to_select)
+
+                            elif "chi2" in method:
+                                # Make sure the data is non-negative for chi2
+                                df[df < 0] = 0
+                                feature_selector = SelectKBest(score_func=chi2, k=num_features_to_select)
+
+                            elif "mutual_info_classif" in method:
+                                # Make sure the data is non-negative for chi2
+                                df[df < 0] = 0
+                                feature_selector = SelectKBest(score_func=mutual_info_classif, k=num_features_to_select)
+
+                            X = df.drop(columns = target_variable)  # Adjust 'Target' to your dependent variable
+                            y = df[target_variable]  # Adjust 'Target' to your dependent variable
+                            X_selected = feature_selector.fit_transform(X, y)
+
+                            # Display selected features
+                            selected_feature_indices = feature_selector.get_support(indices=True)
+                            selected_features_kbest = X.columns[selected_feature_indices]
+                            st.markdown("**Selected Features (considering values in 'recursive feature elimination' method)**")
+                            st.table(selected_features_kbest)
+                            selected_features = selected_features_kbest.copy()
+
+                        if f_sel_method == 'Method 3 : VarianceThreshold':
+
+                            st.markdown("**Method 3 : VarianceThreshold**")  
+                            threshold = st.number_input("Variance Threshold", min_value=0.0, step=0.01, value=0.0)  
+
+                            X = df.drop(columns = target_variable)  
+                            y = df[target_variable]
+                            selector = VarianceThreshold(threshold=threshold)
+                            X_selected = selector.fit_transform(X)
+
+                            selected_feature_indices = selector.get_support(indices=True)
+                            selected_features_vth = X.columns[selected_feature_indices]          
+                            st.markdown("**Selected Features (considering values in 'variance threshold' method)**")                    
+                            st.table(selected_features_vth)
+                            selected_features = selected_features_vth.copy()
