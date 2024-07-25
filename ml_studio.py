@@ -422,7 +422,7 @@ else:
 #---------------------------------------------------------------------------------------------------------------------------------
                 with tab4:
                      
-                    col1, col2, col3, col4 = st.columns(4)  
+                    col1, col2, col3, col4 = st.columns((0.15,0.15,0.5,0.2))  
 
                     with col1:
                         
@@ -442,6 +442,9 @@ else:
                                     df[feature] = pd.Categorical(df[feature]).codes
                             st.info("Categorical variables are encoded")
 
+                        csv = df.to_csv(index=False).encode('utf-8')
+                        st.download_button(label="📥 Download Encoded Data (for review)", data=csv, file_name='encoded_data.csv', mime='text/csv')
+
                     #----------------------------------------
 
                     with col2:   
@@ -451,7 +454,10 @@ else:
                         scaling_method = st.sidebar.selectbox("**:blue[Choose a Scaling Method]**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
                         df = scale_features(df,scaling_method)
                         st.info("Data is scaled for further treatment")
-                        st.dataframe(df.head())
+                        #st.dataframe(df.head())
+
+                        csv = df.to_csv(index=False).encode('utf-8')
+                        st.download_button(label="📥 Download Scaled Data (for review)", data=csv, file_name='scaled_data.csv', mime='text/csv')
 
                     #----------------------------------------
 
