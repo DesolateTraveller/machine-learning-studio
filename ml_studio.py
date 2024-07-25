@@ -409,7 +409,8 @@ else:
                     col1, col2, col3, col4 = st.columns(4)  
 
                     with col1:
-                         
+                        
+                        st.subheader("Feature Encoding:",divider='blue') 
                         categorical_columns = df.select_dtypes(include=['object']).columns
 
                         if len(categorical_columns) == 0:
@@ -423,5 +424,5 @@ else:
                                     print(pd.Categorical(df[feature].unique()))
                                     print(pd.Categorical(df[feature].unique()).codes)
                                     df[feature] = pd.Categorical(df[feature]).codes
-                                st.info("Categorical variables are encoded")
+                            st.info("Categorical variables are encoded")
 
