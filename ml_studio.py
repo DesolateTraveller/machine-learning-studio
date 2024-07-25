@@ -147,13 +147,14 @@ def onehot_encode(df, column):
 
 @st.cache_data(ttl="2h")
 def scale_features(df, method):
+    numerical_columns = df.select_dtypes(include=['float64', 'int64']).columns
     if method == 'Standard Scaling':
         scaler = StandardScaler()
     elif method == 'Min-Max Scaling':
         scaler = MinMaxScaler()
     elif method == 'Robust Scaling':
         scaler = RobustScaler()
-    df = scaler.fit_transform(df)
+    df[numerical_columns] = scaler.fit_transform(df[numerical_columns])
     return df
 
 @st.cache_data(ttl="2h")
