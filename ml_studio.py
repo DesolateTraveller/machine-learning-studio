@@ -189,12 +189,13 @@ else:
 
 #---------------------------------------------------------------------------------------------------------------------------------
         else:  
-            tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["**Information**",
-                                             "**Visualizations**",
-                                            "**Transformation**",
-                                            "**Development**",
-                                            "**Performance**",
-                                            "**Importance**",])
+            tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["**Information**",
+                                                                "**Visualizations**",
+                                                                "**Cleaning**"
+                                                                "**Transformation**",
+                                                                "**Development**",
+                                                                "**Performance**",
+                                                                "**Importance**",])
             
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab1:
@@ -430,13 +431,16 @@ else:
                             st.info("Categorical variables are encoded")
 
                         #----------------------------------------
+
+                    with col2:
+
                         st.subheader("Feature Selection:",divider='blue')
 
                         f_sel_method = ['Method 1 : VIF', 
                                         'Method 2 : Selectkbest',
                                         'Method 3 : VarianceThreshold']
                         f_sel_method = st.sidebar.selectbox("**:blue[Select a feature selection method]**", f_sel_method)
-                        st.divider()                    
+                        #st.divider()                    
 
                         if f_sel_method == 'Method 1 : VIF':
 
@@ -444,13 +448,14 @@ else:
                             st.markdown("**Method 1 : VIF**")
                             vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)
 
-             
                             st.markdown(f"Iterative VIF Thresholding (Threshold: {vif_threshold})")
                             #X = df.drop(columns = target_variable)
                             vif_data = drop_high_vif_variables(df, vif_threshold)
                             #vif_data = vif_data.drop(columns = target_variable)
                             selected_features = vif_data.columns
                             st.markdown("**Selected Features (considering VIF values in ascending orders)**")
+                            st.write("No of features before feature-selection :",df.shape[1])
+                            st.write("No of features after feature-selection :",selected_features.shape[1])
                             st.table(selected_features)
                             #st.table(vif_data)
 
