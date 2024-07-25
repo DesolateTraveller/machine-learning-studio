@@ -146,6 +146,17 @@ def onehot_encode(df, column):
     return df
 
 @st.cache_data(ttl="2h")
+def scale_features(df, method):
+    if method == 'Standard Scaling':
+        scaler = StandardScaler()
+    elif method == 'Min-Max Scaling':
+        scaler = MinMaxScaler()
+    elif method == 'Robust Scaling':
+        scaler = RobustScaler()
+    df = scaler.fit_transform(df)
+    return df
+
+@st.cache_data(ttl="2h")
 def calculate_vif(data):
     X = data.values
     vif_data = pd.DataFrame()
@@ -430,16 +441,26 @@ else:
                                     df[feature] = pd.Categorical(df[feature]).codes
                             st.info("Categorical variables are encoded")
 
-                        #----------------------------------------
+                    #----------------------------------------
 
-                    with col2:
+                    with col2:   
+                         
+                        st.subheader("Feature Scaling:",divider='blue')
+
+                        scaling_method = st.sidebar.selectbox("**:blue[Choose a Scaling Method]**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
+                        df = scale_features(df,scaling_method)
+                        st.info("Data is scaled for further treatment")
+
+                    #----------------------------------------
+
+                    with col3:
 
                         st.subheader("Feature Selection:",divider='blue')
 
                         f_sel_method = ['Method 1 : VIF', 
                                         'Method 2 : Selectkbest',
                                         'Method 3 : VarianceThreshold']
-                        f_sel_method = st.sidebar.selectbox("**:blue[Select a feature selection method]**", f_sel_method)
+                        f_sel_method = st.sidebar.selectbox("**:blue[Choose a feature selection method]**", f_sel_method)
                         #st.divider()                    
 
                         if f_sel_method == 'Method 1 : VIF':
@@ -455,7 +476,7 @@ else:
                             selected_features = vif_data.columns
                             st.markdown("**Selected Features (considering VIF values in ascending orders)**")
                             st.write("No of features before feature-selection :",df.shape[1])
-                            st.write("No of features after feature-selection :",selected_features.shape[1])
+                            st.write("No of features after feature-selection :",len(selected_features))
                             st.table(selected_features)
                             #st.table(vif_data)
 
@@ -490,6 +511,8 @@ else:
                             selected_feature_indices = feature_selector.get_support(indices=True)
                             selected_features_kbest = X.columns[selected_feature_indices]
                             st.markdown("**Selected Features (considering values in 'recursive feature elimination' method)**")
+                            st.write("No of features before feature-selection :",df.shape[1])
+                            st.write("No of features after feature-selection :",len(selected_features))
                             st.table(selected_features_kbest)
                             selected_features = selected_features_kbest.copy()
 
@@ -505,6 +528,20 @@ else:
 
                             selected_feature_indices = selector.get_support(indices=True)
                             selected_features_vth = X.columns[selected_feature_indices]          
-                            st.markdown("**Selected Features (considering values in 'variance threshold' method)**")                    
+                            st.markdown("**Selected Features (considering values in 'variance threshold' method)**") 
+                            st.write("No of features before feature-selection :",df.shape[1])
+                            st.write("No of features after feature-selection :",len(selected_features))                   
                             st.table(selected_features_vth)
                             selected_features = selected_features_vth.copy()
+
+                    #----------------------------------------
+
+                    with col4:                
+
+                        st.subheader("Dataset Splitting Criteria",divider='blue')
+
+                        test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
+                        random_state = st.number_input("**Random State**", 0, 100, 42)
+                        n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
+
+
