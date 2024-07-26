@@ -93,7 +93,7 @@ st.set_page_config(page_title="ML Studio",
                    #page_icon=               
                    initial_sidebar_state="auto")
 #----------------------------------------
-st.title(f""":rainbow[Machine Learning (ML) Studio | v1.0]""")
+st.title(f""":rainbow[Machine Learning (ML) Studio | v0.1]""")
 st.markdown('Created by | <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a>', 
             unsafe_allow_html=True)
 #st.info('**Disclaimer : :blue[Thank you for visiting the app] | Unauthorized uses or copying of the app is strictly prohibited | Click the :blue[sidebar] to follow the instructions to start the applications.**', icon="ℹ️")
