@@ -1,7 +1,9 @@
 import streamlit as st
 import pandas as pd
 import sweetviz as sv
+from autoviz.AutoViz_Class import AutoViz_Class
 from ydata_profiling import ProfileReport
+import base64
 import os
 
 def load_file(file):
@@ -16,13 +18,27 @@ def load_file(file):
 def generate_sweetviz_report(df):
     report = sv.analyze(df)
     report.show_html(filepath='sweetviz_report.html', open_browser=False)
-    return 'sweetviz_report.html'
+    with open('sweetviz_report.html', 'r') as f:
+        html = f.read()
+    return html
 
+def generate_autoviz_report(df, filename):
+    AV = AutoViz_Class()
+    report = AV.AutoViz(filename, dfte=df)
+    return report
 
 def generate_ydata_profiling_report(df):
     profile = ProfileReport(df, explorative=True)
     profile.to_file("ydata_profiling_report.html")
-    return 'ydata_profiling_report.html'
+    with open('ydata_profiling_report.html', 'r') as f:
+        html = f.read()
+    return html
+
+def display_html_report(html, title):
+    b64 = base64.b64encode(html.encode()).decode()
+    iframe = f'<iframe src="data:text/html;base64,{b64}" width="100%" height="800px"></iframe>'
+    st.markdown(f"### {title}")
+    st.markdown(iframe, unsafe_allow_html=True)
 
 # Main App
 st.title("Exploratory Data Analysis (EDA) App")
@@ -41,16 +57,26 @@ if file is not None:
 
     if st.button("Generate EDA Report"):
         if eda_option == "Sweetviz":
-            report_file = generate_sweetviz_report(df)
-            st.success("Sweetviz report generated!")
-            with open(report_file, 'rb') as f:
-                st.download_button('Download Sweetviz Report', f, file_name='sweetviz_report.html')
+            with st.spinner("Generating Sweetviz report..."):
+                report_html = generate_sweetviz_report(df)
+                with st.expander("Sweetviz Report"):
+                    display_html_report(report_html, "Sweetviz Report")
+                st.success("Sweetviz report generated!")
+
+        elif eda_option == "AutoViz":
+            with st.spinner("Generating AutoViz report..."):
+                report_file = 'uploaded_file.csv'
+                df.to_csv(report_file, index=False)
+                st.success("AutoViz report generated!")
+                with st.expander("AutoViz Report"):
+                    generate_autoviz_report(df, report_file)
+                os.remove(report_file)
 
         elif eda_option == "ydata Profiling":
-            report_file = generate_ydata_profiling_report(df)
-            st.success("ydata Profiling report generated!")
-            with open(report_file, 'rb') as f:
-                st.download_button('Download ydata Profiling Report', f, file_name='ydata_profiling_report.html')
-
+            with st.spinner("Generating ydata Profiling report..."):
+                report_html = generate_ydata_profiling_report(df)
+                with st.expander("ydata Profiling Report"):
+                    display_html_report(report_html, "ydata Profiling Report")
+                st.success("ydata Profiling report generated!")
 else:
     st.info("Please upload a file to start the EDA process.")
