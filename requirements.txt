@@ -4,7 +4,7 @@ matplotlib
 seaborn
 #-----------------------------
 streamlit
-streamlit-pandas-profiling
+#streamlit-pandas-profiling==0.1.3
 #-----------------------------
 plotly
 altair
@@ -18,7 +18,7 @@ shap
 autoviz
 sweetviz
 pygwalker
-ydata-profiling
+#ydata-profiling==4.8.3
 #-----------------------------
 holidays
 openpyxl
