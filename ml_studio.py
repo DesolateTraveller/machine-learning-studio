@@ -11,7 +11,7 @@ import streamlit.components.v1 as components
 #---------------------------------------------------------------------------------------------------------------------------------
 #from streamlit_extras.stoggle import stoggle
 from ydata_profiling import ProfileReport
-from streamlit_pandas_profiling import st_profile_report
+#from streamlit_pandas_profiling import st_profile_report
 #----------------------------------------
 import os
 import time
@@ -214,8 +214,9 @@ with tab1:
                     
                     stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
                     with stats_expander:        
-                        pr = df.profile_report()
-                        st_profile_report(pr)
+                        profile = ProfileReport(df)
+                        profile.to_file("profile_report.html")
+                        with open('profile_report.html', 'r') as f:
+                            html_content = f.read()
         except:
             st.warning("Please upload a dataset the analysis.")
-             
