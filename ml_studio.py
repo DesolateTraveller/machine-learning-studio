@@ -124,30 +124,16 @@ def load_file(file):
 #---------------------------------------------------------------------------------------------------------------------------------
 
 
-ml_type = st.selectbox("**:blue[Pick your Problem Type]**", ["None", "Classification", "Clustering", "Image Classification","Regression"])
-if ml_type == "None":
-        st.warning("Please choose an algorithm to proceed with the analysis.")
-else: 
-
 #---------------------------------------------------------------------------------------------------------------------------------   
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
 #---------------------------------------------------------------------------------------------------------------------------------
     
-    with tab1:
-    
-        col1, col2 = st.columns((0.2,0.8))
-        with col1:
-             
-            file = st.file_uploader("**:blue[Choose a file]**",
-                                        type=["csv", "xls", "xlsx"], 
-                                        accept_multiple_files=False, 
-                                        key="file_upload")
-            if file is not None:
-            
-                with col2:        
-                
-                    df = load_file(file)
-                    stats_expander = st.expander("**Preview of Data**", expanded=True)
-                    with stats_expander:  
-                        st.table(df.head(2))
+with tab1:
+     
+    file = st.file_uploader("**:blue[Choose a file]**", type=["csv", "xls", "xlsx"], accept_multiple_files=False, key="file_upload")
+    if file is not None:
+        df = load_file(file)
+        stats_expander = st.expander("**Preview of Data**", expanded=True)
+        with stats_expander:  
+            st.table(df.head(2))
             #st.divider()
