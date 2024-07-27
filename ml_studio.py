@@ -130,7 +130,7 @@ if ml_type == "None":
 else: 
 
 #---------------------------------------------------------------------------------------------------------------------------------   
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
 #---------------------------------------------------------------------------------------------------------------------------------
     
     with tab1:
