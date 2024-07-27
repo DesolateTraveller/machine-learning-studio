@@ -11,7 +11,7 @@ import streamlit.components.v1 as components
 #---------------------------------------------------------------------------------------------------------------------------------
 #from streamlit_extras.stoggle import stoggle
 from ydata_profiling import ProfileReport
-#from streamlit_pandas_profiling import st_profile_report
+from streamlit_pandas_profiling import st_profile_report
 #----------------------------------------
 import os
 import time
@@ -120,81 +120,10 @@ def load_file(file):
         df = pd.DataFrame()
     return df
 
-@st.cache_data(ttl="2h")
-def show_profile_reports(container):
-    if os.path.exists("profile_report.html"):
-        with open('profile_report.html', 'r') as f:
-            html_content = f.read()
-        with container:
-            components.html(html_content, height=800, scrolling=True)
-    if os.path.exists("sweetviz_report.html"):
-        with open('sweetviz_report.html', 'r') as f:
-            html_content = f.read()
-        with container:
-            components.html(html_content, height=800, scrolling=True)
-
-@st.cache_data(ttl="2h")
-def data_profile(df,container):
-    profile = ProfileReport(df)
-    profile.to_file("profile_report.html")
-    with open('profile_report.html', 'r') as f:
-        html_content = f.read()
-    with container:
-        components.html(html_content, height=800, scrolling=True)
-
-@st.cache_data(ttl="2h")
-def update_progress(progress_bar, step, max_steps):
-    progress = int((step / max_steps) * 100)
-    t = f"Processing....Step {step}/{max_steps}"
-    if step == max_steps:
-        t="Process Completed"
-    progress_bar.progress(progress, text=t)
-
-@st.cache_data(ttl="2h")
-def display_sweetviz_report(dataframe,container):
-    report = sv.analyze(dataframe)
-    report.show_html('sweetviz_report.html', open_browser=False)
-    with open('sweetviz_report.html', 'r') as f:
-        html_content = f.read()
-    with container:
-        components.html(html_content, height=800, scrolling=True)
-
-def handle_exception(e):
-    st.error(
-        f"""The app has encountered an error:  
-            **{e}**  
-            Please check settings - columns selections and model parameters  
-        """,
-        icon="🥺",
-    )
-    with st.expander("See Error details"):
-        st.error(traceback.format_exc())
-
-def eda_report():
-    if 'dataframe' in st.session_state:
-        df = st.session_state['dataframe']
-        col1,col2 = st.columns([0.1,0.1])
-        new_report = col1.toggle(":blue[Generate New]", value=True)
-        show_button = col2.button("Show Report")
-        pb = st.progress(0, text="Generating Report")
-        cont = st.container(border=False)
-        try:
-            if show_button:
-                if new_report:
-                    update_progress(pb,1,4)
-                    data_profile(df, cont)
-                    update_progress(pb,2,4)
-                    display_sweetviz_report(df, cont)
-                    update_progress(pb,4,4)
-                else:
-                    show_profile_reports(cont)
-
-        except Exception as e:
-            handle_exception(e)        
+     
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
-
 
 #---------------------------------------------------------------------------------------------------------------------------------   
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
@@ -218,4 +147,11 @@ with tab1:
         col4.metric('**Number of categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
         #st.divider()           
 
-        eda_report() 
+        stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
+        with stats_expander:        
+            dataset = st.session_state.df
+            if len(dataset) > 0:
+                profile_report = ProfileReport(dataset)
+                export = profile_report.to_html()
+                st_profile_report(profile_report)
+        st.download_button(label="Download Full Report", data=export, file_name='report.html')
