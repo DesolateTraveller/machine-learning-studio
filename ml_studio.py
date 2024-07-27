@@ -159,25 +159,6 @@ def display_sweetviz_report(dataframe,container):
     with container:
         components.html(html_content, height=800, scrolling=True)
 
-def eda_report():
-    if 'dataframe' in st.session_state:
-        df = st.session_state['dataframe']
-        col1,col2 = st.columns([0.6,0.4])
-        new_report = col1.toggle(":blue[Generate New]", value=True)
-        show_button = col2.button("Show Report")
-        pb = st.progress(0, text="Generating Report")
-        cont = st.container(border=False)
-        try:
-            if show_button:
-                if new_report:
-                    update_progress(pb,1,2)
-                    data_profile(df, cont)
-                    update_progress(pb,2,2)
-                else:
-                    show_profile_reports(cont)
-        except:
-            st.warning("Please upload a dataset the analysis.")
-
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -205,15 +186,12 @@ with tab1:
         col4.metric('**Number of categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
         #st.divider()           
 
-        new_report = col1.toggle(":blue[Generate New]", value=True)
+
         show_button = col2.button("Show Report")
-        pb = st.progress(0, text="Generating Report")
         try:
             if show_button:
-                if new_report:
-                    
-                    stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
-                    with stats_expander:        
+                stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
+                with stats_expander:        
                         profile = ProfileReport(df)
                         profile.to_file("profile_report.html")
                         with open('profile_report.html', 'r') as f:
