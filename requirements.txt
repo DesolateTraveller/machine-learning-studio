@@ -14,7 +14,6 @@ xgboost
 optuna
 shap
 #-----------------------------
-traceback
 sweetviz
 pygwalker
 #-----------------------------
