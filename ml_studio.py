@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
-import sweetviz as sv
 from ydata_profiling import ProfileReport
 import base64
-import os
 
 def load_file(file):
     if file.name.endswith('csv'):
@@ -13,13 +11,6 @@ def load_file(file):
     else:
         st.error("Unsupported file type")
         return None
-
-def generate_sweetviz_report(df):
-    report = sv.analyze(df)
-    report.show_html(filepath='sweetviz_report.html', open_browser=False)
-    with open('sweetviz_report.html', 'r') as f:
-        html = f.read()
-    return html
 
 def generate_ydata_profiling_report(df):
     profile = ProfileReport(df, explorative=True)
@@ -35,7 +26,7 @@ def display_html_report(html, title):
     st.markdown(iframe, unsafe_allow_html=True)
 
 # Main App
-st.title("Exploratory Data Analysis (EDA) App")
+st.title("Exploratory Data Analysis (EDA) with ydata Profiling")
 
 file = st.file_uploader("Choose a file", type=["csv", "xls", "xlsx"], accept_multiple_files=False)
 
@@ -44,25 +35,11 @@ if file is not None:
     st.write("Preview of Data")
     st.dataframe(df.head())
 
-    eda_option = st.selectbox(
-        "Choose EDA Tool",
-        ["Sweetviz", "AutoViz", "ydata Profiling"]
-    )
-
-    if st.button("Generate EDA Report"):
-        if eda_option == "Sweetviz":
-            with st.spinner("Generating Sweetviz report..."):
-                report_html = generate_sweetviz_report(df)
-                with st.expander("Sweetviz Report"):
-                    display_html_report(report_html, "Sweetviz Report")
-                st.success("Sweetviz report generated!")
-
-
-        elif eda_option == "ydata Profiling":
-            with st.spinner("Generating ydata Profiling report..."):
-                report_html = generate_ydata_profiling_report(df)
-                with st.expander("ydata Profiling Report"):
-                    display_html_report(report_html, "ydata Profiling Report")
-                st.success("ydata Profiling report generated!")
+    if st.button("Generate ydata Profiling Report"):
+        with st.spinner("Generating ydata Profiling report..."):
+            report_html = generate_ydata_profiling_report(df)
+            with st.expander("ydata Profiling Report"):
+                display_html_report(report_html, "ydata Profiling Report")
+            st.success("ydata Profiling report generated!")
 else:
     st.info("Please upload a file to start the EDA process.")
