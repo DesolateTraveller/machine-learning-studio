@@ -155,7 +155,7 @@ if file is not None:
 
         stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
         with stats_expander:        
-            st.table(df)
+            st.table(df.head(2))
 
 #---------------------------------------------------------------------------------------------------------------------------------
     with tab2:
@@ -229,9 +229,18 @@ if file is not None:
                         st.altair_chart(box_plot, use_container_width=True)
 
 #---------------------------------------------------------------------------------------------------------------------------------
-    with tab2:
+    with tab3:
 
         st.write("**Configure ML Model**")
         col1,col2, col3 = st.columns([0.2,0.3,0.5])
 
-        task = col1.selectbox("Select ML task", ["Classification", "Regression", "Clustering", "Anomaly Detection", "Time Series Forecasting"])
+        task = st.selectbox("Select ML task", ["Classification", "Regression", "Clustering", "Anomaly Detection", "Time Series Forecasting"])
+
+        with col2:
+                
+            stats_expander = st.expander("**Select Columns**", expanded=False)
+            with stats_expander:
+
+                target_column = st.selectbox("Select target column", df.columns) if task in ["Classification", "Regression", "Time Series Forecasting"] else None
+                numerical_columns = st.multiselect("Select numerical columns", df.columns)
+                categorical_columns = st.multiselect("Select categorical columns", df.columns)
