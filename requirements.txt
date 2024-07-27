@@ -4,7 +4,7 @@ matplotlib
 seaborn
 #-----------------------------
 streamlit
-#streamlit-pandas-profiling
+streamlit-pandas-profiling
 #-----------------------------
 plotly
 altair
