@@ -135,15 +135,19 @@ else:
     
     with tab1:
     
-        file = st.file_uploader("**:blue[Choose a file]**",
+        col1, col2 = st.columns((0.2,0.8))
+        with col1:
+             
+            file = st.file_uploader("**:blue[Choose a file]**",
                                         type=["csv", "xls", "xlsx"], 
                                         accept_multiple_files=False, 
                                         key="file_upload")
-        if file is not None:
-            df = load_file(file)
-            #st.sidebar.divider()
-
-            stats_expander = st.expander("**Preview of Data**", expanded=True)
-            with stats_expander:  
-                st.table(df.head(2))
-            st.divider()
+            if file is not None:
+            
+                with col2:        
+                
+                    df = load_file(file)
+                    stats_expander = st.expander("**Preview of Data**", expanded=True)
+                    with stats_expander:  
+                        st.table(df.head(2))
+            #st.divider()
