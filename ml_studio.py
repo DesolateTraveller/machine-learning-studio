@@ -134,16 +134,14 @@ def pywalkr(dataset):
 
 file = st.file_uploader("**:blue[Choose a file]**", type=["csv", "xls", "xlsx"], accept_multiple_files=False, key="file_upload")
 if file is not None:
+    df = load_file(file)
+    stats_expander = st.expander("**Preview of Data**", expanded=True)
+    with stats_expander:  
+        st.table(df.head(2))
 
 #---------------------------------------------------------------------------------------------------------------------------------     
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
     with tab1:
-
-        df = load_file(file)
-        stats_expander = st.expander("**Preview of Data**", expanded=True)
-        with stats_expander:  
-            st.table(df.head(2))
-        st.divider()
 
         col1, col2, col3, col4, col5, col6 = st.columns(6)
 
@@ -231,11 +229,10 @@ if file is not None:
 #---------------------------------------------------------------------------------------------------------------------------------
     with tab3:
 
-        st.write("**Configure ML Model**")
         col1,col2, col3 = st.columns([0.2,0.3,0.5])
         with col1:
-            
-            task = st.selectbox("Select ML task", ["Classification", "Regression", "Clustering", "Anomaly Detection", "Time Series Forecasting"])
+
+            task = st.selectbox("**Select ML task**", ["Classification", "Regression", "Clustering", "Anomaly Detection", "Time Series Forecasting"])
 
         with col2:
                 
@@ -245,3 +242,33 @@ if file is not None:
                 target_column = st.selectbox("Select target column", df.columns) if task in ["Classification", "Regression", "Time Series Forecasting"] else None
                 numerical_columns = st.multiselect("Select numerical columns", df.columns)
                 categorical_columns = st.multiselect("Select categorical columns", df.columns)
+
+        with col3:
+                
+            stats_expander = st.expander("**Tune Parameters**", expanded=False)
+            with stats_expander:
+
+                # Data Preparation
+                handle_missing_data = st.toggle("Handle Missing Data", value=True)
+                handle_outliers = st.toggle("Handle Outliers", value=True)
+        
+                # Scale and Transform
+                normalize = st.checkbox("Normalize", value=False)
+                normalize_method = st.selectbox("Normalize Method", ["zscore", "minmax", "maxabs", "robust"], index=0 if normalize else -1) if normalize else None
+                transformation = st.checkbox("Apply Transformation", value=False)
+                transformation_method = st.selectbox("Transformation Method", ["yeo-johnson", "quantile"], index=0 if transformation else -1) if transformation else None
+        
+                # Feature Engineering
+                polynomial_features = st.checkbox("Polynomial Features", value=False)
+                polynomial_degree = st.slider("Polynomial Degree", 2, 5, 2) if polynomial_features else None
+        
+                # Feature Selection
+                remove_multicollinearity = st.checkbox("Remove Multicollinearity", value=False)
+                multicollinearity_threshold = st.slider("Multicollinearity Threshold", 0.5, 1.0, 0.9) if remove_multicollinearity else None
+        
+                if not (task == "Anomaly Detection" or task == "Clustering") :
+                    feature_selection = st.checkbox("Feature Selection", value=False)
+                    feature_selection_method = st.selectbox("Feature Selection Method", ["classic", "exhaustive"], index=0 if feature_selection else -1) if feature_selection else None
+                else:
+                    feature_selection = None
+                    feature_selection_method = None
