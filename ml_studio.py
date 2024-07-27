@@ -135,7 +135,7 @@ else:
     
     with tab1:
     
-        file = st.sidebar.file_uploader("**:blue[Choose a file]**",
+        file = st.file_uploader("**:blue[Choose a file]**",
                                         type=["csv", "xls", "xlsx"], 
                                         accept_multiple_files=False, 
                                         key="file_upload")
