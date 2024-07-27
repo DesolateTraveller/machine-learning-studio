@@ -11,7 +11,7 @@ import streamlit.components.v1 as components
 #---------------------------------------------------------------------------------------------------------------------------------
 #from streamlit_extras.stoggle import stoggle
 from ydata_profiling import ProfileReport
-#from streamlit_pandas_profiling import st_profile_report
+from streamlit_pandas_profiling import st_profile_report
 #----------------------------------------
 import os
 import time
@@ -197,7 +197,6 @@ with tab1:
             st.table(df.head(2))
         st.divider()
 
-
         col1, col2, col3, col4, col5, col6 = st.columns(6)
 
         col1.metric('**Number of input values (rows)**', df.shape[0], help='number of rows in the dataframe')
@@ -206,10 +205,17 @@ with tab1:
         col4.metric('**Number of categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
         #st.divider()           
 
-        #stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
-        #with stats_expander:        
-            #pr = df.profile_report()
-            #st_profile_report(pr)
-            #st.table(df.head())
+        new_report = col1.toggle(":blue[Generate New]", value=True)
+        show_button = col2.button("Show Report")
+        pb = st.progress(0, text="Generating Report")
+        try:
+            if show_button:
+                if new_report:
+                    
+                    stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
+                    with stats_expander:        
+                        pr = df.profile_report()
+                        st_profile_report(pr)
+        except:
+            st.warning("Please upload a dataset the analysis.")
              
-        eda_report()
