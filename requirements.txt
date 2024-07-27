@@ -15,6 +15,7 @@ xgboost
 optuna
 shap
 #-----------------------------
+autoviz
 sweetviz
 pygwalker
 ydata-profiling
