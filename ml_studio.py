@@ -167,63 +167,71 @@ if file is not None:
                 if plot_option == "Line Chart":
 
                     with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="date_1", )
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="values_1")
+                        x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="date_1", )
+                        y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="values_1")
                         
                     with col2:
-                            line_chart = alt.Chart(df).mark_line().encode(
-                            x=alt.X(x_column, type='temporal' if pd.api.types.is_datetime64_any_dtype(df[x_column]) else 'ordinal'),
-                            y=alt.Y(y_column, type='quantitative'),
-                            tooltip=[x_column, y_column]).interactive()
-                            st.altair_chart(line_chart, use_container_width=True)
+                        line_chart = alt.Chart(df).mark_line().encode(
+                        x=alt.X(x_column, type='temporal' if pd.api.types.is_datetime64_any_dtype(df[x_column]) else 'ordinal'),
+                        y=alt.Y(y_column, type='quantitative'),
+                        tooltip=[x_column, y_column]).interactive()
+                        st.altair_chart(line_chart, use_container_width=True)
 
                 elif plot_option == "Histogram":
                         
                     with col1:
-                            x_column = st.selectbox("**:blue[Select column for histogram]**", options=columns, key="hist_1",)
+                        x_column = st.selectbox("**:blue[Select column for histogram]**", options=columns, key="hist_1",)
                         
                     with col2:
-                            histogram = alt.Chart(df).mark_bar().encode(
-                            x=alt.X(x_column, bin=True),
-                            y=alt.Y('count()', type='quantitative'),
-                            tooltip=[x_column, 'count()']).interactive()
-                            st.altair_chart(histogram, use_container_width=True)
+                        histogram = alt.Chart(df).mark_bar().encode(
+                        x=alt.X(x_column, bin=True),
+                        y=alt.Y('count()', type='quantitative'),
+                        tooltip=[x_column, 'count()']).interactive()
+                        st.altair_chart(histogram, use_container_width=True)
 
                 elif plot_option == "Scatter Plot":
                         
                     with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="scatter_x", )
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="scatter_y", )
+                        x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="scatter_x", )
+                        y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="scatter_y", )
                         
                     with col2:
-                            scatter_plot = alt.Chart(df).mark_point().encode(
-                            x=alt.X(x_column, type='quantitative' if pd.api.types.is_numeric_dtype(df[x_column]) else 'ordinal'),
-                            y=alt.Y(y_column, type='quantitative'),
-                            tooltip=[x_column, y_column]).interactive()
-                            st.altair_chart(scatter_plot, use_container_width=True)
+                        scatter_plot = alt.Chart(df).mark_point().encode(
+                        x=alt.X(x_column, type='quantitative' if pd.api.types.is_numeric_dtype(df[x_column]) else 'ordinal'),
+                        y=alt.Y(y_column, type='quantitative'),
+                        tooltip=[x_column, y_column]).interactive()
+                        st.altair_chart(scatter_plot, use_container_width=True)
 
                 elif plot_option == "Bar Chart":
                     
                     with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="bar_x", )
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="bar_y", )
+                        x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="bar_x", )
+                        y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="bar_y", )
                         
                     with col2:
-                            bar_chart = alt.Chart(df).mark_bar().encode(
-                            x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
-                            y=alt.Y(y_column, type='quantitative'),
-                            tooltip=[x_column, y_column]).interactive()
-                            st.altair_chart(bar_chart, use_container_width=True)
+                        bar_chart = alt.Chart(df).mark_bar().encode(
+                        x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
+                        y=alt.Y(y_column, type='quantitative'),
+                        tooltip=[x_column, y_column]).interactive()
+                        st.altair_chart(bar_chart, use_container_width=True)
 
                 elif plot_option == "Box Plot":
                     
                     with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="box_x",)
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="box_y", )
+                        x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="box_x",)
+                        y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="box_y", )
                         
                     with col2:
-                            box_plot = alt.Chart(df).mark_boxplot().encode(
-                            x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
-                            y=alt.Y(y_column, type='quantitative'),
-                            tooltip=[x_column, y_column]).interactive()
-                            st.altair_chart(box_plot, use_container_width=True)
+                        box_plot = alt.Chart(df).mark_boxplot().encode(
+                        x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
+                        y=alt.Y(y_column, type='quantitative'),
+                        tooltip=[x_column, y_column]).interactive()
+                        st.altair_chart(box_plot, use_container_width=True)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+    with tab2:
+
+        st.write("**Configure ML Model**")
+        col1,col2, col3 = st.columns([0.2,0.3,0.5])
+
+        task = col1.selectbox("Select ML task", ["Classification", "Regression", "Clustering", "Anomaly Detection", "Time Series Forecasting"])
