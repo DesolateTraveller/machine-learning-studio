@@ -11,7 +11,7 @@ import streamlit.components.v1 as components
 #---------------------------------------------------------------------------------------------------------------------------------
 #from streamlit_extras.stoggle import stoggle
 from ydata_profiling import ProfileReport
-from streamlit_pandas_profiling import st_profile_report
+#from streamlit_pandas_profiling import st_profile_report
 #----------------------------------------
 import os
 import time
@@ -125,6 +125,7 @@ def load_file(file):
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
 
+
 #---------------------------------------------------------------------------------------------------------------------------------   
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -149,9 +150,4 @@ with tab1:
 
         stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
         with stats_expander:        
-            dataset = st.session_state.df
-            if len(dataset) > 0:
-                profile_report = ProfileReport(dataset)
-                export = profile_report.to_html()
-                st_profile_report(profile_report)
-        st.download_button(label="Download Full Report", data=export, file_name='report.html')
+            st.table(df)
