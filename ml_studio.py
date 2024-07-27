@@ -111,8 +111,10 @@ def load_file(file):
     file_extension = file.name.split('.')[-1]
     if file_extension == 'csv':
         df = pd.read_csv(file, sep=None, engine='python', encoding='utf-8', parse_dates=True, infer_datetime_format=True)
+        st.session_state['dataframe'] = df
     elif file_extension in ['xls', 'xlsx']:
         df = pd.read_excel(file)
+        st.session_state['dataframe'] = df
     else:
         st.error("Unsupported file format")
         df = pd.DataFrame()
@@ -137,3 +139,18 @@ with tab1:
         with stats_expander:  
             st.table(df.head(2))
             #st.divider()
+
+
+        col1, col2, col3, col4, col5, col6 = st.columns(6)
+
+        col1.metric('**Number of input values (rows)**', df.shape[0], help='number of rows in the dataframe')
+        col2.metric('**Number of variables (columns)**', df.shape[1], help='number of columns in the dataframe')     
+        col3.metric('**Number of numerical variables**', len(df.select_dtypes(include=['float64', 'int64']).columns), help='number of numerical variables')
+        col4.metric('**Number of categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
+        #st.divider()           
+
+        stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
+        with stats_expander:        
+            #pr = df.profile_report()
+            #st_profile_report(pr)
+            st.table(df.head()) 
