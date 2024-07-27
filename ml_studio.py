@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import sweetviz as sv
-from autoviz.AutoViz_Class import AutoViz_Class
 from ydata_profiling import ProfileReport
 import os
 
@@ -19,10 +18,6 @@ def generate_sweetviz_report(df):
     report.show_html(filepath='sweetviz_report.html', open_browser=False)
     return 'sweetviz_report.html'
 
-def generate_autoviz_report(df, filename):
-    AV = AutoViz_Class()
-    report = AV.AutoViz(filename, dfte=df)
-    return report
 
 def generate_ydata_profiling_report(df):
     profile = ProfileReport(df, explorative=True)
@@ -50,14 +45,6 @@ if file is not None:
             st.success("Sweetviz report generated!")
             with open(report_file, 'rb') as f:
                 st.download_button('Download Sweetviz Report', f, file_name='sweetviz_report.html')
-
-        elif eda_option == "AutoViz":
-            report_file = 'uploaded_file.csv'
-            df.to_csv(report_file, index=False)
-            st.success("AutoViz report generated!")
-            generate_autoviz_report(df, report_file)
-            with open(report_file, 'rb') as f:
-                st.download_button('Download AutoViz Report', f, file_name='autoviz_report.html')
 
         elif eda_option == "ydata Profiling":
             report_file = generate_ydata_profiling_report(df)
