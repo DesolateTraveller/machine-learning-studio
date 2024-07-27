@@ -233,8 +233,9 @@ if file is not None:
 
         st.write("**Configure ML Model**")
         col1,col2, col3 = st.columns([0.2,0.3,0.5])
-
-        task = st.selectbox("Select ML task", ["Classification", "Regression", "Clustering", "Anomaly Detection", "Time Series Forecasting"])
+        with col1:
+            
+            task = st.selectbox("Select ML task", ["Classification", "Regression", "Clustering", "Anomaly Detection", "Time Series Forecasting"])
 
         with col2:
                 
