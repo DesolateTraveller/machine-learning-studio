@@ -10,7 +10,7 @@ import streamlit.components.v1 as components
 ### Import Libraries
 #---------------------------------------------------------------------------------------------------------------------------------
 #from streamlit_extras.stoggle import stoggle
-from ydata_profiling import ProfileReport
+#from ydata_profiling import ProfileReport
 #from streamlit_pandas_profiling import st_profile_report
 #----------------------------------------
 import os
@@ -120,16 +120,12 @@ def load_file(file):
         df = pd.DataFrame()
     return df
 
-     
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
 
-
-#---------------------------------------------------------------------------------------------------------------------------------   
 tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
-#---------------------------------------------------------------------------------------------------------------------------------
-    
+
 with tab1:
      
     file = st.file_uploader("**:blue[Choose a file]**", type=["csv", "xls", "xlsx"], accept_multiple_files=False, key="file_upload")
