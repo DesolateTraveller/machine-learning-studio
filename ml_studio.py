@@ -132,12 +132,13 @@ def pywalkr(dataset):
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
+file = st.file_uploader("**:blue[Choose a file]**", type=["csv", "xls", "xlsx"], accept_multiple_files=False, key="file_upload")
+if file is not None:
 
-with tab1:
-     
-    file = st.file_uploader("**:blue[Choose a file]**", type=["csv", "xls", "xlsx"], accept_multiple_files=False, key="file_upload")
-    if file is not None:
+#---------------------------------------------------------------------------------------------------------------------------------     
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
+    with tab1:
+
         df = load_file(file)
         stats_expander = st.expander("**Preview of Data**", expanded=True)
         with stats_expander:  
@@ -157,7 +158,7 @@ with tab1:
             st.table(df)
 
 #---------------------------------------------------------------------------------------------------------------------------------
-with tab2:
+    with tab2:
 
                 plot_option = st.selectbox("**Choose Plot**", ["Line Chart", "Histogram", "Scatter Plot", "Bar Chart", "Box Plot"])
                 columns = list(df.columns)
