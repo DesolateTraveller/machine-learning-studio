@@ -10,7 +10,7 @@ import streamlit.components.v1 as components
 ### Import Libraries
 #---------------------------------------------------------------------------------------------------------------------------------
 #from streamlit_extras.stoggle import stoggle
-#from ydata_profiling import ProfileReport
+from ydata_profiling import ProfileReport
 #from streamlit_pandas_profiling import st_profile_report
 #----------------------------------------
 import os
@@ -120,6 +120,63 @@ def load_file(file):
         df = pd.DataFrame()
     return df
 
+@st.cache_data(ttl="2h")
+def show_profile_reports(container):
+    if os.path.exists("profile_report.html"):
+        with open('profile_report.html', 'r') as f:
+            html_content = f.read()
+        with container:
+            components.html(html_content, height=800, scrolling=True)
+    if os.path.exists("sweetviz_report.html"):
+        with open('sweetviz_report.html', 'r') as f:
+            html_content = f.read()
+        with container:
+            components.html(html_content, height=800, scrolling=True)
+
+@st.cache_data(ttl="2h")
+def data_profile(df,container):
+    profile = ProfileReport(df)
+    profile.to_file("profile_report.html")
+    with open('profile_report.html', 'r') as f:
+        html_content = f.read()
+    with container:
+        components.html(html_content, height=800, scrolling=True)
+
+@st.cache_data(ttl="2h")
+def update_progress(progress_bar, step, max_steps):
+    progress = int((step / max_steps) * 100)
+    t = f"Processing....Step {step}/{max_steps}"
+    if step == max_steps:
+        t="Process Completed"
+    progress_bar.progress(progress, text=t)
+
+@st.cache_data(ttl="2h")
+def display_sweetviz_report(dataframe,container):
+    report = sv.analyze(dataframe)
+    report.show_html('sweetviz_report.html', open_browser=False)
+    with open('sweetviz_report.html', 'r') as f:
+        html_content = f.read()
+    with container:
+        components.html(html_content, height=800, scrolling=True)
+
+def eda_report():
+    if 'dataframe' in st.session_state:
+        df = st.session_state['dataframe']
+        col1,col2 = st.columns([0.6,0.4])
+        new_report = col1.toggle(":blue[Generate New]", value=True)
+        show_button = col2.button("Show Report")
+        pb = st.progress(0, text="Generating Report")
+        cont = st.container(border=False)
+        try:
+            if show_button:
+                if new_report:
+                    update_progress(pb,1,2)
+                    data_profile(df, cont)
+                    update_progress(pb,2,2)
+                else:
+                    show_profile_reports(cont)
+        except:
+            st.warning("Please upload a dataset the analysis.")
 
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
@@ -138,7 +195,7 @@ with tab1:
         stats_expander = st.expander("**Preview of Data**", expanded=True)
         with stats_expander:  
             st.table(df.head(2))
-            #st.divider()
+        st.divider()
 
 
         col1, col2, col3, col4, col5, col6 = st.columns(6)
@@ -149,8 +206,10 @@ with tab1:
         col4.metric('**Number of categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
         #st.divider()           
 
-        stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
-        with stats_expander:        
+        #stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
+        #with stats_expander:        
             #pr = df.profile_report()
             #st_profile_report(pr)
-            st.table(df.head()) 
+            #st.table(df.head())
+             
+        eda_report()
