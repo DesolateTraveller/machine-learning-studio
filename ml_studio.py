@@ -97,7 +97,7 @@ st.set_page_config(page_title="ML Studio",
 st.title(f""":rainbow[Machine Learning (ML) Studio | v0.1]""")
 st.markdown('Created by | <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a>', 
             unsafe_allow_html=True)
-#st.info('**Disclaimer : :blue[Thank you for visiting the app] | Unauthorized uses or copying of the app is strictly prohibited | Click the :blue[sidebar] to follow the instructions to start the applications.**', icon="ℹ️")
+st.info('**Disclaimer : :blue[Thank you for visiting the app] | Unauthorized uses or copying of the app is strictly prohibited | Click the :blue[sidebar] to follow the instructions to start the applications.**', icon="ℹ️")
 #----------------------------------------
 # Set the background image
 st.divider()
@@ -126,7 +126,7 @@ def load_file(file):
 
 ml_type = st.selectbox("**:blue[Pick your Problem Type]**", ["None", "Classification", "Clustering", "Image Classification","Regression"])
 if ml_type == "None":
-        st.warning("Please choose an algorithm in the sidebar to proceed with the analysis.")
+        st.warning("Please choose an algorithm to proceed with the analysis.")
 else: 
 
 #---------------------------------------------------------------------------------------------------------------------------------   
