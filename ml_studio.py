@@ -45,6 +45,7 @@ import traceback
 import shutil
 import sweetviz as sv
 import pygwalker as pyg
+from pygwalker.api.streamlit import StreamlitRenderer
 #----------------------------------------
 # Model Building
 import xgboost as xgb
@@ -120,6 +121,13 @@ def load_file(file):
         df = pd.DataFrame()
     return df
 
+@st.cache_data(ttl="2h")
+def pywalkr(dataset):
+    try:
+        pyg_app = StreamlitRenderer(dataset)
+        pyg_app.explorer()
+    except Exception as e:
+        st.error(str(e))
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -147,3 +155,8 @@ with tab1:
         stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
         with stats_expander:        
             st.table(df)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+with tab2:
+
+    pywalkr(df)
