@@ -82,6 +82,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, RocCurveDi
 #----------------------------------------
 # Model Validation
 
+
 #----------------------------------------
 #from pycaret.classification import setup, compare_models, pull, save_model, evaluate_model
 
@@ -133,7 +134,8 @@ if file is not None:
         st.table(df.head(2))
 
 #---------------------------------------------------------------------------------------------------------------------------------     
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Build**","**Development**","**Performance**",])
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["**Information**","**Visualizations**","**Cleaning**","**Transformation**","**Development**","**Performance**","**Importance**",])
+#--------------------------------------------------------------------------------------------------------------------------------- 
     with tab1:
 
         col1, col2, col3, col4, col5, col6 = st.columns(6)
@@ -157,47 +159,10 @@ if file is not None:
 #---------------------------------------------------------------------------------------------------------------------------------
     with tab3:
 
-        col1,col2, col3 = st.columns([0.2,0.3,0.5])
-        with col1:
+            with st.container:
 
-            task = st.selectbox("**Select ML task**", ["Classification", "Regression", "Clustering", "Anomaly Detection", "Time Series Forecasting"])
-
-        with col2:
-                
-            stats_expander = st.expander("**Select Columns**", expanded=False)
-            with stats_expander:
-
-                target_column = st.selectbox("Select target column", df.columns) if task in ["Classification", "Regression", "Time Series Forecasting"] else None
-                numerical_columns = st.multiselect("Select numerical columns", df.columns)
-                categorical_columns = st.multiselect("Select categorical columns", df.columns)
-
-        with col3:
-                
-            stats_expander = st.expander("**Tune Parameters**", expanded=False)
-            with stats_expander:
-
-                # Data Preparation
-                handle_missing_data = st.toggle("Handle Missing Data", value=True)
-                handle_outliers = st.toggle("Handle Outliers", value=True)
-        
-                # Scale and Transform
-                normalize = st.checkbox("Normalize", value=False)
-                normalize_method = st.selectbox("Normalize Method", ["zscore", "minmax", "maxabs", "robust"], index=0 if normalize else -1) if normalize else None
-                transformation = st.checkbox("Apply Transformation", value=False)
-                transformation_method = st.selectbox("Transformation Method", ["yeo-johnson", "quantile"], index=0 if transformation else -1) if transformation else None
-        
-                # Feature Engineering
-                polynomial_features = st.checkbox("Polynomial Features", value=False)
-                polynomial_degree = st.slider("Polynomial Degree", 2, 5, 2) if polynomial_features else None
-        
-                # Feature Selection
-                remove_multicollinearity = st.checkbox("Remove Multicollinearity", value=False)
-                multicollinearity_threshold = st.slider("Multicollinearity Threshold", 0.5, 1.0, 0.9) if remove_multicollinearity else None
-        
-                if not (task == "Anomaly Detection" or task == "Clustering") :
-                    feature_selection = st.checkbox("Feature Selection", value=False)
-                    feature_selection_method = st.selectbox("Feature Selection Method", ["classic", "exhaustive"], index=0 if feature_selection else -1) if feature_selection else None
-                else:
-                    feature_selection = None
-                    feature_selection_method = None
-
+                    st.subheader("Check | Duplicate Values",divider='blue') 
+                    if st.checkbox("Show Duplicate Values"):
+                        st.table(df[df.duplicated()].head(2))
+                    else:
+                        st.table(df[df.duplicated()].head(2))
