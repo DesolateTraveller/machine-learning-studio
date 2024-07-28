@@ -82,14 +82,9 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, RocCurveDi
 #----------------------------------------
 # Model Validation
 
-
 #----------------------------------------
 #from pycaret.classification import setup, compare_models, pull, save_model, evaluate_model
-from pycaret.classification import setup as cls_setup, compare_models as cls_compare, save_model as cls_save, pull as cls_pull, plot_model as cls_plot
-from pycaret.regression import setup as reg_setup, compare_models as reg_compare, save_model as reg_save, pull as reg_pull, plot_model as reg_plot
-from pycaret.clustering import setup as clu_setup, create_model as clu_create, plot_model as clu_plot, save_model as clu_save, pull as clu_pull
-from pycaret.anomaly import setup as ano_setup, create_model as ano_create, plot_model as ano_plot, save_model as ano_save, pull as ano_pull
-from pycaret.time_series import setup as ts_setup, compare_models as ts_compare, save_model as ts_save, pull as ts_pull, plot_model as ts_plot
+
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Title and description for your Streamlit app
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -125,164 +120,7 @@ def load_file(file):
         df = pd.DataFrame()
     return df
 
-@st.cache_data(ttl="2h")
-def pywalkr(dataset):
-    try:
-        pyg_app = StreamlitRenderer(dataset)
-        pyg_app.explorer()
-    except Exception as e:
-        st.error(str(e))
 
-@st.cache_data(ttl="2h")
-def update_progress(progress_bar, step, max_steps):
-    progress = int((step / max_steps) * 100)
-    t = f"Processing....Step {step}/{max_steps}"
-    if step == max_steps:
-        t="Process Completed"
-    progress_bar.progress(progress, text=t)
-
-@st.cache_data(ttl="2h")
-def build_model(task):
-    try:
-        # Setup arguments for PyCaret
-        setup_kwargs = {
-                'data': df[numerical_columns + categorical_columns + ([target_column] if target_column else [])],
-                'categorical_features': categorical_columns,
-                'numeric_features': numerical_columns,
-                'target': target_column,
-                'preprocess': handle_missing_data,
-                'remove_outliers': handle_outliers,
-                'normalize': normalize,
-                'normalize_method': normalize_method,
-                'transformation': transformation,
-                'transformation_method': transformation_method,
-                'polynomial_features': polynomial_features,
-                'polynomial_degree': polynomial_degree,
-                'remove_multicollinearity': remove_multicollinearity,
-                'multicollinearity_threshold': multicollinearity_threshold,
-                'feature_selection': feature_selection,
-                'feature_selection_method': feature_selection_method}
-        
-        pb = st.progress(0, text="Building Model...")
-        if task == "Classification" and st.button("Run Classification"):
-                
-            df[target_column] = df[target_column].astype('category')
-            df.dropna(subset=[target_column] + numerical_columns + categorical_columns, inplace=True)
-                
-            if len(df) < 2:
-                st.error("Not enough data to split into train and test sets.")
-                return
-            
-            update_progress(pb,1,7)
-            exp = cls_setup(**setup_kwargs)
-            update_progress(pb,2,7)
-            best_model = cls_compare()
-            update_progress(pb,3,7)
-            st.dataframe(cls_pull())
-            update_progress(pb,4,7)
-            cls_plot(best_model, plot='auc',display_format="streamlit")
-            cls_plot(best_model, plot='confusion_matrix',display_format="streamlit")
-            update_progress(pb,5,7)
-            st.image(cls_plot(best_model, plot='pr',save=True))
-            update_progress(pb,6,7)
-            cls_save(best_model, 'best_classification_model')
-            st.write('Best Model based on metrics - ')
-            st.write(best_model)
-            update_progress(pb,7,7)
-
-        elif task == "Regression" and st.button("Run Regression"):
-            
-            update_progress(pb,1,7)
-            df[target_column] = pd.to_numeric(df[target_column], errors='coerce')
-            update_progress(pb,2,7)
-            df.dropna(subset=[target_column] + numerical_columns + categorical_columns, inplace=True)
-            update_progress(pb,3,7)                
-            if len(df) < 2:
-                st.error("Not enough data to split into train and test sets.")
-                return
-                
-            exp = reg_setup(**setup_kwargs)
-            best_model = reg_compare()
-            update_progress(pb,4,7)
-            st.dataframe(reg_pull())
-            update_progress(pb,5,7)
-            st.image(reg_plot(best_model, plot='residuals', save=True))
-            st.image(reg_plot(best_model, plot='error', save=True))
-            st.image(reg_plot(best_model, plot='error', save=True))
-            update_progress(pb,6,7)
-            reg_save(best_model, 'best_regression_model')
-            st.write('Best Model based on metrics - ')
-            st.write(best_model)
-            update_progress(pb,7,7)
-            
-        elif task == "Clustering" and st.button("Run Clustering"):
-            
-            update_progress(pb,1,7)
-            df.dropna(subset=numerical_columns + categorical_columns, inplace=True)
-            update_progress(pb,2,7)
-            setup_kwargs.pop('target')
-            setup_kwargs.pop('feature_selection')
-            setup_kwargs.pop('feature_selection_method')  
-            update_progress(pb,3,7)
-            exp = clu_setup(**setup_kwargs)
-            best_model = clu_create('kmeans')
-            update_progress(pb,4,7)
-            clu_plot(best_model, plot='cluster', display_format='streamlit')
-            clu_plot(best_model, plot='elbow', display_format='streamlit')
-            update_progress(pb,5,7)
-            st.write(best_model)
-            st.dataframe(clu_pull())
-            update_progress(pb,6,7)
-            clu_save(best_model, 'best_clustering_model')
-            st.write('Best Model based on metrics - ')
-            st.write(best_model)
-            update_progress(pb,7,7)
-
-        elif task == "Anomaly Detection" and st.button("Run Anomaly Detection"):
-                
-            update_progress(pb,1,7)
-            df.dropna(subset=numerical_columns + categorical_columns, inplace=True)
-            update_progress(pb,2,7)
-            setup_kwargs.pop('target')
-            setup_kwargs.pop('feature_selection')
-            setup_kwargs.pop('feature_selection_method')        
-            update_progress(pb,3,7)
-            exp = ano_setup(**setup_kwargs)
-            best_model = ano_create('iforest')
-            update_progress(pb,4,7)
-            ano_plot(best_model, plot='tsne', display_format='streamlit')
-            update_progress(pb,5,7)                
-            st.write(best_model)
-            st.dataframe(ano_pull())
-            update_progress(pb,6,7)
-            ano_save(best_model, 'best_anomaly_model')
-            st.write('Best Model based on metrics - ')
-            st.write(best_model)
-            update_progress(pb,7,7)
-
-        elif task == "Time Series Forecasting" :
-                
-            date_column = st.selectbox("Select date column", df.columns)
-            if st.button("Run Time Series Forecasting"):
-                update_progress(pb,1,5)
-                df[date_column] = pd.to_datetime(df[date_column])
-                df[target_column] = pd.to_numeric(df[target_column], errors='coerce')
-                df.dropna(subset=[target_column], inplace=True)
-                update_progress(pb,2,5)                
-                df = df.set_index(date_column).asfreq('D')
-                exp = ts_setup(df, target=target_column, numeric_imputation_target='mean', numeric_imputation_exogenous='mean')
-                best_model = ts_compare()
-                update_progress(pb,3,5)                    
-                st.dataframe(ts_pull())
-                ts_plot(best_model, plot='forecast', display_format="streamlit")
-                ts_save(best_model, 'best_timeseries_model')
-                update_progress(pb,4,5)
-                st.write('Best Model based on metrics - ')
-                st.write(best_model)
-                update_progress(pb,5,5)
-
-    except Exception as e:
-            st.info("Please upload a file to start the EDA process.")
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -295,7 +133,7 @@ if file is not None:
         st.table(df.head(2))
 
 #---------------------------------------------------------------------------------------------------------------------------------     
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Development**","**Performance**","**Importance**",])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["**Information**","**Visualization**","**Build**","**Development**","**Performance**",])
     with tab1:
 
         col1, col2, col3, col4, col5, col6 = st.columns(6)
@@ -313,73 +151,8 @@ if file is not None:
 #---------------------------------------------------------------------------------------------------------------------------------
     with tab2:
 
-                plot_option = st.selectbox("**Choose Plot**", ["Line Chart", "Histogram", "Scatter Plot", "Bar Chart", "Box Plot"])
-                columns = list(df.columns)
-                col1, col2 = st.columns((0.1,0.9))
-                    
-                if plot_option == "Line Chart":
+        plot_option = st.selectbox("**Choose Plot**", ["Line Chart", "Histogram", "Scatter Plot", "Bar Chart", "Box Plot"])
 
-                    with col1:
-                        x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="date_1", )
-                        y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="values_1")
-                        
-                    with col2:
-                        line_chart = alt.Chart(df).mark_line().encode(
-                        x=alt.X(x_column, type='temporal' if pd.api.types.is_datetime64_any_dtype(df[x_column]) else 'ordinal'),
-                        y=alt.Y(y_column, type='quantitative'),
-                        tooltip=[x_column, y_column]).interactive()
-                        st.altair_chart(line_chart, use_container_width=True)
-
-                elif plot_option == "Histogram":
-                        
-                    with col1:
-                        x_column = st.selectbox("**:blue[Select column for histogram]**", options=columns, key="hist_1",)
-                        
-                    with col2:
-                        histogram = alt.Chart(df).mark_bar().encode(
-                        x=alt.X(x_column, bin=True),
-                        y=alt.Y('count()', type='quantitative'),
-                        tooltip=[x_column, 'count()']).interactive()
-                        st.altair_chart(histogram, use_container_width=True)
-
-                elif plot_option == "Scatter Plot":
-                        
-                    with col1:
-                        x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="scatter_x", )
-                        y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="scatter_y", )
-                        
-                    with col2:
-                        scatter_plot = alt.Chart(df).mark_point().encode(
-                        x=alt.X(x_column, type='quantitative' if pd.api.types.is_numeric_dtype(df[x_column]) else 'ordinal'),
-                        y=alt.Y(y_column, type='quantitative'),
-                        tooltip=[x_column, y_column]).interactive()
-                        st.altair_chart(scatter_plot, use_container_width=True)
-
-                elif plot_option == "Bar Chart":
-                    
-                    with col1:
-                        x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="bar_x", )
-                        y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="bar_y", )
-                        
-                    with col2:
-                        bar_chart = alt.Chart(df).mark_bar().encode(
-                        x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
-                        y=alt.Y(y_column, type='quantitative'),
-                        tooltip=[x_column, y_column]).interactive()
-                        st.altair_chart(bar_chart, use_container_width=True)
-
-                elif plot_option == "Box Plot":
-                    
-                    with col1:
-                        x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="box_x",)
-                        y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="box_y", )
-                        
-                    with col2:
-                        box_plot = alt.Chart(df).mark_boxplot().encode(
-                        x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
-                        y=alt.Y(y_column, type='quantitative'),
-                        tooltip=[x_column, y_column]).interactive()
-                        st.altair_chart(box_plot, use_container_width=True)
 
 #---------------------------------------------------------------------------------------------------------------------------------
     with tab3:
@@ -428,4 +201,3 @@ if file is not None:
                     feature_selection = None
                     feature_selection_method = None
 
-        build_model(task)
