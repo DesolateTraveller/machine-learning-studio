@@ -160,9 +160,11 @@ if file is not None:
     with tab3:
 
             with st.container():
-
-                    st.subheader("Check | Duplicate Values",divider='blue') 
+                    
+                    st.subheader("Check | Duplicate Values", divider='blue') 
                     if st.checkbox("Show Duplicate Values"):
-                        st.table(df[df.duplicated()].head(2))
-                    else:
-                        st.table(df[df.duplicated()].head(2))
+                        duplicates = df[df.duplicated()]
+                        if not duplicates.empty:
+                            st.table(duplicates.head(2))
+                        else:
+                            st.info("No duplicates found.")
