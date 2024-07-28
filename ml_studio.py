@@ -159,7 +159,7 @@ if file is not None:
 #---------------------------------------------------------------------------------------------------------------------------------
     with tab3:
 
-            with st.container:
+            with st.container():
 
                     st.subheader("Check | Duplicate Values",divider='blue') 
                     if st.checkbox("Show Duplicate Values"):
