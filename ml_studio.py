@@ -555,7 +555,7 @@ else:
                     if st.button("Submit"):
                         with st.spinner("Setting up and comparing models..."):
 
-                            data = df[selected_features].sample(frac=train_size, random_state=random_state).reset_index(drop=True) 
+                            data = df[selected_features].sample(frac=train_size, random_state=random_state)
                             s = setup(data, target=target_variable, session_id=123)
                             st.markdown('<p style="color:#4FFF33">Setup Successfully Completed!</p>', unsafe_allow_html=True)
 
