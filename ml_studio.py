@@ -124,6 +124,20 @@ def check_missing_values(data):
     return missing_values 
 
 @st.cache_data(ttl="2h")
+def check_outliers(data):
+    numerical_columns = data.select_dtypes(include=[np.number]).columns
+    outliers = pd.DataFrame(columns=['Column', 'Number of Outliers'])
+    for column in numerical_columns:
+        Q1 = data[column].quantile(0.25)
+        Q3 = data[column].quantile(0.75)
+        IQR = Q3 - Q1
+        threshold = 1.5
+        outliers_indices = ((data[column] < Q1 - threshold * IQR) | (data[column] > Q3 + threshold * IQR))
+        num_outliers = outliers_indices.sum()
+        outliers = outliers._append({'Column': column, 'Number of Outliers': num_outliers}, ignore_index=True)
+        return outliers
+    
+@st.cache_data(ttl="2h")
 def handle_numerical_missing_values(data, numerical_strategy):
     imputer = SimpleImputer(strategy=numerical_strategy)
     numerical_features = data.select_dtypes(include=['number']).columns
@@ -184,7 +198,8 @@ def drop_high_vif_variables(data, threshold):
 
 st.sidebar.header("Input", divider='blue')
 st.sidebar.info('Please choose from the following options to start the application.', icon="ℹ️")
-ml_type = st.sidebar.selectbox("**:blue[Pick your Problem Type]**", ["None", "Classification", "Clustering", "Image Classification","Regression"])
+ml_type = st.sidebar.selectbox("**:blue[Pick your Problem Type]**", ["None", "Anomaly detection","Classification", "Clustering", "Image Classification","Regression","Time series"])
+                                                   
 if ml_type == "None":
         st.warning("Please choose an algorithm in the sidebar to proceed with the analysis.")
 else:        
@@ -202,18 +217,13 @@ else:
         st.divider()
 
         target_variable = st.sidebar.selectbox("**:blue[Choose Target Variable]**", options=["None"] + list(df.columns), key="target_variable")
+        st.sidebar.divider()
         if target_variable == "None":
             st.warning("Please choose a target variable to proceed with the analysis.")
 
 #---------------------------------------------------------------------------------------------------------------------------------
         else:  
-            tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["**Information**",
-                                                                "**Visualizations**",
-                                                                "**Cleaning**",
-                                                                "**Transformation**",
-                                                                "**Development**",
-                                                                "**Performance**",
-                                                                "**Importance**",])
+            tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["**Information**","**Visualizations**","**Cleaning**","**Transformation**","**Development**","**Performance**","**Importance**",])
             
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab1:
@@ -355,27 +365,6 @@ else:
                         #st.altair_chart(chart, theme=None, use_container_width=True)  
 
                     st.subheader("Outliers Check & Treatment",divider='blue')
-                    def check_outliers(data):
-                                # Assuming we're checking for outliers in numerical columns
-                                numerical_columns = data.select_dtypes(include=[np.number]).columns
-                                outliers = pd.DataFrame(columns=['Column', 'Number of Outliers'])
-
-                                for column in numerical_columns:
-                                    Q1 = data[column].quantile(0.25)
-                                    Q3 = data[column].quantile(0.75)
-                                    IQR = Q3 - Q1
-
-                                    # Define a threshold for outliers
-                                    threshold = 1.5
-
-                                    # Find indices of outliers
-                                    outliers_indices = ((data[column] < Q1 - threshold * IQR) | (data[column] > Q3 + threshold * IQR))
-
-                                    # Count the number of outliers
-                                    num_outliers = outliers_indices.sum()
-                                    outliers = outliers._append({'Column': column, 'Number of Outliers': num_outliers}, ignore_index=True)
-
-                                return outliers
                 
                     if missing_values.empty:
                         df = df.copy()
@@ -423,8 +412,10 @@ else:
 
 #---------------------------------------------------------------------------------------------------------------------------------
                 with tab4:
+
+                    st.sidebar.info(":blue-background[Feature Engineering]")
                      
-                    col1, col2, col3, col4 = st.columns((0.2,0.2,0.4,0.2))  
+                    col1, col2, col3= st.columns((0.3,0.5,0.2))  
 
                     with col1:
                         
@@ -447,10 +438,8 @@ else:
                         csv = df.to_csv(index=False).encode('utf-8')
                         st.download_button(label="📥 Download Encoded Data (for review)", data=csv, file_name='encoded_data.csv', mime='text/csv')
 
-                    #----------------------------------------
+                        st.divider()
 
-                    with col2:   
-                         
                         st.subheader("Feature Scaling",divider='blue')
 
                         scaling_method = st.sidebar.selectbox("**:blue[Choose a Scaling Method]**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
@@ -463,7 +452,7 @@ else:
 
                     #----------------------------------------
 
-                    with col3:
+                    with col2:   
 
                         st.subheader("Feature Selection",divider='blue')
 
@@ -546,10 +535,10 @@ else:
 
                     #----------------------------------------
 
-                    with col4:                
+                    with col3:                
 
                         st.subheader("Dataset Splitting Criteria",divider='blue')
 
                         test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
                         random_state = st.number_input("**Random State**", 0, 100, 42)
-                        n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)   
+                        n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
