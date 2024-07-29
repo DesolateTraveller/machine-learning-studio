@@ -555,13 +555,13 @@ else:
                     if st.button("Submit"):
                         with st.spinner("Setting up and comparing models..."):
 
-                            data = df[selected_features].sample(frac=train_size, random_state=random_state)
+                            if train_size / 100 > 1:
+                                sample_frac = 1
+                            else:
+                                sample_frac = train_size / 100
+
+                            data = df[selected_features].sample(frac=sample_frac, random_state=random_state, replace=sample_frac > 1)
                             s = setup(data, target=target_variable, session_id=123)
-                            st.markdown('<p style="color:#4FFF33">Setup Successfully Completed!</p>', unsafe_allow_html=True)
-                            st.dataframe(pull())
-                        
                             best_model = compare_models()
-                            results = pull()
-                            st.write("### Best Model: ", results['Model'].iloc[0])
-                            st.write('#### Comparing All Models')
-                            st.dataframe(results)
+                            st.markdown('<p style="color:#4FFF33">Setup Successfully Completed!</p>', unsafe_allow_html=True)
+                            st.write(best_model)
