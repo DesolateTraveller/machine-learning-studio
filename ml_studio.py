@@ -83,7 +83,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, RocCurveDi
 
 #----------------------------------------
 #from pycaret.classification import setup, compare_models, pull, save_model, evaluate_model
-
+from pycaret.classification import setup, compare_models, predict_model, pull, plot_model,create_model,ensemble_model,blend_models,stack_models,tune_model,save_model
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Title and description for your Streamlit app
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -542,3 +542,5 @@ else:
                         test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
+
+#---------------------------------------------------------------------------------------------------------------------------------
