@@ -551,11 +551,14 @@ else:
                 st.write(f"You selected: {ml_type}")
                  
                 if ml_type == 'Classification':
+
+                    selected_features.append(target_variable)
+                    data = df[selected_features].sample(frac=train_size, random_state=random_state).reset_index(drop=True) 
+                    data_unseen = df[selected_features].drop(data.index).reset_index(drop=True)
                      
                     if st.button("Submit"):
                         with st.spinner("Setting up and comparing models..."):
 
-                            data = df[selected_features].sample(frac=train_size, random_state=random_state)
                             s = setup(data, target=target_variable, session_id=123)
                             st.markdown('<p style="color:#4FFF33">Setup Successfully Completed!</p>', unsafe_allow_html=True)
 
