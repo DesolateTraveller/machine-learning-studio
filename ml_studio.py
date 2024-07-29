@@ -83,7 +83,8 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, RocCurveDi
 
 #----------------------------------------
 #from pycaret.classification import setup, compare_models, pull, save_model, evaluate_model
-from pycaret.classification.ClassificationExperiment import setup, compare_models, predict_model, pull, plot_model,create_model,ensemble_model,blend_models,stack_models,tune_model,save_model
+from pycaret.classification import ClassificationExperiment
+#from pycaret.classification.ClassificationExperiment import setup, compare_models, predict_model, pull, plot_model,create_model,ensemble_model,blend_models,stack_models,tune_model,save_model
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Title and description for your Streamlit app
 #---------------------------------------------------------------------------------------------------------------------------------
