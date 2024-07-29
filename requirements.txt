@@ -26,4 +26,4 @@ openpyxl
 tensorflow
 keras
 #-----------------------------
-pycaret
+pycaret==3.3.2
