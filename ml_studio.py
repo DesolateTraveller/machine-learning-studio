@@ -83,8 +83,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, RocCurveDi
 
 #----------------------------------------
 #from pycaret.classification import setup, compare_models, pull, save_model, evaluate_model
-from pycaret.classification import ClassificationExperiment
-#from pycaret.classification.ClassificationExperiment import setup, compare_models, predict_model, pull, plot_model,create_model,ensemble_model,blend_models,stack_models,tune_model,save_model
+from pycaret.classification import setup, compare_models, predict_model, pull, plot_model, create_model, ensemble_model, blend_models, stack_models, tune_model, save_model
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Title and description for your Streamlit app
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -316,7 +315,7 @@ else:
                             st.altair_chart(box_plot, use_container_width=True)
 
 #---------------------------------------------------------------------------------------------------------------------------------
-                with tab3:
+            with tab3:
                 
                     st.subheader("Missing Values Check & Treatment",divider='blue')
                     col1, col2 = st.columns((0.2,0.8))
@@ -412,7 +411,7 @@ else:
                                     st.write(df.head())
 
 #---------------------------------------------------------------------------------------------------------------------------------
-                with tab4:
+            with tab4:
 
                     st.sidebar.info(":blue-background[Feature Engineering]")
                      
@@ -540,8 +539,25 @@ else:
 
                         st.subheader("Dataset Splitting Criteria",divider='blue')
 
+                        train_size = st.slider("**Test Size (as %)**", 10, 90, 70, 5)
                         test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
 
 #---------------------------------------------------------------------------------------------------------------------------------
+            with tab5:
+
+                st.info("Please note that there may be some processing delay during the AutoML execution.")
+                st.write(f"You selected: {ml_type}")
+                 
+                if ml_type == 'Classification':
+                     
+                    if st.button("Submit"):
+                        with st.spinner("Setting up and comparing models..."):
+
+                            data = df[selected_features].sample(frac=train_size, random_state=random_state).reset_index(drop=True) 
+                            s = setup(data, target=target_variable, session_id=123)
+                            st.markdown('<p style="color:#4FFF33">Setup Successfully Completed!</p>', unsafe_allow_html=True)
+
+    
+                     
