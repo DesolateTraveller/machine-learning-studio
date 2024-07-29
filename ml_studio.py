@@ -558,6 +558,10 @@ else:
                             data = df[selected_features].sample(frac=train_size, random_state=random_state)
                             s = setup(data, target=target_variable, session_id=123)
                             st.markdown('<p style="color:#4FFF33">Setup Successfully Completed!</p>', unsafe_allow_html=True)
-
-    
-                     
+                            st.dataframe(pull())
+                        
+                            best_model = compare_models()
+                            results = pull()
+                            st.write("### Best Model: ", results['Model'].iloc[0])
+                            st.write('#### Comparing All Models')
+                            st.dataframe(results)
