@@ -36,7 +36,7 @@ def load_file(file):
 def classification_pycaret():
     st.title("AutoML - Classification using PyCaret")
     
-    uploaded_file = st.file_uploader("Choose a file", type=["csv", "xls", "xlsx"])
+    uploaded_file = st.file_uploader("**Choose a file**", type=["csv", "xls", "xlsx"])
     if uploaded_file is not None:
         df = load_file(uploaded_file)
         st.write("### Data Preview")
