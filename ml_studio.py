@@ -90,12 +90,16 @@ from pycaret.classification import setup, compare_models, predict_model, pull, p
 #import custom_style()
 st.set_page_config(page_title="ML Studio | v0.1",
                    layout="wide",
-                   #page_icon=               
+                   page_icon="💻",              
                    initial_sidebar_state="auto")
 #----------------------------------------
 st.title(f""":rainbow[Machine Learning (ML) Studio]""")
-st.markdown('Created by | <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a>', 
-            unsafe_allow_html=True)
+st.markdown(
+    '''
+    Created by | <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a> ( :envelope: [Email](mailto:avijit.mba18@gmail.com) | :bust_in_silhouette: [LinkedIn](https://www.linkedin.com/in/avijit2403/) | :computer: [GitHub](https://github.com/DesolateTraveller) ) |
+    for best view of the app, please **zoom-out** the browser to **75%**.
+    ''',
+    unsafe_allow_html=True)
 #st.info('**Disclaimer : :blue[Thank you for visiting the app] | Unauthorized uses or copying of the app is strictly prohibited | Click the :blue[sidebar] to follow the instructions to start the applications.**', icon="ℹ️")
 #----------------------------------------
 # Set the background image
@@ -220,7 +224,7 @@ metrics_dict = {
 
 st.sidebar.header("Input", divider='blue')
 st.sidebar.info('Please choose from the following options to start the application.', icon="ℹ️")
-ml_type = st.sidebar.selectbox("**:blue[Pick your Problem Type]**", ["None", "Anomaly detection","Classification", "Clustering", "Image Classification","Regression","Time series"])
+ml_type = st.sidebar.selectbox("**:blue[Pick your Problem Type]**", ["None", "Classification", "Clustering", "Regression",])
                                                    
 if ml_type == "None":
         st.warning("Please choose an algorithm in the sidebar to proceed with the analysis.")
