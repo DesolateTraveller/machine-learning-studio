@@ -48,17 +48,20 @@ import pygwalker as pyg
 # Model Building
 import xgboost as xgb
 from sklearn import tree
+from sklearn.svm import SVC
+from sklearn.dummy import DummyClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import ExtraTreesClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression, RidgeClassifier
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis, QuadraticDiscriminantAnalysis
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 from sklearn.model_selection import KFold, cross_val_score, train_test_split
 #
-from sklearn.ensemble import GradientBoostingClassifier
+from catboost import CatBoostClassifier
+from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 from xgboost import plot_importance
 #import optuna.integration.lightgbm as lgb
@@ -77,13 +80,13 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, cross_val_
 from sklearn.metrics import roc_auc_score,roc_curve,classification_report,confusion_matrix, accuracy_score
 from sklearn.feature_selection import SelectKBest, mutual_info_classif, f_classif, f_regression, chi2, VarianceThreshold
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, RocCurveDisplay, PrecisionRecallDisplay, silhouette_score
+from sklearn.metrics import accuracy_score, roc_auc_score, recall_score, precision_score, f1_score, cohen_kappa_score, matthews_corrcoef
 #----------------------------------------
 # Model Validation
 
-
 #----------------------------------------
 #from pycaret.classification import setup, compare_models, pull, save_model, evaluate_model
-from pycaret.classification import setup, compare_models, predict_model, pull, plot_model, create_model, ensemble_model, blend_models, stack_models, tune_model, save_model
+#from pycaret.classification import setup, compare_models, predict_model, pull, plot_model, create_model, ensemble_model, blend_models, stack_models, tune_model, save_model
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Title and description for your Streamlit app
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -217,6 +220,38 @@ metrics_dict = {
     "Lift Curve":'lift',
     "Gain Curve": 'gain',
     "KS Statistic Plot":  'ks'
+}
+
+def evaluate_model(model, X_train, X_test, y_train, y_test):
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    y_pred_prob = model.predict_proba(X_test)[:, 1] if hasattr(model, "predict_proba") else None
+    return {
+        "Accuracy": accuracy_score(y_test, y_pred),
+        "AUC": roc_auc_score(y_test, y_pred_prob) if y_pred_prob is not None else np.nan,
+        "Recall": recall_score(y_test, y_pred),
+        "Precision": precision_score(y_test, y_pred),
+        "F1 Score": f1_score(y_test, y_pred),
+        "Kappa": cohen_kappa_score(y_test, y_pred),
+        "MCC": matthews_corrcoef(y_test, y_pred)
+    }
+models = {
+    "Logistic Regression": LogisticRegression(),
+    "Ridge Classifier": RidgeClassifier(),
+    "Linear Discriminant Analysis": LinearDiscriminantAnalysis(),
+    "Random Forest Classifier": RandomForestClassifier(),
+    "Naive Bayes": GaussianNB(),
+    "CatBoost Classifier": CatBoostClassifier(verbose=0),
+    "Gradient Boosting Classifier": GradientBoostingClassifier(),
+    "Ada Boost Classifier": AdaBoostClassifier(),
+    "Extra Trees Classifier": ExtraTreesClassifier(),
+    "Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis(),
+    "Light Gradient Boosting Machine": LGBMClassifier(),
+    "K Neighbors Classifier": KNeighborsClassifier(),
+    "Decision Tree Classifier": DecisionTreeClassifier(),
+    "Extreme Gradient Boosting": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
+    "Dummy Classifier": DummyClassifier(strategy="most_frequent"),
+    "SVM - Linear Kernel": SVC(kernel="linear", probability=True)
 }
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
@@ -441,7 +476,7 @@ else:
 
                     st.sidebar.info(":blue-background[Feature Engineering]")
                      
-                    col1, col2, col3= st.columns((0.3,0.5,0.2))  
+                    col1, col2, col3= st.columns((0.25,0.5,0.25))  
 
                     with col1:
                         
@@ -577,35 +612,27 @@ else:
                 st.sidebar.divider()
                 st.sidebar.info(f"**Selected Algorithm: {ml_type}**")
                  
-                if ml_type == 'Classification':
-                     
-                    if st.button("Submit"):
-                        with st.spinner("Setting up and comparing models..."):
+                if ml_type == 'Classification': 
 
-                            if train_size / 100 > 1:
-                                sample_frac = 1
-                            else:
-                                sample_frac = train_size / 100
+                    clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
+                    if clf_typ == 'Binary':
+                        if st.button("Submit"):
+                            with st.spinner("Setting up and comparing models..."):
+                                 
+                                X = df.drop(columns = [target_variable])
+                                y = df[target_variable]
+                                X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                                                                    test_size=test_size, 
+                                                                                    random_state=random_state)
+                                results = []
+                                for name, model in models.items():
+                                    metrics = evaluate_model(model, X_train, X_test, y_train, y_test)
+                                    metrics["Model"] = name
+                                    results.append(metrics)
 
-                            data = df[selected_features].sample(frac=sample_frac, random_state=random_state, replace=sample_frac > 1)
-                            s = setup(data, target=target_variable, session_id=123)
-                            st.dataframe(pull())
-                            
-                            best_model = compare_models()
-                            results = pull()
-                            st.markdown('<p style="color:#4FFF33">Setup Successfully Completed!</p>', unsafe_allow_html=True)
-                            st.write("### Best Model: ", results['Model'].iloc[0])
-                            st.write('#### Comparing All Models')
-                            st.dataframe(results)
+                                results_df = pd.DataFrame(results)
+                                best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
 
-                            model_option = st.selectbox("Select a model option", ["Best Model", "Specific Model", "Ensemble Model", "Blending", "Stacking"])
-                            if model_option == "Specific Model":
-                                model_name = st.selectbox("Choose the model name", results['Model'].to_list())
-                            elif model_option in ["Ensemble Model", "Blending", "Stacking"]:
-                                model_name = st.selectbox("Choose the model", results['Model'].to_list())
-                                method = st.selectbox("Choose the method: ", ['Bagging', 'Boosting'] if model_option == "Ensemble Model" else ['soft', 'hard'])
-                        
-                            tune_model_option = st.checkbox("Tune the model")
-                            selected_metrics = st.multiselect("Select classification metrics to evaluate", options=list(metrics_dict.keys()))
-                            uploaded_file_test = st.file_uploader("Upload CSV or Excel test file (optional)", type=["csv", "xlsx"], key='test')
+                                st.write("Model Performance Comparison")
+                                st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == best_metrics[c] else "" for v in x], axis=1))
 
