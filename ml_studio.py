@@ -620,7 +620,7 @@ else:
 
                     clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
                     if clf_typ == 'Binary':
-                        if st.sidebar.button("Submit"):
+                        #if st.sidebar.button("Submit"):
 
                             col1, col2 = st.columns(2)  
                             with col1:
