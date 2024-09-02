@@ -277,7 +277,7 @@ else:
             st.table(df.head(2))
         st.divider()
 
-        target_variable = st.sidebar.selectbox("**:blue[Choose Target Variable]**", options=["None"] + df.columns), key="target_variable")
+        target_variable = st.sidebar.selectbox("**:blue[Choose Target Variable]**", options=["None"] + list(df.columns), key="target_variable")
         st.sidebar.divider()
         if target_variable == "None":
             st.warning("Please choose a target variable to proceed with the analysis.")
