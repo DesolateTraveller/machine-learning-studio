@@ -222,7 +222,7 @@ metrics_dict = {
     "KS Statistic Plot":  'ks'
 }
 
-@st.cache_data(ttl="2h")
+@st.cache_resources
 def evaluate_model(model, X_train, X_test, y_train, y_test):
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
@@ -643,3 +643,34 @@ else:
 
                                     best_model_acc = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
                                     st.write(f"The best model is (accuracy): **{best_model_acc}**")
+
+                                with col2:
+                                     
+                                    st.subheader("Graph",divider='blue')
+                                    best_model = model[best_model_acc]
+                                    y_pred_best = best_model.predict(X_test)
+                                    y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None
+
+                                    analysis_option = st.selectbox("Choose analysis type", ["Confusion Matrix", "AUC Curve", "Feature Importance"])
+
+                                    if analysis_option == "Confusion Matrix":
+                                        cm = confusion_matrix(y_test, y_pred_best)
+                                        plt.figure(figsize=(10, 7))
+                                        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+                                        plt.title(f"Confusion Matrix for {best_model_acc}")
+                                        plt.xlabel("Predicted")
+                                        plt.ylabel("Actual")
+                                        st.pyplot(plt)
+
+                                    elif analysis_option == "AUC Curve" and y_proba_best is not None:
+                                        fpr, tpr, _ = roc_curve(y_test, y_proba_best)
+                                        plt.figure(figsize=(10, 7))
+                                        plt.plot(fpr, tpr, color="blue", lw=2, label=f"AUC = {auc(fpr, tpr):.2f}")
+                                        plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
+                                        plt.xlabel("False Positive Rate")
+                                        plt.ylabel("True Positive Rate")
+                                        plt.title(f"AUC Curve for {best_model_acc}")
+                                        plt.legend(loc="lower right")
+                                        st.pyplot(plt)
+
+
