@@ -72,9 +72,7 @@ file = st.sidebar.file_uploader("**:blue[Choose a file]**",
                                     accept_multiple_files=False, 
                                     key="file_upload")
 if file is not None:
-  df = load_data()
-
-    # Display data preview
+    df = load_data()
     st.write("Data Preview")
     #st.dataframe(df.head())
 
