@@ -634,7 +634,7 @@ else:
                                 best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
 
                                 st.write("Model Performance Comparison")
-                                st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == best_metrics[c] else "" for v in x], axis=1))
+                                st.dataframe(results_df)
 
 
 
