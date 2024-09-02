@@ -247,7 +247,7 @@ models = {
     "Extra Trees Classifier": ExtraTreesClassifier(),
     #"Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis(),
     #"Light Gradient Boosting Machine": LGBMClassifier(),
-    #"K Neighbors Classifier": KNeighborsClassifier(),
+    "K Neighbors Classifier": KNeighborsClassifier(),
     "Decision Tree Classifier": DecisionTreeClassifier(),
     #"Extreme Gradient Boosting": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
     "Dummy Classifier": DummyClassifier(strategy="most_frequent"),
@@ -634,7 +634,7 @@ else:
                                 best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
 
                                 st.write("Model Performance Comparison")
-                                st.dataframe(results_df)
+                                st.dataframe(results_df, use_container_width=False)
 
 
 
