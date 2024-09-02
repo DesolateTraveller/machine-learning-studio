@@ -80,7 +80,7 @@ from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, cross_val_
 from sklearn.metrics import roc_auc_score,roc_curve,classification_report,confusion_matrix, accuracy_score
 from sklearn.feature_selection import SelectKBest, mutual_info_classif, f_classif, f_regression, chi2, VarianceThreshold
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, RocCurveDisplay, PrecisionRecallDisplay, silhouette_score
-from sklearn.metrics import accuracy_score, auc, roc_auc_score, recall_score, precision_score, f1_score, cohen_kappa_score, matthews_corrcoef
+from sklearn.metrics import accuracy_score, auc, roc_auc_score, recall_score, precision_score, f1_score, cohen_kappa_score, matthews_corrcoef, precision_recall_curve
 #----------------------------------------
 # Model Validation
 
@@ -622,7 +622,7 @@ else:
                     if clf_typ == 'Binary':
                         #if st.sidebar.button("Submit"):
 
-                            col1, col2 = st.columns(2)  
+                            col1, col2 = st.columns((0.4,0.6))  
                             with col1:
                                     
                                 with st.container():
@@ -654,7 +654,8 @@ else:
                                     y_pred_best = best_model.predict(X_test)
                                     y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None
 
-                                    analysis_option = st.selectbox("Choose analysis type", ["Confusion Matrix", "AUC Curve"])
+                                    analysis_option = st.selectbox("**Choose analysis metrices**", ["Confusion Matrix", "AUC Curve", "Discrimination Threshold", 
+                                                                                                    "Precision-Recall Curve","Classification Report", "Lift Curve", "Gain Curve"])
 
                                     if analysis_option == "Confusion Matrix":
                                         cm = confusion_matrix(y_test, y_pred_best)
@@ -676,14 +677,26 @@ else:
                                         plt.legend(loc="lower right")
                                         st.pyplot(plt,use_container_width=True)
 
+                                    if analysis_option == "Discrimination Threshold" and y_proba_best is not None:
+                                        precisions, recalls, thresholds = precision_recall_curve(y_test, y_proba_best)
+                                        plt.figure(figsize=(10, 7))
+                                        plt.plot(thresholds, precisions[:-1], "b--", label="Precision")
+                                        plt.plot(thresholds, recalls[:-1], "g-", label="Recall")
+                                        plt.xlabel("Threshold")
+                                        plt.title(f"Discrimination Threshold for {best_model_acc}")
+                                        plt.legend(loc="best")
+                                        st.pyplot(plt,use_container_width=True)
 
-                            st.subheader("Importance",divider='blue')
+                                    if analysis_option == "Precision-Recall Curve" and y_proba_best is not None:
+                                        precisions, recalls, _ = precision_recall_curve(y_test, y_proba_best)
+                                        plt.figure(figsize=(10, 7))
+                                        plt.plot(recalls, precisions, color="purple", lw=2)
+                                        plt.xlabel("Recall")
+                                        plt.ylabel("Precision")
+                                        plt.title(f"Precision-Recall Curve for {best_model_acc}")
+                                        st.pyplot(plt,use_container_width=True)
 
-                            importances = best_model.feature_importances_
-                            indices = np.argsort(importances)[::-1]
-                            plt.figure(figsize=(10,3))
-                            plt.title(f"Feature Importances for {best_model_acc}")
-                            plt.bar(range(X_train.shape[1]), importances[indices], align="center")
-                            plt.xticks(range(X_train.shape[1]), X_train.columns[indices], rotation=90)
-                            plt.xlim([-1, X_train.shape[1]])
-                            st.pyplot(plt,use_container_width=True)
+                                    if analysis_option == "Classification Report":
+                                        report = classification_report(y_test, y_pred_best, output_dict=True)
+                                        report_df = pd.DataFrame(report).transpose()
+                                        st.dataframe(report_df,use_container_width=True)
