@@ -636,7 +636,7 @@ else:
                                     results_df = pd.DataFrame(results)
                                     best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
                                     #st.write("Model Performance Comparison")
-                                    st.dataframe(results_df, columns=("col %d" % i for i in range(20)),hide_index=True, use_container_width=True)
+                                    st.dataframe(results_df, hide_index=True, use_container_width=True)
                                     #st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == best_metrics[c] else "" for v in x], axis=1))
 
                                     best_model = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
