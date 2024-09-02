@@ -222,6 +222,7 @@ metrics_dict = {
     "KS Statistic Plot":  'ks'
 }
 
+@st.cache_data(ttl="2h")
 def evaluate_model(model, X_train, X_test, y_train, y_test):
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
@@ -636,11 +637,12 @@ else:
                                     results_df = pd.DataFrame(results)
                                     best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
                                     #st.write("Model Performance Comparison")
-                                    st.dataframe(results_df, hide_index=True, use_container_width=True)
+                                    st.dataframe(results_df,hide_index=True, use_container_width=True)
                                     #st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == best_metrics[c] else "" for v in x], axis=1))
 
-                                    best_model = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
-                                    st.write(f"The best model is: **{best_model}**")
+                                    best_model_acc = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+                                    st.write(f"The best model is (accuracy): **{best_model_acc}**")
+                                    st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == x.max() else "" for v in x], axis=0))
 
 
 
