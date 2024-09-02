@@ -284,7 +284,7 @@ else:
 
 #---------------------------------------------------------------------------------------------------------------------------------
         else:  
-            tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["**Information**","**Visualizations**","**Cleaning**","**Transformation**","**Development**","**Performance**","**Importance**",])
+            tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["**Information**","**Visualizations**","**Cleaning**","**Transformation**","**Performance**","**Results**",])
             
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab1:
@@ -618,26 +618,29 @@ else:
                     if clf_typ == 'Binary':
                         if st.sidebar.button("Submit"):
                             with st.spinner("Setting up and comparing models..."):
+
+                                col1, col2 = st.columns(2)  
+                                with col1:
                                  
-                                X = df.drop(columns = [target_variable])
-                                y = df[target_variable]
-                                X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                                    X = df.drop(columns = [target_variable])
+                                    y = df[target_variable]
+                                    X_train, X_test, y_train, y_test = train_test_split(X, y, 
                                                                                     test_size=test_size, 
                                                                                     random_state=random_state)
-                                results = []
-                                for name, model in models.items():
-                                    metrics = evaluate_model(model, X_train, X_test, y_train, y_test)
-                                    metrics["Model"] = name
-                                    results.append(metrics)
+                                    results = []
+                                    for name, model in models.items():
+                                        metrics = evaluate_model(model, X_train, X_test, y_train, y_test)
+                                        metrics["Model"] = name
+                                        results.append(metrics)
 
-                                results_df = pd.DataFrame(results)
-                                best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
+                                    results_df = pd.DataFrame(results)
+                                    best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
+                                    #st.write("Model Performance Comparison")
+                                    st.dataframe(results_df, columns=("col %d" % i for i in range(20)),hide_index=True, use_container_width=True)
+                                    #st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == best_metrics[c] else "" for v in x], axis=1))
 
-                                st.write("Model Performance Comparison")
-                                st.dataframe(results_df, use_container_width=True)
-
-                                best_model = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
-                                st.write(f"The best model is: **{best_model}**")
+                                    best_model = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+                                    st.write(f"The best model is: **{best_model}**")
 
 
 
