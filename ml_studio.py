@@ -616,7 +616,7 @@ else:
 
                     clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
                     if clf_typ == 'Binary':
-                        if st.button("Submit"):
+                        if st.sidebar.button("Submit"):
                             with st.spinner("Setting up and comparing models..."):
                                  
                                 X = df.drop(columns = [target_variable])
@@ -635,6 +635,9 @@ else:
 
                                 st.write("Model Performance Comparison")
                                 st.dataframe(results_df, use_container_width=False)
+
+                                best_model = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+                                st.write(f"The best model is: **{best_model}**")
 
 
 
