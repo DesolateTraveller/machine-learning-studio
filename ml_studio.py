@@ -241,18 +241,18 @@ models = {
     "Linear Discriminant Analysis": LinearDiscriminantAnalysis(),
     "Random Forest Classifier": RandomForestClassifier(),
     "Naive Bayes": GaussianNB(),
-    "CatBoost Classifier": CatBoostClassifier(verbose=0),
+    #"CatBoost Classifier": CatBoostClassifier(verbose=0),
     "Gradient Boosting Classifier": GradientBoostingClassifier(),
     "Ada Boost Classifier": AdaBoostClassifier(),
     "Extra Trees Classifier": ExtraTreesClassifier(),
-    "Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis(),
-    "Light Gradient Boosting Machine": LGBMClassifier(),
-    "K Neighbors Classifier": KNeighborsClassifier(),
+    #"Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis(),
+    #"Light Gradient Boosting Machine": LGBMClassifier(),
+    #"K Neighbors Classifier": KNeighborsClassifier(),
     "Decision Tree Classifier": DecisionTreeClassifier(),
-    "Extreme Gradient Boosting": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
+    #"Extreme Gradient Boosting": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
     "Dummy Classifier": DummyClassifier(strategy="most_frequent"),
-    "SVM - Linear Kernel": SVC(kernel="linear", probability=True)
-}
+    #"SVM - Linear Kernel": SVC(kernel="linear", probability=True)
+    }
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -635,4 +635,6 @@ else:
 
                                 st.write("Model Performance Comparison")
                                 st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == best_metrics[c] else "" for v in x], axis=1))
+
+
 
