@@ -284,7 +284,7 @@ else:
 
 #---------------------------------------------------------------------------------------------------------------------------------
         else:  
-            tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["**Information**","**Visualizations**","**Cleaning**","**Transformation**","**Performance**","**Results**",])
+            tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["**Information**","**Visualizations**","**Cleaning**","**Transformation**","**Performance**","**Results**",])
             
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab1:
