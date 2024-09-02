@@ -605,6 +605,10 @@ else:
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
 
+                        X = df.drop(columns = [target_variable])
+                        y = df[target_variable]
+                        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab5:
 
@@ -617,33 +621,28 @@ else:
                     clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
                     if clf_typ == 'Binary':
                         if st.sidebar.button("Submit"):
-                            with st.spinner("Setting up and comparing models..."):
 
-                                col1, col2 = st.columns(2)  
-                                with col1:
+                            col1, col2 = st.columns(2)  
+                            with col1:
 
                                     st.subheader("Comparison",divider='blue')
-                                    X = df.drop(columns = [target_variable])
-                                    y = df[target_variable]
-                                    X_train, X_test, y_train, y_test = train_test_split(X, y, 
-                                                                                    test_size=test_size, 
-                                                                                    random_state=random_state)
-                                    results = []
-                                    for name, model in models.items():
-                                        metrics = evaluate_model(model, X_train, X_test, y_train, y_test)
-                                        metrics["Model"] = name
-                                        results.append(metrics)
+                                    with st.spinner("Setting up and comparing models..."):
 
-                                    results_df = pd.DataFrame(results)
-                                    best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
-                                    #st.write("Model Performance Comparison")
-                                    st.dataframe(results_df,hide_index=True, use_container_width=True)
-                                    #st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == best_metrics[c] else "" for v in x], axis=1))
+                                        results = []
+                                        for name, model in models.items():
+                                            metrics = evaluate_model(model, X_train, X_test, y_train, y_test)
+                                            metrics["Model"] = name
+                                            results.append(metrics)
+                                        results_df = pd.DataFrame(results)
+                                        best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
+                                        st.dataframe(results_df,hide_index=True, use_container_width=True)
 
-                                    best_model_acc = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
-                                    st.write(f"The best model is (accuracy): **{best_model_acc}**")
+                                        st.divider()
 
-                                with col2:
+                                        best_model_acc = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+                                        st.write(f"The best model is (accuracy): **{best_model_acc}**")
+
+                            with col2:
                                      
                                     st.subheader("Graph",divider='blue')
                                     best_model = models[best_model_acc]
@@ -651,7 +650,7 @@ else:
                                     y_pred_best = best_model.predict(X_test)
                                     y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None
 
-                                    analysis_option = st.selectbox("Choose analysis type", ["Confusion Matrix", "AUC Curve", "Feature Importance"])
+                                    analysis_option = st.selectbox("Choose analysis type", ["Confusion Matrix", "AUC Curve"])
 
                                     if analysis_option == "Confusion Matrix":
                                         cm = confusion_matrix(y_test, y_pred_best)
@@ -660,9 +659,9 @@ else:
                                         plt.title(f"Confusion Matrix for {best_model_acc}")
                                         plt.xlabel("Predicted")
                                         plt.ylabel("Actual")
-                                        st.pyplot(plt)
+                                        st.pyplot(plt,use_container_width=True)
 
-                                    elif analysis_option == "AUC Curve" and y_proba_best is not None:
+                                    if analysis_option == "AUC Curve" and y_proba_best is not None:
                                         fpr, tpr, _ = roc_curve(y_test, y_proba_best)
                                         plt.figure(figsize=(10, 7))
                                         plt.plot(fpr, tpr, color="blue", lw=2, label=f"AUC = {auc(fpr, tpr):.2f}")
@@ -671,6 +670,16 @@ else:
                                         plt.ylabel("True Positive Rate")
                                         plt.title(f"AUC Curve for {best_model_acc}")
                                         plt.legend(loc="lower right")
-                                        st.pyplot(plt)
+                                        st.pyplot(plt,use_container_width=True)
 
 
+                            st.subheader("Importance",divider='blue')
+
+                            importances = best_model.feature_importances_
+                            indices = np.argsort(importances)[::-1]
+                            plt.figure(figsize=(10, 7))
+                            plt.title(f"Feature Importances for {best_model_acc}")
+                            plt.bar(range(X_train.shape[1]), importances[indices], align="center")
+                            plt.xticks(range(X_train.shape[1]), X_train.columns[indices], rotation=90)
+                            plt.xlim([-1, X_train.shape[1]])
+                            st.pyplot(plt,use_container_width=True)
