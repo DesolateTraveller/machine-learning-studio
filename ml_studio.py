@@ -79,7 +79,7 @@ st.write("Data Preview")
 #st.dataframe(df.head())
 
 # User input for target variable
-target = st.selectbox("Select Target Variable", df.columns)
+target = st.selectbox("Select Target Variable", list(df.columns))
 
 # Split the data
 X = df.drop(columns=[target])
