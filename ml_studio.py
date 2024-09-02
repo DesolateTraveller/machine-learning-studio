@@ -193,7 +193,6 @@ def calculate_vif(data):
     vif_data = vif_data.sort_values(by="VIF", ascending=False)
     return vif_data
 
-@st.cache_data(ttl="2h")
 def drop_high_vif_variables(data, threshold):
     vif_data = calculate_vif(data)
     high_vif_variables = vif_data[vif_data["VIF"] > threshold]["Variable"].tolist()
