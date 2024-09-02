@@ -634,7 +634,7 @@ else:
                                 best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
 
                                 st.write("Model Performance Comparison")
-                                st.dataframe(results_df, use_container_width=False)
+                                st.dataframe(results_df, use_container_width=True)
 
                                 best_model = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
                                 st.write(f"The best model is: **{best_model}**")
