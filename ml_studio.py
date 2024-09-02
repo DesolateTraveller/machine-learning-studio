@@ -192,7 +192,7 @@ def calculate_vif(data):
     vif_data["VIF"] = [variance_inflation_factor(X, i) for i in range(X.shape[1])]
     vif_data = vif_data.sort_values(by="VIF", ascending=False)
     return vif_data
-  
+
 @st.cache_data(ttl="2h")
 def drop_high_vif_variables(data, threshold):
     vif_data = calculate_vif(data)
@@ -219,7 +219,7 @@ metrics_dict = {
     "Feature IImportance (all)": 'feature_all',
     "Lift Curve":'lift',
     "Gain Curve": 'gain',
-    "KS Statistic Plot":  'ks'
+    #"KS Statistic Plot":  'ks'
 }
 
 def evaluate_model(model, X_train, X_test, y_train, y_test):
@@ -647,6 +647,7 @@ else:
                                      
                                     st.subheader("Graph",divider='blue')
                                     best_model = model[best_model_acc]
+                                    best_model.fit(X_train, y_train)
                                     y_pred_best = best_model.predict(X_test)
                                     y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None
 
