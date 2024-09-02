@@ -76,7 +76,7 @@ if file is not None:
 
 # Display data preview
 st.write("Data Preview")
-st.dataframe(df.head())
+#st.dataframe(df.head())
 
 # User input for target variable
 target = st.selectbox("Select Target Variable", df.columns)
