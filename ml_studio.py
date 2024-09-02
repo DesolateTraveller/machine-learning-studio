@@ -74,35 +74,35 @@ file = st.sidebar.file_uploader("**:blue[Choose a file]**",
 if file is not None:
   df = load_data()
 
-# Display data preview
-st.write("Data Preview")
-#st.dataframe(df.head())
+    # Display data preview
+    st.write("Data Preview")
+    #st.dataframe(df.head())
 
-# User input for target variable
-target = st.selectbox("Select Target Variable", list(df.columns))
+    # User input for target variable
+    target = st.selectbox("Select Target Variable", list(df.columns))
 
-# Split the data
-X = df.drop(columns=[target])
-y = df[target]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    # Split the data
+    X = df.drop(columns=[target])
+    y = df[target]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-# Evaluate each model and store results
-results = []
-for name, model in models.items():
-    metrics = evaluate_model(model, X_train, X_test, y_train, y_test)
-    metrics["Model"] = name
-    results.append(metrics)
+    # Evaluate each model and store results
+    results = []
+    for name, model in models.items():
+        metrics = evaluate_model(model, X_train, X_test, y_train, y_test)
+        metrics["Model"] = name
+        results.append(metrics)
 
-# Create a DataFrame for results
-results_df = pd.DataFrame(results)
+    # Create a DataFrame for results
+    results_df = pd.DataFrame(results)
 
-# Highlight the best metrics
-best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
+    # Highlight the best metrics
+    best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
 
-st.write("Model Performance Comparison")
-st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == best_metrics[c] else "" for v in x], axis=1))
+    st.write("Model Performance Comparison")
+    st.dataframe(results_df.style.apply(lambda x: ["background-color: lightgreen" if v == best_metrics[c] else "" for v in x], axis=1))
 
-# Show the best model
-best_model = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
-st.write(f"The best model is: **{best_model}**")
+    # Show the best model
+    best_model = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+    st.write(f"The best model is: **{best_model}**")
 
