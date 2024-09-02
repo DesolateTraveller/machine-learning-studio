@@ -17,7 +17,7 @@ import numpy as np
 
 # Function to load dataset
 @st.cache
-def load_data():
+def load_data(file):
     file_extension = file.name.split('.')[-1]
     if file_extension == 'csv':
         df = pd.read_csv(file, sep=None, engine='python', encoding='utf-8', parse_dates=True, infer_datetime_format=True)
@@ -72,12 +72,12 @@ file = st.sidebar.file_uploader("**:blue[Choose a file]**",
                                     accept_multiple_files=False, 
                                     key="file_upload")
 if file is not None:
-    df = load_data()
-    st.write("Data Preview")
+    df = load_data(file)
+    #st.write("Data Preview")
     #st.dataframe(df.head())
 
     # User input for target variable
-    target = st.selectbox("Select Target Variable", list(df.columns))
+    target = st.selectbox("Select Target Variable", df.columns)
 
     # Split the data
     X = df.drop(columns=[target])
