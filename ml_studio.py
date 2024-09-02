@@ -654,7 +654,7 @@ else:
 
                                     if analysis_option == "Confusion Matrix":
                                         cm = confusion_matrix(y_test, y_pred_best)
-                                        plt.figure(figsize=(10, 7))
+                                        plt.figure(figsize=(5,5))
                                         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
                                         plt.title(f"Confusion Matrix for {best_model_acc}")
                                         plt.xlabel("Predicted")
@@ -663,7 +663,7 @@ else:
 
                                     if analysis_option == "AUC Curve" and y_proba_best is not None:
                                         fpr, tpr, _ = roc_curve(y_test, y_proba_best)
-                                        plt.figure(figsize=(10, 7))
+                                        plt.figure(figsize=(5,5))
                                         plt.plot(fpr, tpr, color="blue", lw=2, label=f"AUC = {auc(fpr, tpr):.2f}")
                                         plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
                                         plt.xlabel("False Positive Rate")
@@ -677,7 +677,7 @@ else:
 
                             importances = best_model.feature_importances_
                             indices = np.argsort(importances)[::-1]
-                            plt.figure(figsize=(10, 7))
+                            plt.figure(figsize=(10,5))
                             plt.title(f"Feature Importances for {best_model_acc}")
                             plt.bar(range(X_train.shape[1]), importances[indices], align="center")
                             plt.xticks(range(X_train.shape[1]), X_train.columns[indices], rotation=90)
