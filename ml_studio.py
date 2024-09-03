@@ -751,7 +751,7 @@ else:
                                                         "Feature Selection": [f_sel_method],
                                                         "Target Variable": [target_variable]})
                         #st.subheader("Final Results Summary")
-                        st.dataframe(final_results_df., use_container_width=True)
+                        st.dataframe(final_results_df, use_container_width=True)
 
                                        
 
