@@ -718,10 +718,7 @@ else:
                             feature_names = [col for col in X.columns if col != target_variable]
 
                             if best_model_acc == "Logistic Regression":
-                                if len(best_model.coef_) > 1: 
-                                    importance = np.mean(best_model.coef_, axis=0)  
-                                else:
-                                    importance = best_model.coef_[0]  
+                                importance = best_model.coef_[0]
                             else:
                                 importance = best_model.feature_importances_
 
@@ -780,4 +777,8 @@ else:
 
                             st.dataframe(final_results_df, hide_index=True, use_container_width=True)
 
-                                      
+                                       
+
+
+
+
