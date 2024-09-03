@@ -715,13 +715,11 @@ else:
                                         st.pyplot(plt,use_container_width=True) 
 
                             st.subheader("Importance",divider='blue')
-
+                            feature_names = X.columns
                             if best_model_acc == "Logistic Regression":
                                 importance = best_model.coef_[0]
-                                feature_names = df[selected_features]
                             else:
                                 importance = best_model.feature_importances_
-                                feature_names = df[selected_features]
 
                             col1, col2 = st.columns((0.15,0.85))
                             with col1:
