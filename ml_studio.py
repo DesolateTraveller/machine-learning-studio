@@ -719,7 +719,7 @@ else:
                                 importance = best_model.feature_importances_
                                 feature_names = X.columns
 
-                            col1, col2 = st.columns((0.2,0.8))
+                            col1, col2 = st.columns((0.1,0.9))
                             with col1:
                                 with st.container():
 
@@ -729,7 +729,7 @@ else:
                             with col2:
                                 with st.container():
                                         
-                                    plt.figure(figsize=(10, 7))
+                                    plt.figure(figsize=(10,5))
                                     sns.barplot(x="Feature",y="Importance",data=importance_df)
                                     plt.title(f"Feature Importance for {best_model_acc}", fontsize=8)
                                     st.pyplot(plt,use_container_width=True)
@@ -751,7 +751,7 @@ else:
                                                         "Feature Selection": [f_sel_method],
                                                         "Target Variable": [target_variable]})
                         #st.subheader("Final Results Summary")
-                        st.table(final_results_df, use_container_width=True)
+                        st.dataframe(final_results_df., use_container_width=True)
 
                                        
 
