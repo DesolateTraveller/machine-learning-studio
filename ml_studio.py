@@ -33,13 +33,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 #----------------------------------------
+#import dabl
+import altair as alt
 import plotly.express as px
+import plotly.offline as pyoff
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
 from plotly.subplots import make_subplots
-import plotly.offline as pyoff
-import altair as alt
-#import dabl
+import scikitplot as skplt
 #----------------------------------------
 import shutil
 import sweetviz as sv
@@ -474,7 +475,7 @@ else:
             with tab4:
 
                     #st.sidebar.info(":blue-background[Feature Engineering]")
-                    col1, col2, col3= st.columns((0.25,0.5,0.25))  
+                    col1, col2 = st.columns((0.3,0.7))  
 
                     with col1:
                         
@@ -501,7 +502,7 @@ else:
 
                         st.subheader("Feature Scaling",divider='blue')
 
-                        scaling_method = st.sidebar.selectbox("**:blue[Choose a Scaling Method]**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
+                        scaling_method = st.sidebar.selectbox("**:blue[Choose a scaling method]**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
                         df = scale_features(df,scaling_method)
                         st.info("Data is scaled for further treatment")
                         #st.dataframe(df.head())
@@ -594,24 +595,25 @@ else:
 
                     #----------------------------------------
 
-                    with col3:                
-
-                        st.subheader("Dataset Splitting Criteria",divider='blue')
-                    
-                        train_size = st.slider("**Test Size (as %)**", 10, 90, 70, 5)
-                        test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
-                        random_state = st.number_input("**Random State**", 0, 100, 42)
-                        n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
-
-                        X = df[selected_features]
-                        y = df[target_variable]
-                        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+                    #with col3:                
+                    #st.subheader("Dataset Splitting Criteria",divider='blue')
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab5:
 
                 st.info("Please note that there may be some processing delay during the AutoML execution.")
                 st.sidebar.divider()
+
+                stats_expander = st.sidebar.expander("**:blue[Dataset Splitting Criteria]**", expanded=False)
+                with stats_expander:
+                        train_size = st.slider("**Test Size (as %)**", 10, 90, 70, 5)
+                        test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
+                        random_state = st.number_input("**Random State**", 0, 100, 42)
+                        n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
+
+                X = df[selected_features]
+                y = df[target_variable]
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
                  
                 if ml_type == 'Classification': 
 
@@ -658,7 +660,7 @@ else:
                                         cm = confusion_matrix(y_test, y_pred_best)
                                         plt.figure(figsize=(8,3))
                                         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-                                        plt.title(f"Confusion Matrix for {best_model_acc}", fontsize=10)
+                                        plt.title(f"Confusion Matrix for {best_model_acc}", fontsize=8)
                                         plt.xlabel("Predicted")
                                         plt.ylabel("Actual")
                                         st.pyplot(plt,use_container_width=True)
@@ -670,7 +672,7 @@ else:
                                         plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
                                         plt.xlabel("False Positive Rate")
                                         plt.ylabel("True Positive Rate")
-                                        plt.title(f"AUC Curve for {best_model_acc}", fontsize=10)
+                                        plt.title(f"AUC Curve for {best_model_acc}", fontsize=8)
                                         plt.legend(loc="lower right")
                                         st.pyplot(plt,use_container_width=True)
 
@@ -680,7 +682,7 @@ else:
                                         plt.plot(thresholds, precisions[:-1], "b--", label="Precision")
                                         plt.plot(thresholds, recalls[:-1], "g-", label="Recall")
                                         plt.xlabel("Threshold")
-                                        plt.title(f"Discrimination Threshold for {best_model_acc}", fontsize=10)
+                                        plt.title(f"Discrimination Threshold for {best_model_acc}", fontsize=8)
                                         plt.legend(loc="best")
                                         st.pyplot(plt,use_container_width=True)
 
@@ -690,7 +692,7 @@ else:
                                         plt.plot(recalls, precisions, color="purple", lw=2)
                                         plt.xlabel("Recall")
                                         plt.ylabel("Precision")
-                                        plt.title(f"Precision-Recall Curve for {best_model_acc}", fontsize=10)
+                                        plt.title(f"Precision-Recall Curve for {best_model_acc}", fontsize=8)
                                         st.pyplot(plt,use_container_width=True)
 
                                     if analysis_option == "Classification Report":
@@ -700,23 +702,55 @@ else:
 
                                     if analysis_option == "Lift Curve" and y_proba_best is not None:
                                         skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
-                                        plt.title(f"Lift Curve for {best_model_acc}", fontsize=10)
-                                        st.pyplot(plt)
+                                        plt.title(f"Lift Curve for {best_model_acc}", fontsize=8)
+                                        st.pyplot(plt,use_container_width=True)
+
+                                    if analysis_option == "Gain Curve" and y_proba_best is not None:
+                                        skplt.metrics.plot_cumulative_gain(y_test, best_model.predict_proba(X_test))
+                                        plt.title(f"Gain Curve for {best_model_acc}", fontsize=8)
+                                        st.pyplot(plt,use_container_width=True) 
 
                             st.subheader("Importance",divider='blue')
+
                             if best_model_acc == "Logistic Regression":
-                                coef = best_model.coef_.flatten()
-                                feature_importance = pd.Series(coef, index=X.columns).sort_values(ascending=False)
-                                plt.figure(figsize=(10, 7))
-                                sns.barplot(x=feature_importance, y=feature_importance.index)
-                                plt.title("Feature Importance for Logistic Regression")
-                                st.pyplot(plt)
+                                importance = best_model.coef_[0]
+                                feature_names = X.columns
                             else:
-                                if hasattr(best_model, "feature_importances_"):
-                                    feature_importance = pd.Series(best_model.feature_importances_, index=X.columns).sort_values(ascending=False)
-                                    plt.figure(figsize=(10, 7))
-                                    sns.barplot(x=feature_importance, y=feature_importance.index)
-                                    plt.title(f"Feature Importance for {best_model_acc}")
-                                    st.pyplot(plt)
-                                else:
-                                        st.write("Feature importance not available for this model.")
+                                importance = best_model.feature_importances_
+                                feature_names = X.columns
+
+                            col1, col2 = st.columns((0.3,0.7))
+                            with col1:
+                                with st.container():
+
+                                        importance_df = pd.DataFrame({"Feature": feature_names,"Importance": importance}).sort_values(by="Importance", ascending=False)
+                                        st.dataframe(importance_df, hide_index=True, use_container_width=True)
+
+                            with col2:
+                                with st.container():
+                                        
+                                        plt.figure(figsize=(10, 7))
+                                        sns.barplot(x="Importance", y="Feature", data=importance_df)
+                                        plt.title(f"Feature Importance for {best_model_acc}", fontsize=8)
+                                        st.pyplot(plt,use_container_width=True)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+            with tab6:
+                        
+                        #st.info(f"**Selected Algorithm: {ml_type}**")
+                        best_metrics=results_df.loc[results_df["Model"] == best_model_acc].iloc[0].to_dict()
+                        final_results_df = pd.DataFrame({"Type of Problem": {ml_type},
+                                                        "Best Algorithm": best_model_acc,
+                                                        "Accuracy": [best_metrics["Accuracy"]],
+                                                        "AUC": [best_metrics["AUC"]],
+                                                        "Precision": [best_metrics["Precision"]],
+                                                        "Recall": [best_metrics["Recall"]],
+                                                        "F1 Score": [best_metrics["F1 Score"]],
+                                                        #"Best Feature(s)": [', '.join(best_features)],
+                                                        "Scaling Method": [scaling_method],
+                                                        "Feature Selection": [f_sel_method],
+                                                        "Target Variable": [target_variable]})
+                        #st.subheader("Final Results Summary")
+                        st.dataframe(final_results_df, use_container_width=True)
+
+                                       
