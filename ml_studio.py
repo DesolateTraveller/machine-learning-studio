@@ -715,13 +715,15 @@ else:
                                         st.pyplot(plt,use_container_width=True) 
 
                             st.subheader("Importance",divider='blue')
-                            feature_names = X.columns
+                            feature_names = [col for col in X.columns if col != target_variable]
 
                             if best_model_acc == "Logistic Regression":
                                 importance = models[best_model_acc].coef_.flatten()
                             else:
                                 importance = models[best_model_acc].feature_importances_
-
+                            
+                            if importance.ndim > 1:
+                                importance = importance.ravel()
                             importance_df = pd.DataFrame({"Feature": feature_names, "Importance": importance}).sort_values(by="Importance", ascending=False)
 
                             col1, col2 = st.columns((0.15,0.85))
