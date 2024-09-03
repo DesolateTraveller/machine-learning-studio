@@ -711,5 +711,4 @@ else:
                                      
                                         importances = best_model.feature_importances_
                                         importance_df = pd.DataFrame({'Feature': X_train.shape[1], 'Importance': importances})
-                                        importances.sort_values(by='Coefficient', key=abs, ascending=False, inplace=True)
-                                        st.table(importances)
+                                        st.table(importance_df)
