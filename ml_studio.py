@@ -293,10 +293,11 @@ else:
                 #st.subheader("**Data Analysis**",divider='blue')
                 col1, col2, col3, col4, col5, col6 = st.columns(6)
 
-                col1.metric('**Number of input values (rows)**', df.shape[0], help='number of rows in the dataframe')
-                col2.metric('**Number of variables (columns)**', df.shape[1], help='number of columns in the dataframe')     
-                col3.metric('**Number of numerical variables**', len(df.select_dtypes(include=['float64', 'int64']).columns), help='number of numerical variables')
-                col4.metric('**Number of categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
+                col1.metric('**input values (rows)**', df.shape[0], help='number of rows')
+                col2.metric('**variables (columns)**', df.shape[1], help='number of columns')     
+                col3.metric('**numerical variables**', len(df.select_dtypes(include=['float64', 'int64']).columns), help='number of numerical variables')
+                col4.metric('**categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
+                col4.metric('**variable category**', df[target_variable].value_counts(), help='target vriable category')
                 #st.divider()           
 
                 stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
@@ -719,7 +720,7 @@ else:
                                 importance = best_model.feature_importances_
                                 feature_names = X.columns
 
-                            col1, col2 = st.columns((0.1,0.9))
+                            col1, col2 = st.columns((0.15,0.85))
                             with col1:
                                 with st.container():
 
@@ -730,7 +731,7 @@ else:
                                 with st.container():
                                         
                                     plt.figure(figsize=(10,5))
-                                    sns.barplot(x="Feature",y="Importance",data=importance_df)
+                                    sns.barplot(x="Importance",y="Feature",data=importance_df)
                                     plt.title(f"Feature Importance for {best_model_acc}", fontsize=8)
                                     st.pyplot(plt,use_container_width=True)
 
@@ -739,22 +740,16 @@ else:
                         
                         #st.info(f"**Selected Algorithm: {ml_type}**")
                         best_metrics=results_df.loc[results_df["Model"] == best_model_acc].iloc[0].to_dict()
-                        final_results_df = pd.DataFrame({"Type of Problem": [ml_type],
-                                                        "Best Algorithm": [best_model_acc],
-                                                        "Accuracy": [best_metrics["Accuracy"]],
-                                                        "AUC": [best_metrics["AUC"]],
-                                                        "Precision": [best_metrics["Precision"]],
-                                                        "Recall": [best_metrics["Recall"]],
-                                                        "F1 Score": [best_metrics["F1 Score"]],
-                                                        #"Best Feature(s)": [', '.join(best_features)],
-                                                        "Scaling Method": [scaling_method],
-                                                        "Feature Selection": [f_sel_method],
-                                                        "Target Variable": [target_variable]})
+                        
+                        final_results_df = pd.DataFrame({
+                                            "Metric": ["Type of Problem","Best Algorithm", "Accuracy", "AUC", "Precision", "Recall", "F1 Score", 
+                                            #"Best Feature(s)", 
+                                            "Scaling Method", "Feature Selection", "Target Variable"],
+                                            "Value": [ml_type,best_model_acc, best_metrics["Accuracy"], best_metrics["AUC"], 
+                                            best_metrics["Precision"], best_metrics["Recall"], 
+                                            #best_metrics["F1 Score"], ', '.join(best_features), 
+                                            scaling_method, f_sel_method, target_variable]
+                                            })
+                        
                         #st.subheader("Final Results Summary")
                         st.dataframe(final_results_df, use_container_width=True)
-
-                                       
-
-
-
-
