@@ -722,8 +722,7 @@ else:
                             else:
                                 importance = best_model.feature_importances_
 
-                            if len(feature_names) == len(importance):
-                                importance_df = pd.DataFrame({"Feature": feature_names, "Importance": importance}).sort_values(by="Importance", ascending=False)
+                            importance_df = pd.DataFrame({"Feature": feature_names, "Importance": importance}).sort_values(by="Importance", ascending=False)
 
                             col1, col2 = st.columns((0.15,0.85))
                             with col1:
