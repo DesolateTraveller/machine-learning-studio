@@ -708,11 +708,18 @@ else:
                             col1, col2 = st.columns((0.2,0.8)) 
                             with col1:
                                 with st.container():
-                                     
-                                        importances = best_model.feature_importances_
-                                        importance_df = pd.DataFrame({'Feature': selected_features, 'Importance': importances})
-                                        st.table(importance_df)
+                                        
+                                        if best_model_acc == 'Logistic Regression':
 
+                                            importances = best_model.coef_
+                                            importance_df = pd.DataFrame({'Feature': selected_features, 'Importance': importances})
+                                            st.table(importance_df)
+
+                                        elif:
+
+                                            importances = best_model.feature_importances_
+                                            importance_df = pd.DataFrame({'Feature': selected_features, 'Importance': importances})
+                                            st.table(importance_df)
                             with col2:
                                 with st.container():
                                      
