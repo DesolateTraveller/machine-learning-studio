@@ -715,7 +715,7 @@ else:
                                         st.pyplot(plt,use_container_width=True) 
 
                             st.subheader("Importance",divider='blue')
-                            feature_names = [col for col in X.columns if col != target_variable]
+                            feature_names = X.columns
 
                             if best_model_acc == "Logistic Regression":
                                 importance = models[best_model_acc].coef_.flatten()
