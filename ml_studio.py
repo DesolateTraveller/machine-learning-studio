@@ -718,10 +718,10 @@ else:
 
                             if best_model_acc == "Logistic Regression":
                                 importance = best_model.coef_[0]
-                                feature_names = selected_features
+                                feature_names = df[selected_features]
                             else:
                                 importance = best_model.feature_importances_
-                                feature_names = selected_features
+                                feature_names = df[selected_features]
 
                             col1, col2 = st.columns((0.15,0.85))
                             with col1:
@@ -770,8 +770,10 @@ else:
                                                       target_variable]
                                             })
                         
-                        #st.subheader("Final Results Summary")
-                        st.dataframe(final_results_df, use_container_width=True)
+                        col1, col2 = st.columns(2)
+                        with col1:
+
+                            st.dataframe(final_results_df, hide_index=True, use_container_width=True)
 
                                        
 
