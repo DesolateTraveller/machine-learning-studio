@@ -603,7 +603,7 @@ else:
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
 
-                        X = df.drop(columns = [target_variable])
+                        X = df[selected_features]
                         y = df[target_variable]
                         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
 
@@ -710,5 +710,14 @@ else:
                                 with st.container():
                                      
                                         importances = best_model.feature_importances_
-                                        importance_df = pd.DataFrame({'Feature': X_train.shape[1], 'Importance': importances})
+                                        importance_df = pd.DataFrame({'Feature': selected_features, 'Importance': importances})
                                         st.table(importance_df)
+
+                            with col2:
+                                with st.container():
+                                     
+                                        plot_data_fimp = [go.Bar(x=importance_df['Feature'],y= importance_df['Importance'])]
+                                        plot_layout_fimp = go.Layout(xaxis={"title": "Feature"},yaxis={"title": "Importance"},
+                                                                    title='Feature Importance',)
+                                        fig = go.Figure(data=plot_data_fimp, layout=plot_layout_fimp)
+                                        st.plotly_chart(fig,use_container_width = True)
