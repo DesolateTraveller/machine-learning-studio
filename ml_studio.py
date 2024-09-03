@@ -715,7 +715,7 @@ else:
                                         st.pyplot(plt,use_container_width=True) 
 
                             st.subheader("Importance",divider='blue')
-                            feature_names = X.columns
+                            feature_names = [col for col in X.columns if col != target_variable]
                             if best_model_acc == "Logistic Regression":
                                 importance = best_model.coef_[0]
                             else:
@@ -744,18 +744,21 @@ else:
 
                         final_results_df = pd.DataFrame({
                                             "Metric": ["Type of Problem",
+                                                       "Target Variable",
+                                                        "Scaling Method", 
+                                                       "Feature Selection"
                                                        "Best Algorithm", 
                                                        "Accuracy", 
                                                        "AUC", 
                                                        "Precision", 
                                                        "Recall", 
                                                        "F1 Score", 
-                                                       #"Best Feature(s)", 
-                                                       "Scaling Method", 
-                                                       "Feature Selection", 
-                                                       "Target Variable"],
-
+                                                       #"Best Feature(s)",
+                                                       ],
                                             "Value": [ml_type,
+                                                      target_variable,
+                                                      scaling_method, 
+                                                      f_sel_method,
                                                       best_model_acc, 
                                                       best_metrics["Accuracy"], 
                                                       best_metrics["AUC"], 
@@ -763,10 +766,7 @@ else:
                                                       best_metrics["Recall"], 
                                                       best_metrics["F1 Score"], 
                                                       #', '.join(best_features), 
-                                                      scaling_method, 
-                                                      f_sel_method, 
-                                                      target_variable]
-                                            })
+                                                    ]})
                         
                         col1, col2 = st.columns(2)
                         with col1:
