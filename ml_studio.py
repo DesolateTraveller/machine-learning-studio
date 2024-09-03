@@ -718,9 +718,9 @@ else:
                             feature_names = X.columns
 
                             if best_model_acc == "Logistic Regression":
-                                importance = best_model.coef_
+                                importance = models[best_model_acc].coef_
                             else:
-                                importance = best_model.feature_importances_
+                                importance = models[best_model_acc].feature_importances_
 
                             importance_df = pd.DataFrame({"Feature": feature_names, "Importance": importance}).sort_values(by="Importance", ascending=False)
 
