@@ -718,10 +718,10 @@ else:
 
                             if best_model_acc == "Logistic Regression":
                                 importance = best_model.coef_[0]
-                                feature_names = X.columns
+                                feature_names = selected_features
                             else:
                                 importance = best_model.feature_importances_
-                                feature_names = X.columns
+                                feature_names = selected_features
 
                             col1, col2 = st.columns((0.15,0.85))
                             with col1:
@@ -745,13 +745,29 @@ else:
                         best_metrics=results_df.loc[results_df["Model"] == best_model_acc].iloc[0].to_dict()
 
                         final_results_df = pd.DataFrame({
-                                            "Metric": ["Type of Problem","Best Algorithm", "Accuracy", "AUC", "Precision", "Recall", "F1 Score", 
-                                            #"Best Feature(s)", 
-                                            "Scaling Method", "Feature Selection", "Target Variable"],
-                                            "Value": [ml_type,best_model_acc, best_metrics["Accuracy"], best_metrics["AUC"], 
-                                            best_metrics["Precision"], best_metrics["Recall"], 
-                                            #best_metrics["F1 Score"], ', '.join(best_features), 
-                                            scaling_method, f_sel_method, target_variable]
+                                            "Metric": ["Type of Problem",
+                                                       "Best Algorithm", 
+                                                       "Accuracy", 
+                                                       "AUC", 
+                                                       "Precision", 
+                                                       "Recall", 
+                                                       "F1 Score", 
+                                                       #"Best Feature(s)", 
+                                                       "Scaling Method", 
+                                                       "Feature Selection", 
+                                                       "Target Variable"],
+
+                                            "Value": [ml_type,
+                                                      best_model_acc, 
+                                                      best_metrics["Accuracy"], 
+                                                      best_metrics["AUC"], 
+                                                      best_metrics["Precision"],
+                                                      best_metrics["Recall"], 
+                                                      best_metrics["F1 Score"], 
+                                                      #', '.join(best_features), 
+                                                      scaling_method, 
+                                                      f_sel_method, 
+                                                      target_variable]
                                             })
                         
                         #st.subheader("Final Results Summary")
