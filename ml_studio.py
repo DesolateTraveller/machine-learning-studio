@@ -704,26 +704,19 @@ else:
                                         st.pyplot(plt)
 
                             st.subheader("Importance",divider='blue')
-                            col1, col2 = st.columns((0.2,0.8)) 
-                            with col1:
-                                with st.container():
-                                        
-                                    if best_model_acc == "Logistic Regression":
-                                        
-                                        importances = best_model.coef_
-                                        importance_df = pd.DataFrame({'Feature': selected_features, 'Importance': importances})
-                                        st.table(importance_df)
-                                    
-                                    else:
-                                        importances = best_model.feature_importances_
-                                        importance_df = pd.DataFrame({'Feature': selected_features, 'Importance': importances})
-                                        st.table(importance_df)
-
-                            with col2:
-                                with st.container():
-                                     
-                                        plot_data_fimp = [go.Bar(x=importance_df['Feature'],y= importance_df['Importance'])]
-                                        plot_layout_fimp = go.Layout(xaxis={"title": "Feature"},yaxis={"title": "Importance"},
-                                                                    title='Feature Importance',)
-                                        fig = go.Figure(data=plot_data_fimp, layout=plot_layout_fimp)
-                                        st.plotly_chart(fig,use_container_width = True)
+                            if best_model_acc == "Logistic Regression":
+                                coef = best_model.coef_.flatten()
+                                feature_importance = pd.Series(coef, index=X.columns).sort_values(ascending=False)
+                                plt.figure(figsize=(10, 7))
+                                sns.barplot(x=feature_importance, y=feature_importance.index)
+                                plt.title("Feature Importance for Logistic Regression")
+                                st.pyplot(plt)
+                            else:
+                                if hasattr(best_model, "feature_importances_"):
+                                    feature_importance = pd.Series(best_model.feature_importances_, index=X.columns).sort_values(ascending=False)
+                                    plt.figure(figsize=(10, 7))
+                                    sns.barplot(x=feature_importance, y=feature_importance.index)
+                                    plt.title(f"Feature Importance for {best_model_acc}")
+                                    st.pyplot(plt)
+                                else:
+                                        st.write("Feature importance not available for this model.")
