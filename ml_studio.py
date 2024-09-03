@@ -656,9 +656,9 @@ else:
 
                                     if analysis_option == "Confusion Matrix":
                                         cm = confusion_matrix(y_test, y_pred_best)
-                                        plt.figure(figsize=(6,3))
+                                        plt.figure(figsize=(8,3))
                                         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-                                        plt.title(f"Confusion Matrix for {best_model_acc}")
+                                        plt.title(f"Confusion Matrix for {best_model_acc}", fontsize=10)
                                         plt.xlabel("Predicted")
                                         plt.ylabel("Actual")
                                         st.pyplot(plt,use_container_width=True)
@@ -670,7 +670,7 @@ else:
                                         plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
                                         plt.xlabel("False Positive Rate")
                                         plt.ylabel("True Positive Rate")
-                                        plt.title(f"AUC Curve for {best_model_acc}")
+                                        plt.title(f"AUC Curve for {best_model_acc}", fontsize=10)
                                         plt.legend(loc="lower right")
                                         st.pyplot(plt,use_container_width=True)
 
@@ -680,7 +680,7 @@ else:
                                         plt.plot(thresholds, precisions[:-1], "b--", label="Precision")
                                         plt.plot(thresholds, recalls[:-1], "g-", label="Recall")
                                         plt.xlabel("Threshold")
-                                        plt.title(f"Discrimination Threshold for {best_model_acc}")
+                                        plt.title(f"Discrimination Threshold for {best_model_acc}", fontsize=10)
                                         plt.legend(loc="best")
                                         st.pyplot(plt,use_container_width=True)
 
@@ -690,7 +690,7 @@ else:
                                         plt.plot(recalls, precisions, color="purple", lw=2)
                                         plt.xlabel("Recall")
                                         plt.ylabel("Precision")
-                                        plt.title(f"Precision-Recall Curve for {best_model_acc}")
+                                        plt.title(f"Precision-Recall Curve for {best_model_acc}", fontsize=10)
                                         st.pyplot(plt,use_container_width=True)
 
                                     if analysis_option == "Classification Report":
@@ -700,10 +700,16 @@ else:
 
                                     if analysis_option == "Lift Curve" and y_proba_best is not None:
                                         skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
-                                        plt.title(f"Lift Curve for {best_model_acc}")
+                                        plt.title(f"Lift Curve for {best_model_acc}", fontsize=10)
                                         st.pyplot(plt)
 
-#---------------------------------------------------------------------------------------------------------------------------------
-            with tab6:
-                        
-                        st.info(f"**Selected Algorithm: {ml_type}**")
+
+                            st.subheader("Importance",divider='blue')
+                            col1, col2 = st.columns((0.2,0.8)) 
+                            with col1:
+                                with st.container():
+                                     
+                                        importances = best_model.feature_importances_
+                                        importance_df = pd.DataFrame({'Feature': X_train.shape[1], 'Importance': importances})
+                                        importances.sort_values(by='Coefficient', key=abs, ascending=False, inplace=True)
+                                        st.table(importances)
