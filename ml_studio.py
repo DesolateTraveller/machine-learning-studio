@@ -258,7 +258,7 @@ models = {
 #---------------------------------------------------------------------------------------------------------------------------------
 
 st.sidebar.header("Input", divider='blue')
-st.sidebar.info('Please choose from the following options to start the application.', icon="ℹ️")
+#st.sidebar.info('Please choose from the following options to start the application.', icon="ℹ️")
 ml_type = st.sidebar.selectbox("**:blue[Pick your Problem Type]**", ["None", "Classification", "Clustering", "Regression",])
                                                    
 if ml_type == "None":
@@ -474,8 +474,7 @@ else:
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab4:
 
-                    st.sidebar.info(":blue-background[Feature Engineering]")
-                     
+                    #st.sidebar.info(":blue-background[Feature Engineering]")
                     col1, col2, col3= st.columns((0.25,0.5,0.25))  
 
                     with col1:
@@ -614,7 +613,6 @@ else:
 
                 st.info("Please note that there may be some processing delay during the AutoML execution.")
                 st.sidebar.divider()
-                st.sidebar.info(f"**Selected Algorithm: {ml_type}**")
                  
                 if ml_type == 'Classification': 
 
@@ -700,3 +698,13 @@ else:
                                         report = classification_report(y_test, y_pred_best, output_dict=True)
                                         report_df = pd.DataFrame(report).transpose()
                                         st.dataframe(report_df,use_container_width=True)
+
+                                    if analysis_option == "Lift Curve" and y_proba_best is not None:
+                                        skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
+                                        plt.title(f"Lift Curve for {best_model_acc}")
+                                        st.pyplot(plt)
+
+#---------------------------------------------------------------------------------------------------------------------------------
+            with tab6:
+                        
+                        st.info(f"**Selected Algorithm: {ml_type}**")
