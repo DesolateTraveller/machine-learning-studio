@@ -103,7 +103,7 @@ st.markdown(
     for best view of the app, please **zoom-out** the browser to **75%**.
     ''',
     unsafe_allow_html=True)
-#st.info('**Disclaimer : :blue[Thank you for visiting the app] | Unauthorized uses or copying of the app is strictly prohibited | Click the :blue[sidebar] to follow the instructions to start the applications.**', icon="ℹ️")
+st.info('**A lightweight Machine Learning (ML) streamlit app that help to analyse different kind machine learning problems**', icon="ℹ️")
 #----------------------------------------
 # Set the background image
 st.divider()
@@ -448,8 +448,8 @@ else:
                     
                     with col2:
                         # Treatment options
-                        treatment_option = st.selectbox("**:blue[Select a treatment option:]**", ["Cap Outliers","Drop Outliers", ])
-
+                        treatment_option = st.sidebar.selectbox("**:blue[Select a treatment option:]**", ["Cap Outliers","Drop Outliers", ])
+                        st.divider()
                             # Perform treatment based on user selection
                         if treatment_option == "Drop Outliers":
                                 df = df[~outliers['Column'].isin(outliers[outliers['Number of Outliers'] > 0]['Column'])]
