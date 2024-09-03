@@ -291,13 +291,18 @@ else:
             with tab1:
 
                 #st.subheader("**Data Analysis**",divider='blue')
-                col1, col2, col3, col4, col5, col6 = st.columns(6)
+                col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
 
                 col1.metric('**input values (rows)**', df.shape[0], help='number of rows')
                 col2.metric('**variables (columns)**', df.shape[1], help='number of columns')     
                 col3.metric('**numerical variables**', len(df.select_dtypes(include=['float64', 'int64']).columns), help='number of numerical variables')
                 col4.metric('**categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
-                col4.metric('**variable category**', df[target_variable].value_counts(), help='target vriable category')
+                
+                col5.metric('**Missing values**', df.isnull().sum().sum(), help='Total missing values in the dataset')
+                col6.metric('**Unique categorical values**', sum(df.select_dtypes(include=['object']).nunique()), help='Sum of unique values in categorical variables')
+                col7.metric('**Correlation matrix**', df.corr().to_numpy().sum(), help='Sum of correlations in numerical variables')
+                col8.metric('**Target variable categories**', df[target_variable].value_counts().to_dict(), help='Target variable category counts')
+                
                 #st.divider()           
 
                 stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
@@ -740,7 +745,7 @@ else:
                         
                         #st.info(f"**Selected Algorithm: {ml_type}**")
                         best_metrics=results_df.loc[results_df["Model"] == best_model_acc].iloc[0].to_dict()
-                        
+
                         final_results_df = pd.DataFrame({
                                             "Metric": ["Type of Problem","Best Algorithm", "Accuracy", "AUC", "Precision", "Recall", "F1 Score", 
                                             #"Best Feature(s)", 
@@ -753,3 +758,9 @@ else:
                         
                         #st.subheader("Final Results Summary")
                         st.dataframe(final_results_df, use_container_width=True)
+
+                                       
+
+
+
+
