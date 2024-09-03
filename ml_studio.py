@@ -300,8 +300,7 @@ else:
                 
                 col5.metric('**Missing values**', df.isnull().sum().sum(), help='Total missing values in the dataset')
                 col6.metric('**Unique categorical values**', sum(df.select_dtypes(include=['object']).nunique()), help='Sum of unique values in categorical variables')
-                col7.metric('**Correlation matrix**', df.corr().to_numpy().sum(), help='Sum of correlations in numerical variables')
-                col8.metric('**Target variable categories**', df[target_variable].value_counts().to_dict(), help='Target variable category counts')
+                col7.metric('**Target variable categories**', df[target_variable].value_counts().to_dict(), help='Target variable category counts')
                 
                 #st.divider()           
 
