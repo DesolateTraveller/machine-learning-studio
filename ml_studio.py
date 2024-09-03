@@ -719,28 +719,28 @@ else:
                                 importance = best_model.feature_importances_
                                 feature_names = X.columns
 
-                            col1, col2 = st.columns((0.3,0.7))
+                            col1, col2 = st.columns((0.2,0.8))
                             with col1:
                                 with st.container():
 
-                                        importance_df = pd.DataFrame({"Feature": feature_names,"Importance": importance}).sort_values(by="Importance", ascending=False)
-                                        st.dataframe(importance_df, hide_index=True, use_container_width=True)
+                                    importance_df = pd.DataFrame({"Feature": feature_names,"Importance": importance}).sort_values(by="Importance", ascending=False)
+                                    st.dataframe(importance_df, hide_index=True, use_container_width=True)
 
                             with col2:
                                 with st.container():
                                         
-                                        plt.figure(figsize=(10, 7))
-                                        sns.barplot(x="Importance", y="Feature", data=importance_df)
-                                        plt.title(f"Feature Importance for {best_model_acc}", fontsize=8)
-                                        st.pyplot(plt,use_container_width=True)
+                                    plt.figure(figsize=(10, 7))
+                                    sns.barplot(x="Feature",y="Importance",data=importance_df)
+                                    plt.title(f"Feature Importance for {best_model_acc}", fontsize=8)
+                                    st.pyplot(plt,use_container_width=True)
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
                         
                         #st.info(f"**Selected Algorithm: {ml_type}**")
                         best_metrics=results_df.loc[results_df["Model"] == best_model_acc].iloc[0].to_dict()
-                        final_results_df = pd.DataFrame({"Type of Problem": {ml_type},
-                                                        "Best Algorithm": best_model_acc,
+                        final_results_df = pd.DataFrame({"Type of Problem": [ml_type],
+                                                        "Best Algorithm": [best_model_acc],
                                                         "Accuracy": [best_metrics["Accuracy"]],
                                                         "AUC": [best_metrics["AUC"]],
                                                         "Precision": [best_metrics["Precision"]],
@@ -754,3 +754,7 @@ else:
                         st.dataframe(final_results_df, use_container_width=True)
 
                                        
+
+
+
+
