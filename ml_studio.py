@@ -449,7 +449,6 @@ else:
                     with col2:
                         # Treatment options
                         treatment_option = st.sidebar.selectbox("**:blue[Select a treatment option:]**", ["Cap Outliers","Drop Outliers", ])
-                        st.divider()
                             # Perform treatment based on user selection
                         if treatment_option == "Drop Outliers":
                                 df = df[~outliers['Column'].isin(outliers[outliers['Number of Outliers'] > 0]['Column'])]
@@ -516,13 +515,13 @@ else:
 
                         st.subheader("Feature Selection",divider='blue')
 
-                        f_sel_method = ['Method 1 : VIF', 
-                                        'Method 2 : Selectkbest',
-                                        'Method 3 : VarianceThreshold']
+                        f_sel_method = ['VIF', 
+                                        'Selectkbest',
+                                        'VarianceThreshold']
                         f_sel_method = st.sidebar.selectbox("**:blue[Choose a feature selection method]**", f_sel_method)
                         #st.divider()                    
 
-                        if f_sel_method == 'Method 1 : VIF':
+                        if f_sel_method == 'VIF':
 
                             #st.subheader("Feature Selection (Method 1):",divider='blue')
                             st.markdown("**Method 1 : VIF**")
@@ -539,7 +538,7 @@ else:
                             st.table(selected_features)
                             #st.table(vif_data)
 
-                        if f_sel_method == 'Method 2 : Selectkbest':
+                        if f_sel_method == 'Selectkbest':
 
                             #st.subheader("Feature Selection (Method 2):",divider='blue')                        
                             st.markdown("**Method 2 : Selectkbest**")          
@@ -575,7 +574,7 @@ else:
                             st.table(selected_features_kbest)
                             selected_features = selected_features_kbest.copy()
 
-                        if f_sel_method == 'Method 3 : VarianceThreshold':
+                        if f_sel_method == 'VarianceThreshold':
 
                             st.markdown("**Method 3 : VarianceThreshold**")  
                             threshold = st.number_input("Variance Threshold", min_value=0.0, step=0.01, value=0.0)  
@@ -598,7 +597,7 @@ else:
                     with col3:                
 
                         st.subheader("Dataset Splitting Criteria",divider='blue')
-
+                    
                         train_size = st.slider("**Test Size (as %)**", 10, 90, 70, 5)
                         test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
                         random_state = st.number_input("**Random State**", 0, 100, 42)
@@ -652,12 +651,12 @@ else:
                                     y_pred_best = best_model.predict(X_test)
                                     y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None
 
-                                    analysis_option = st.selectbox("**Choose analysis metrices**", ["Confusion Matrix", "AUC Curve", "Discrimination Threshold", 
+                                    analysis_option = st.sidebar.selectbox("**:blue[Choose analysis metrices]**", ["Confusion Matrix", "AUC Curve", "Discrimination Threshold", 
                                                                                                     "Precision-Recall Curve","Classification Report", "Lift Curve", "Gain Curve"])
 
                                     if analysis_option == "Confusion Matrix":
                                         cm = confusion_matrix(y_test, y_pred_best)
-                                        plt.figure(figsize=(10,3))
+                                        plt.figure(figsize=(6,3))
                                         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
                                         plt.title(f"Confusion Matrix for {best_model_acc}")
                                         plt.xlabel("Predicted")
@@ -666,7 +665,7 @@ else:
 
                                     if analysis_option == "AUC Curve" and y_proba_best is not None:
                                         fpr, tpr, _ = roc_curve(y_test, y_proba_best)
-                                        plt.figure(figsize=(10,3))
+                                        plt.figure(figsize=(8,3))
                                         plt.plot(fpr, tpr, color="blue", lw=2, label=f"AUC = {auc(fpr, tpr):.2f}")
                                         plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
                                         plt.xlabel("False Positive Rate")
@@ -677,7 +676,7 @@ else:
 
                                     if analysis_option == "Discrimination Threshold" and y_proba_best is not None:
                                         precisions, recalls, thresholds = precision_recall_curve(y_test, y_proba_best)
-                                        plt.figure(figsize=(10, 7))
+                                        plt.figure(figsize=(8,3))
                                         plt.plot(thresholds, precisions[:-1], "b--", label="Precision")
                                         plt.plot(thresholds, recalls[:-1], "g-", label="Recall")
                                         plt.xlabel("Threshold")
@@ -687,7 +686,7 @@ else:
 
                                     if analysis_option == "Precision-Recall Curve" and y_proba_best is not None:
                                         precisions, recalls, _ = precision_recall_curve(y_test, y_proba_best)
-                                        plt.figure(figsize=(10, 7))
+                                        plt.figure(figsize=(8,3))
                                         plt.plot(recalls, precisions, color="purple", lw=2)
                                         plt.xlabel("Recall")
                                         plt.ylabel("Precision")
