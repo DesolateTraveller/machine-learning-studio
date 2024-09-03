@@ -718,7 +718,7 @@ else:
                             feature_names = X.columns
 
                             if best_model_acc == "Logistic Regression":
-                                importance = best_model.coef_[0]
+                                importance = best_model.coef_
                             else:
                                 importance = best_model.feature_importances_
 
