@@ -728,8 +728,8 @@ else:
                             with col2:
                                 with st.container():
                                         
-                                    plot_data_imp = [go.Bar(x = importance['Feature'],y = importance['Coefficient'])]
-                                    plot_layout_imp = go.Layout(xaxis = {"title": "Feature"},yaxis = {"title": "Coefficient"},title = 'Feature Importance',)
+                                    plot_data_imp = [go.Bar(x = importance_df['Feature'],y = importance_df['Coefficient'])]
+                                    plot_layout_imp = go.Layout(xaxis = {"title": "Feature"},yaxis = {"title": "Importance"},title = 'Feature Importance',)
                                     fig = go.Figure(data = plot_data_imp, layout = plot_layout_imp)
                                     st.plotly_chart(fig,use_container_width = True)
 
