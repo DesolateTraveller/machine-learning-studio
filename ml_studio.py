@@ -528,7 +528,6 @@ else:
 
                         if f_sel_method == 'VIF':
 
-                            #st.subheader("Feature Selection (Method 1):",divider='blue')
                             st.markdown("**Method 1 : VIF**")
                             vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)
 
@@ -544,8 +543,7 @@ else:
                             #st.table(vif_data)
 
                         if f_sel_method == 'Selectkbest':
-
-                            #st.subheader("Feature Selection (Method 2):",divider='blue')                        
+                  
                             st.markdown("**Method 2 : Selectkbest**")          
                             method = st.selectbox("**Select kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
                             num_features_to_select = st.slider("**Select Number of Independent Features**", min_value=1, max_value=len(df.columns), value=5)
@@ -566,11 +564,10 @@ else:
                                 df[df < 0] = 0
                                 feature_selector = SelectKBest(score_func=mutual_info_classif, k=num_features_to_select)
 
-                            X = df.drop(columns = target_variable)  # Adjust 'Target' to your dependent variable
-                            y = df[target_variable]  # Adjust 'Target' to your dependent variable
+                            X = df.drop(columns = target_variable)  
+                            y = df[target_variable]  
                             X_selected = feature_selector.fit_transform(X, y)
 
-                            # Display selected features
                             selected_feature_indices = feature_selector.get_support(indices=True)
                             selected_features_kbest = X.columns[selected_feature_indices]
                             st.markdown("**Selected Features (considering values in 'recursive feature elimination' method)**")
@@ -715,31 +712,26 @@ else:
                                         st.pyplot(plt,use_container_width=True) 
 
                             st.subheader("Importance",divider='blue')
-                            feature_names = X.columns
 
                             if best_model_acc == "Logistic Regression":
-                                importance = models[best_model_acc].coef_.flatten()
+                                importance = best_model.coef_.flatten()
                             else:
-                                importance = models[best_model_acc].feature_importances_
-                            
-                            #if importance.ndim > 1:
-                                #importance = importance.ravel()
-                            importance_df = pd.DataFrame({"Feature": feature_names, "Importance": importance}).sort_values(by="Importance", ascending=False)
+                                importance = best_model.feature_importances_
 
                             col1, col2 = st.columns((0.15,0.85))
                             with col1:
                                 with st.container():
 
-                                    importance_df = pd.DataFrame({"Feature": feature_names,"Importance": importance}).sort_values(by="Importance", ascending=False)
+                                    importance_df = pd.DataFrame({"Feature": selected_features,"Importance": importance})
                                     st.dataframe(importance_df, hide_index=True, use_container_width=True)
 
                             with col2:
                                 with st.container():
                                         
-                                    plt.figure(figsize=(10,5))
-                                    sns.barplot(x="Importance",y="Feature",data=importance_df)
-                                    plt.title(f"Feature Importance for {best_model_acc}", fontsize=8)
-                                    st.pyplot(plt,use_container_width=True)
+                                    plot_data_imp = [go.Bar(x = importance['Feature'],y = importance['Coefficient'])]
+                                    plot_layout_imp = go.Layout(xaxis = {"title": "Feature"},yaxis = {"title": "Coefficient"},title = 'Feature Importance',)
+                                    fig = go.Figure(data = plot_data_imp, layout = plot_layout_imp)
+                                    st.plotly_chart(fig,use_container_width = True)
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
@@ -747,8 +739,7 @@ else:
                         #st.info(f"**Selected Algorithm: {ml_type}**")
                         best_metrics=results_df.loc[results_df["Model"] == best_model_acc].iloc[0].to_dict()
 
-                        final_results_df = pd.DataFrame({
-                                            "Metric": ["Type of Problem",
+                        final_results_df = pd.DataFrame({"Metric": ["Type of Problem",
                                                        "Target Variable",
                                                         "Scaling Method", 
                                                        "Feature Selection"
