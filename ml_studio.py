@@ -532,9 +532,9 @@ else:
                             vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)
 
                             st.markdown(f"Iterative VIF Thresholding (Threshold: {vif_threshold})")
-                            #X = df.drop(columns = target_variable)
+                            X = df.drop(columns = target_variable)
                             vif_data = drop_high_vif_variables(df, vif_threshold)
-                            #vif_data = vif_data.drop(columns = target_variable)
+                            vif_data = vif_data.drop(columns = target_variable)
                             selected_features = vif_data.columns
                             st.markdown("**Selected Features (considering VIF values in ascending orders)**")
                             st.write("No of features before feature-selection :",df.shape[1])
