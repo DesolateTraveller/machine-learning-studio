@@ -619,6 +619,8 @@ else:
                 if ml_type == 'Classification': 
 
                     clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
+
+                    #----------------------------------------
                     if clf_typ == 'Binary':
                         #if st.sidebar.button("Submit"):
 
@@ -711,27 +713,79 @@ else:
                                         plt.title(f"Gain Curve for {best_model_acc}", fontsize=8)
                                         st.pyplot(plt,use_container_width=True) 
 
-                            st.subheader("Importance",divider='blue')
-
-                            if best_model_acc == "Logistic Regression":
-                                importance = best_model.coef_.flatten()
-                            else:
-                                importance = best_model.feature_importances_
-
-                            col1, col2 = st.columns((0.15,0.85))
+                    #----------------------------------------
+                    elif clf_typ == 'MultiClass':
+                            
+                            col1, col2 = st.columns((0.4,0.6))  
                             with col1:
+                                
                                 with st.container():
+                                    
+                                    st.subheader("Comparison",divider='blue')
+                                    with st.spinner("Setting up and comparing models..."):
+                
+                                        results = []
+                                        for name, model in models.items():
+                                            metrics = evaluate_model(model, X_train, X_test, y_train, y_test, multi_class=True)
+                                            metrics["Model"] = name
+                                            results.append(metrics)
+                                        results_df = pd.DataFrame(results)
+                                        best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
+                                        st.dataframe(results_df,hide_index=True, use_container_width=True)
 
-                                    importance_df = pd.DataFrame({"Feature": selected_features,"Importance": importance})
-                                    st.dataframe(importance_df, hide_index=True, use_container_width=True)
+                                        st.divider()
+
+                                        best_model_acc = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+                                        st.info(f"The best model is (accuracy): **{best_model_acc}**")
 
                             with col2:
-                                with st.container():
+            
+                                with st.container():  
+                
+                                    st.subheader("Graph",divider='blue')
+                                    best_model = models[best_model_acc]
+                                    best_model.fit(X_train, y_train)
+                                    y_pred_best = best_model.predict(X_test)
+                                    y_proba_best = best_model.predict_proba(X_test) if hasattr(best_model, "predict_proba") else None
+
+                                    analysis_option = st.sidebar.selectbox("**:blue[Choose analysis metrices]**", ["Confusion Matrix", "Classification Report"])
+
+                                    if analysis_option == "Confusion Matrix":
+                                        cm = confusion_matrix(y_test, y_pred_best)
+                                        plt.figure(figsize=(8,3))
+                                        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+                                        plt.title(f"Confusion Matrix for {best_model_acc}", fontsize=8)
+                                        plt.xlabel("Predicted")
+                                        plt.ylabel("Actual")
+                                        st.pyplot(plt,use_container_width=True)
+
+                                    if analysis_option == "Classification Report":
+                                        report = classification_report(y_test, y_pred_best, output_dict=True)
+                                        report_df = pd.DataFrame(report).transpose()
+                                        st.dataframe(report_df,use_container_width=True)
+
+                    #----------------------------------------                    
+                    st.subheader("Importance",divider='blue')
+
+                    if best_model_acc == "Logistic Regression":
+                        importance = best_model.coef_.flatten()
+                    else:
+                        importance = best_model.feature_importances_
+
+                    col1, col2 = st.columns((0.15,0.85))
+                    with col1:
+                        with st.container():
+
+                            importance_df = pd.DataFrame({"Feature": selected_features,"Importance": importance})
+                            st.dataframe(importance_df, hide_index=True, use_container_width=True)
+
+                    with col2:
+                        with st.container():
                                         
-                                    plot_data_imp = [go.Bar(x = importance_df['Feature'],y = importance_df['Importance'])]
-                                    plot_layout_imp = go.Layout(xaxis = {"title": "Feature"},yaxis = {"title": "Importance"},title = 'Feature Importance',)
-                                    fig = go.Figure(data = plot_data_imp, layout = plot_layout_imp)
-                                    st.plotly_chart(fig,use_container_width = True)
+                            plot_data_imp = [go.Bar(x = importance_df['Feature'],y = importance_df['Importance'])]
+                            plot_layout_imp = go.Layout(xaxis = {"title": "Feature"},yaxis = {"title": "Importance"},title = 'Feature Importance',)
+                            fig = go.Figure(data = plot_data_imp, layout = plot_layout_imp)
+                            st.plotly_chart(fig,use_container_width = True)
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
@@ -740,7 +794,7 @@ else:
                         best_metrics=results_df.loc[results_df["Model"] == best_model_acc].iloc[0].to_dict()
                         final_results_df = pd.DataFrame({"Metric": ["Type of Problem",
                                                     "Target Variable",
-                                                    "Type of Target"
+                                                    "Type of Target",
                                                     "Scaling Method", 
                                                     "Feature Selection",
                                                     "Best Algorithm", 
