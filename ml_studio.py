@@ -820,7 +820,7 @@ else:
                                                     ]})
                         col1, col2 = st.columns((0.4,0.6))
                         with col1:
-                            st.dataframe(final_results_df, hide_index=True, use_container_width=True)
+                            st.dataframe(final_results_df, hide_index=True)
 
                                        
 
