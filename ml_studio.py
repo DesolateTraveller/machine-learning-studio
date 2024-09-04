@@ -757,11 +757,11 @@ else:
                                                     scaling_method, 
                                                     f_sel_method,
                                                     best_model_acc, 
-                                                    best_metrics["Accuracy"].round(".2f"), 
-                                                    best_metrics["AUC"], 
-                                                    best_metrics["Precision"],
-                                                    best_metrics["Recall"], 
-                                                    best_metrics["F1 Score"], 
+                                                    round(best_metrics["Accuracy"],2), 
+                                                    round(best_metrics["AUC"],2), 
+                                                    round(best_metrics["Precision"],2),
+                                                    round(best_metrics["Recall"],2), 
+                                                    round(best_metrics["F1 Score"],2), 
                                                     #', '.join(best_features), 
                                                     ]})
                         col1, col2 = st.columns((0.4,0.6))
