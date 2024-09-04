@@ -642,7 +642,7 @@ else:
                                         st.divider()
 
                                         best_model_acc = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
-                                        st.write(f"The best model is (accuracy): **{best_model_acc}**")
+                                        st.info(f"The best model is (accuracy): **{best_model_acc}**")
 
                             with col2:
 
@@ -742,7 +742,7 @@ else:
                         final_results_df = pd.DataFrame({"Metric": ["Type of Problem",
                                                        "Target Variable",
                                                         "Scaling Method", 
-                                                       "Feature Selection"
+                                                       "Feature Selection",
                                                        "Best Algorithm", 
                                                        "Accuracy", 
                                                        "AUC", 
