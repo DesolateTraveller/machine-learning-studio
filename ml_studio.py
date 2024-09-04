@@ -738,35 +738,34 @@ else:
                         
                         #st.info(f"**Selected Algorithm: {ml_type}**")
                         best_metrics=results_df.loc[results_df["Model"] == best_model_acc].iloc[0].to_dict()
-
                         final_results_df = pd.DataFrame({"Metric": ["Type of Problem",
-                                                       "Target Variable",
-                                                        "Scaling Method", 
-                                                       "Feature Selection",
-                                                       "Best Algorithm", 
-                                                       "Accuracy", 
-                                                       "AUC", 
-                                                       "Precision", 
-                                                       "Recall", 
-                                                       "F1 Score", 
-                                                       #"Best Feature(s)",
-                                                       ],
+                                                    "Target Variable",
+                                                    "Type of Target"
+                                                    "Scaling Method", 
+                                                    "Feature Selection",
+                                                    "Best Algorithm", 
+                                                    "Accuracy", 
+                                                    "AUC", 
+                                                    "Precision", 
+                                                    "Recall", 
+                                                    "F1 Score", 
+                                                    #"Best Feature(s)",
+                                                    ],
                                             "Value": [ml_type,
-                                                      target_variable,
-                                                      scaling_method, 
-                                                      f_sel_method,
-                                                      best_model_acc, 
-                                                      best_metrics["Accuracy"], 
-                                                      best_metrics["AUC"], 
-                                                      best_metrics["Precision"],
-                                                      best_metrics["Recall"], 
-                                                      best_metrics["F1 Score"], 
-                                                      #', '.join(best_features), 
+                                                    target_variable,
+                                                    clf_typ,
+                                                    scaling_method, 
+                                                    f_sel_method,
+                                                    best_model_acc, 
+                                                    best_metrics["Accuracy"].round(".2f"), 
+                                                    best_metrics["AUC"], 
+                                                    best_metrics["Precision"],
+                                                    best_metrics["Recall"], 
+                                                    best_metrics["F1 Score"], 
+                                                    #', '.join(best_features), 
                                                     ]})
-                        
-                        col1, col2 = st.columns(2)
+                        col1, col2 = st.columns((0.4,0.6))
                         with col1:
-
                             st.dataframe(final_results_df, hide_index=True, use_container_width=True)
 
                                        
