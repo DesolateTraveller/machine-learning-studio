@@ -84,7 +84,19 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, RocCurveDi
 from sklearn.metrics import accuracy_score, auc, roc_auc_score, recall_score, precision_score, f1_score, cohen_kappa_score, matthews_corrcoef, precision_recall_curve
 #----------------------------------------
 # Model Validation
-
+#----------------------------------------
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, mean_squared_log_error
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import (LinearRegression, Ridge, ElasticNet, Lasso, 
+                                  BayesianRidge, OrthogonalMatchingPursuit, HuberRegressor)
+from sklearn.ensemble import (GradientBoostingRegressor, RandomForestRegressor, 
+                              AdaBoostRegressor, ExtraTreesRegressor)
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.dummy import DummyRegressor
+from catboost import CatBoostRegressor
+from lightgbm import LGBMRegressor
+from sklearn.metrics import mean_absolute_percentage_error as mape
 #----------------------------------------
 #from pycaret.classification import setup, compare_models, pull, save_model, evaluate_model
 #from pycaret.classification import setup, compare_models, predict_model, pull, plot_model, create_model, ensemble_model, blend_models, stack_models, tune_model, save_model
@@ -254,6 +266,35 @@ models = {
     "Dummy Classifier": DummyClassifier(strategy="most_frequent"),
     #"SVM - Linear Kernel": SVC(kernel="linear", probability=True)
     }
+
+def calculate_metrics(y_true, y_pred):
+    mae = mean_absolute_error(y_true, y_pred)
+    mse = mean_squared_error(y_true, y_pred)
+    rmse = np.sqrt(mse)
+    r2 = r2_score(y_true, y_pred)
+    rmsle = np.sqrt(mean_squared_log_error(y_true, y_pred)) if np.all(y_pred > 0) else None
+    mape_value = mape(y_true, y_pred)
+    return mae, mse, rmse, r2, rmsle, mape_value
+
+# Define regressors
+regressors = {
+    "Dummy Regressor": DummyRegressor(),
+    "Linear Regression": LinearRegression(),
+    "Ridge Regression": Ridge(),
+    "Elastic Net": ElasticNet(),
+    "Bayesian Ridge": BayesianRidge(),
+    "Orthogonal Matching Pursuit": OrthogonalMatchingPursuit(),
+    "Huber Regressor": HuberRegressor(),
+    "Gradient Boosting Regressor": GradientBoostingRegressor(),
+    "Random Forest Regressor": RandomForestRegressor(),
+    "CatBoost Regressor": CatBoostRegressor(silent=True),
+    "Passive Aggressive Regressor": PassiveAggressiveRegressor(),
+    "K Neighbors Regressor": KNeighborsRegressor(),
+    "LGBM Regressor": LGBMRegressor(),
+    "AdaBoost Regressor": AdaBoostRegressor(),
+    "Extra Trees Regressor": ExtraTreesRegressor(),
+    "Decision Tree Regressor": DecisionTreeRegressor()
+}
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -615,7 +656,8 @@ else:
                 X = df[selected_features]
                 y = df[target_variable]
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
-                 
+
+                #----------------------------------------                 
                 if ml_type == 'Classification': 
 
                     clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
@@ -764,7 +806,8 @@ else:
                                         report_df = pd.DataFrame(report).transpose()
                                         st.dataframe(report_df,use_container_width=True)
 
-                    #----------------------------------------                    
+
+                #----------------------------------------                    
                     st.subheader("Importance",divider='blue')
 
                     if best_model_acc == "Logistic Regression":
@@ -786,6 +829,26 @@ else:
                             plot_layout_imp = go.Layout(xaxis = {"title": "Feature"},yaxis = {"title": "Importance"},title = 'Feature Importance',)
                             fig = go.Figure(data = plot_data_imp, layout = plot_layout_imp)
                             st.plotly_chart(fig,use_container_width = True)
+
+                #----------------------------------------                 
+                if ml_type == 'Regression': 
+
+                        results = []
+                        for name, model in regressors.items():
+                            model.fit(X_train, y_train)
+                            y_pred = model.predict(X_test)
+                            mae, mse, rmse, r2, rmsle, mape_value = calculate_metrics(y_test, y_pred)
+    
+                            results.append({"Model": name,
+                                            "MAE": round(mae, 2),
+                                            "MSE": round(mse, 2),
+                                            "RMSE": round(rmse, 2),
+                                            "R2": round(r2, 2),
+                                            "RMSLE": round(rmsle, 2) if rmsle else "N/A",
+                                            "MAPE": round(mape_value, 2)})
+                            
+                            results_df = pd.DataFrame(results)
+                            st.dataframe(results_df,hide_index=True, use_container_width=True)
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
