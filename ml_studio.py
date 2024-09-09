@@ -288,7 +288,7 @@ regressors = {
     "Gradient Boosting Regressor": GradientBoostingRegressor(),
     "Random Forest Regressor": RandomForestRegressor(),
     "CatBoost Regressor": CatBoostRegressor(silent=True),
-    "Passive Aggressive Regressor": PassiveAggressiveRegressor(),
+    #"Passive Aggressive Regressor": PassiveAggressiveRegressor(),
     "K Neighbors Regressor": KNeighborsRegressor(),
     "LGBM Regressor": LGBMRegressor(),
     "AdaBoost Regressor": AdaBoostRegressor(),
