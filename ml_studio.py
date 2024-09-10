@@ -950,7 +950,21 @@ else:
                         with col1:
                             st.dataframe(final_results_df, hide_index=True, use_container_width=True)
 
-                                       
+                        with col2:
+                            X_test_results = X_test.copy()  
+                            X_test_results["Actual"] = y_test
+                            X_test_results["Predicted Label"] = y_pred_best
+                            if y_proba_best is not None:
+                                if clf_typ == "Binary":
+                                    X_test_results["Prediction Score"] = y_proba_best  # For binary classification, use the second column of predict_proba
+                                else:
+                                    for i in range(y_proba_best.shape[1]):
+                                        X_test_results[f"Class {i} Probability"] = y_proba_best[:, i]
+
+
+                            st.subheader(f"Predictions and Scores for {best_model_clf}")
+                            st.dataframe(X_test_results, use_container_width=True)
+
                 if ml_type == 'Regression':  
 
                         best_metrics=results_df.loc[results_df["Model"] == best_model_reg].iloc[0].to_dict()
