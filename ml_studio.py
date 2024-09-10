@@ -963,7 +963,6 @@ else:
                                     for i in range(y_proba_best.shape[1]):
                                         X_test_results[f"Class {i} Probability"] = y_proba_best[:, i]
 
-
                             st.subheader("Prediction & Score",divider='blue')
                             st.dataframe(X_test_results, use_container_width=True)
                             st.download_button(label="Download predicted data as CSV",data=X_test_results.to_csv(index=False),file_name="classification_predictions.csv",mime="text/csv")
@@ -995,8 +994,20 @@ else:
                                                     round(best_metrics["MAPE"],2), 
                                                     #', '.join(best_features), 
                                                     ]})
-                        col1, col2 = st.columns((0.4,0.6))
+                        col1, col2 = st.columns((0.2,0.8))
                         with col1:
+
+                            st.subheader("Output",divider='blue')                            
                             st.dataframe(final_results_df, hide_index=True, use_container_width=True)
 
+                        with col2:
+                             
+                            best_model.fit(X_train, y_train)
+                            y_pred_best = best_model.predict(X_test)
+                            X_test_results_reg = X_test.copy()  
+                            X_test_results_reg["Actual"] = y_test 
+                            X_test_results_reg["Predicted"] = y_pred_best 
 
+                            st.subheader("Prediction & Score",divider='blue')
+                            st.dataframe(X_test_results_reg, use_container_width=True)
+                            st.download_button(label="Download predicted data as CSV",data=X_test_results_reg.to_csv(index=False),file_name="regression_predictions.csv",mime="text/csv")
