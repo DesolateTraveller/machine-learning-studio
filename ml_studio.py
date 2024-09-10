@@ -1014,7 +1014,7 @@ else:
                                 
                                 best_model_clust = results_df.loc[results_df['Silhouette'].idxmax(), 'Algorithm']
                                 st.info(f"The best model is : **{best_model_clust}**")
-                                best_model = regressors[best_model_clust]
+                                best_model = clustering_algorithms[best_model_clust]
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
