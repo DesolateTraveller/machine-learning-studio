@@ -1016,12 +1016,25 @@ else:
                                 st.info(f"The best model is : **{best_model_clust}**")
                                 best_model = clustering_algorithms[best_model_clust]
 
+                    with col2:
+            
+                        with st.container(): 
+
+                                st.subheader("Graph",divider='blue')   
+                                
+                                best_labels = best_model.fit_predict(X)
+                                df['Cluster_Labels'] = best_labels
+
+                                plt.figure(figsize=(8, 6))
+                                sns.scatterplot(x=X.iloc[:, 0], y=X.iloc[:, 1], hue=best_labels, palette="viridis")
+                                plt.title(f"Cluster plot for {best_model_clust}")
+                                plt.show()
+                                st.pyplot(plt,use_container_width = True)                            
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
                
                 if ml_type == 'Classification':        
                         
-                        #st.info(f"**Selected Algorithm: {ml_type}**")
                         best_metrics=results_df.loc[results_df["Model"] == best_model_clf].iloc[0].to_dict()
                         final_results_df = pd.DataFrame({"Metric": ["Type of Problem",
                                                     "Target Variable",
@@ -1070,6 +1083,7 @@ else:
                             st.dataframe(X_test_results, use_container_width=True)
                             st.download_button(label="Download predicted data as CSV",data=X_test_results.to_csv(index=False),file_name="classification_predictions.csv",mime="text/csv")
 
+            #----------------------------------------  
                 if ml_type == 'Regression':  
 
                         best_metrics=results_df.loc[results_df["Model"] == best_model_reg].iloc[0].to_dict()
@@ -1114,3 +1128,5 @@ else:
                             st.subheader("Prediction & Score",divider='blue')
                             st.dataframe(X_test_results_reg, use_container_width=True)
                             st.download_button(label="Download predicted data as CSV",data=X_test_results_reg.to_csv(index=False),file_name="regression_predictions.csv",mime="text/csv")
+
+            #----------------------------------------  
