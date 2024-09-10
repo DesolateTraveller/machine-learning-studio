@@ -1025,6 +1025,9 @@ else:
                                 best_labels = best_model.fit_predict(X)
                                 df['Cluster_Labels'] = best_labels
 
+
+
+
                                 plt.figure(figsize=(8, 3))
                                 sns.scatterplot(x=X.iloc[:, 0], y=X.iloc[:, 1], hue=best_labels, palette="viridis")
                                 plt.title(f"Cluster plot for {best_model_clust}")
@@ -1038,16 +1041,26 @@ else:
                                         kmeans = KMeans(n_clusters=k)
                                         kmeans.fit(X)
                                         inertia_values.append(kmeans.inertia_)
-    
-                                    plt.figure(figsize=(8,3))
-                                    plt.plot(K_range, inertia_values, marker='o', linestyle='--')
-                                    plt.title('Elbow Method for KMeans')
-                                    plt.xlabel('Number of clusters')
-                                    plt.ylabel('Inertia')
-                                    plt.show()
-                                    st.pyplot(plt,use_container_width = True)
 
-                    if best_model_clust == "KMeans":  # Silhouette diagram only for KMeans
+                                    col1, col2 = st.columns((0.4,0.6))  
+                                    with col1:  
+                                        with st.container(): 
+
+                                            elbow_df = pd.DataFrame({'K': K_range,'Inertia': inertia_values})  
+                                            st.dataframe(elbow_df,hide_index=True, use_container_width=True)
+
+                                            with col2:  
+                                                with st.container(): 
+                                                    
+                                                    plt.figure(figsize=(8,3))
+                                                    plt.plot(K_range, inertia_values, marker='o', linestyle='--')
+                                                    plt.title('Elbow Method for KMeans')
+                                                    plt.xlabel('Number of clusters')
+                                                    plt.ylabel('Inertia')
+                                                    plt.show()
+                                                    st.pyplot(plt,use_container_width = True)
+
+                    if best_model_clust == "KMeans":  
                         sample_silhouette_values = silhouette_samples(X, best_labels)
                         y_lower = 10
                         plt.figure(figsize=(8,3))
@@ -1069,7 +1082,7 @@ else:
                         plt.ylabel("Cluster")
                         plt.show()
                         st.pyplot(plt,use_container_width = True)        
-                                      
+
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
                
