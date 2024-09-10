@@ -1013,7 +1013,7 @@ else:
                                 st.divider()
                                 
                                 best_model_clust = results_df.loc[results_df['Silhouette'].idxmax(), 'Algorithm']
-                                st.info(f"The best model is : **{best_model_reg}**")
+                                st.info(f"The best model is : **{best_model_clust}**")
                                 best_model = regressors[best_model_clust]
 
 #---------------------------------------------------------------------------------------------------------------------------------
