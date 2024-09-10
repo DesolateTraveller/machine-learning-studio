@@ -87,16 +87,18 @@ from sklearn.metrics import accuracy_score, auc, roc_auc_score, recall_score, pr
 #----------------------------------------
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, mean_squared_log_error
 from sklearn.model_selection import train_test_split, learning_curve, validation_curve
-from sklearn.linear_model import (LinearRegression, Ridge, ElasticNet, Lasso, 
-                                  BayesianRidge, OrthogonalMatchingPursuit, HuberRegressor)
-from sklearn.ensemble import (GradientBoostingRegressor, RandomForestRegressor, 
-                              AdaBoostRegressor, ExtraTreesRegressor)
+from sklearn.linear_model import LinearRegression, Ridge, ElasticNet, Lasso,BayesianRidge, OrthogonalMatchingPursuit, HuberRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor, AdaBoostRegressor, ExtraTreesRegressor
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.dummy import DummyRegressor
 from catboost import CatBoostRegressor
 from lightgbm import LGBMRegressor
 from sklearn.metrics import mean_absolute_percentage_error as mape
+#----------------------------------------
+from sklearn.cluster import KMeans, AffinityPropagation, MeanShift, SpectralClustering, AgglomerativeClustering, DBSCAN, OPTICS, Birch
+from kmodes.kmodes import KModes
+from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score, homogeneity_score, adjusted_rand_score, completeness_score
 #----------------------------------------
 #from pycaret.classification import setup, compare_models, pull, save_model, evaluate_model
 #from pycaret.classification import setup, compare_models, predict_model, pull, plot_model, create_model, ensemble_model, blend_models, stack_models, tune_model, save_model
@@ -325,6 +327,19 @@ def plot_validation_curve(model, X_train, y_train, param_name, param_range, titl
     plt.ylabel("Score (Negative MSE)")
     plt.legend(loc="best")
     st.pyplot(plt, use_container_width=True)
+
+#----------------------------------------
+clustering_algorithms = {
+    "KMeans": KMeans(n_clusters=3),
+    "AffinityPropagation": AffinityPropagation(),
+    "MeanShift": MeanShift(),
+    "SpectralClustering": SpectralClustering(n_clusters=3),
+    "AgglomerativeClustering": AgglomerativeClustering(n_clusters=3),
+    "DBSCAN": DBSCAN(),
+    "OPTICS": OPTICS(),
+    "Birch": Birch(n_clusters=3),
+    "KModes": KModes(n_clusters=3, init='Cao', n_init=5, verbose=1)
+}    
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -332,9 +347,14 @@ def plot_validation_curve(model, X_train, y_train, param_name, param_range, titl
 st.sidebar.header("Input", divider='blue')
 #st.sidebar.info('Please choose from the following options to start the application.', icon="ℹ️")
 ml_type = st.sidebar.selectbox("**:blue[Pick your Problem Type]**", ["None", "Classification", "Clustering", "Regression",])
-                                                   
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------                                                   
 if ml_type == "None":
         st.warning("Please choose an algorithm in the sidebar to proceed with the analysis.")
+
+#---------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------
 else:        
     file = st.sidebar.file_uploader("**:blue[Choose a file]**",
                                     type=["csv", "xls", "xlsx"], 
@@ -687,7 +707,7 @@ else:
                 y = df[target_variable]
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
 
-                #----------------------------------------                 
+            #----------------------------------------                 
                 if ml_type == 'Classification': 
 
                     clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
@@ -836,7 +856,6 @@ else:
                                         report_df = pd.DataFrame(report).transpose()
                                         st.dataframe(report_df,use_container_width=True)
 
-
                     #----------------------------------------                    
                     st.subheader("Importance",divider='blue')
 
@@ -860,7 +879,7 @@ else:
                             fig = go.Figure(data = plot_data_imp, layout = plot_layout_imp)
                             st.plotly_chart(fig,use_container_width = True)
 
-                #----------------------------------------                 
+            #----------------------------------------                
                 if ml_type == 'Regression': 
 
                     col1, col2 = st.columns((0.4,0.6))  
@@ -928,6 +947,7 @@ else:
                                     param_name = 'alpha'  
                                     param_range = np.logspace(-3, 3, 10)
                                     plot_validation_curve(best_model, X_train, y_train, param_name, param_range)
+
                     #----------------------------------------  
                     st.subheader("Importance",divider='blue')
 
@@ -950,6 +970,52 @@ else:
                             plot_layout_imp = go.Layout(xaxis = {"title": "Feature"},yaxis = {"title": "Importance"},title = 'Feature Importance',)
                             fig = go.Figure(data = plot_data_imp, layout = plot_layout_imp)
                             st.plotly_chart(fig,use_container_width = True)
+
+            #----------------------------------------              
+                if ml_type == 'Clustering': 
+
+                    col1, col2 = st.columns((0.4,0.6))  
+                    with col1:
+                                
+                        with st.container():
+                                    
+                            st.subheader("Comparison",divider='blue')
+                            with st.spinner("Setting up and comparing models..."):
+
+                                results = []
+                                for name, algorithm in clustering_algorithms.items():
+                                    try:
+                                        if name == "KModes":
+                                            labels = algorithm.fit_predict(X)
+                                        else:
+                                            labels = algorithm.fit_predict(X)
+        
+                                        silhouette = silhouette_score(X, labels) if len(set(labels)) > 1 else None
+                                        calinski = calinski_harabasz_score(X, labels) if len(set(labels)) > 1 else None
+                                        davies = davies_bouldin_score(X, labels) if len(set(labels)) > 1 else None
+                                        homogeneity = homogeneity_score(df[target_variable], labels)
+                                        rand_index = adjusted_rand_score(df[target_variable], labels)
+                                        completeness = completeness_score(df[target_variable], labels)
+        
+                                        results.append({"Algorithm": name,
+                                                        "Silhouette": silhouette,
+                                                        "Calinski-Harabasz": calinski,
+                                                        "Davies-Bouldin": davies,
+                                                        "Homogeneity": homogeneity,
+                                                        "Rand Index": rand_index,
+                                                        "Completeness": completeness})
+                                    except Exception as e:
+                                        print(f"Algorithm {name} failed: {e}")
+
+                                results_df = pd.DataFrame(results)
+                                st.dataframe(results_df,hide_index=True, use_container_width=True)                      
+
+                                st.divider()
+                                
+                                best_model_clust = results_df.loc[results_df['Silhouette'].idxmax(), 'Algorithm']
+                                st.info(f"The best model is : **{best_model_reg}**")
+                                best_model = regressors[best_model_clust]
+
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
                
