@@ -98,7 +98,7 @@ from sklearn.metrics import mean_absolute_percentage_error as mape
 #----------------------------------------
 from sklearn.cluster import KMeans, AffinityPropagation, MeanShift, SpectralClustering, AgglomerativeClustering, DBSCAN, OPTICS, Birch
 from kmodes.kmodes import KModes
-from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score, homogeneity_score, adjusted_rand_score, completeness_score
+from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bouldin_score, homogeneity_score, adjusted_rand_score, completeness_score, silhouette_samples
 #----------------------------------------
 #from pycaret.classification import setup, compare_models, pull, save_model, evaluate_model
 #from pycaret.classification import setup, compare_models, predict_model, pull, plot_model, create_model, ensemble_model, blend_models, stack_models, tune_model, save_model
@@ -1025,11 +1025,51 @@ else:
                                 best_labels = best_model.fit_predict(X)
                                 df['Cluster_Labels'] = best_labels
 
-                                plt.figure(figsize=(8, 6))
+                                plt.figure(figsize=(8, 3))
                                 sns.scatterplot(x=X.iloc[:, 0], y=X.iloc[:, 1], hue=best_labels, palette="viridis")
                                 plt.title(f"Cluster plot for {best_model_clust}")
                                 plt.show()
-                                st.pyplot(plt,use_container_width = True)                            
+                                st.pyplot(plt,use_container_width = True)      
+
+                    if "KMeans" in clustering_algorithms:
+                                    inertia_values = []
+                                    K_range = range(1, 11)
+                                    for k in K_range:
+                                        kmeans = KMeans(n_clusters=k)
+                                        kmeans.fit(X)
+                                        inertia_values.append(kmeans.inertia_)
+    
+                                    plt.figure(figsize=(8,3))
+                                    plt.plot(K_range, inertia_values, marker='o', linestyle='--')
+                                    plt.title('Elbow Method for KMeans')
+                                    plt.xlabel('Number of clusters')
+                                    plt.ylabel('Inertia')
+                                    plt.show()
+                                    st.pyplot(plt,use_container_width = True)
+
+                    if best_model_clust == "KMeans":  # Silhouette diagram only for KMeans
+                        sample_silhouette_values = silhouette_samples(X, best_labels)
+                        y_lower = 10
+                        plt.figure(figsize=(8,3))
+
+                        for i in range(3):  # Assuming 3 clusters for this example
+                            ith_cluster_silhouette_values = sample_silhouette_values[best_labels == i]
+                            ith_cluster_silhouette_values.sort()
+                            size_cluster_i = ith_cluster_silhouette_values.shape[0]
+                            y_upper = y_lower + size_cluster_i
+
+                            color = plt.cm.nipy_spectral(float(i) / 3)
+                            plt.fill_betweenx(np.arange(y_lower, y_upper), 0, ith_cluster_silhouette_values, facecolor=color, edgecolor=color, alpha=0.7)
+                            plt.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+                            y_lower = y_upper + 10
+
+                        plt.axvline(x=silhouette_score(X, best_labels), color="red", linestyle="--")
+                        plt.title("Silhouette plot for the best model (KMeans)")
+                        plt.xlabel("Silhouette coefficient")
+                        plt.ylabel("Cluster")
+                        plt.show()
+                        st.pyplot(plt,use_container_width = True)        
+                                      
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
                
