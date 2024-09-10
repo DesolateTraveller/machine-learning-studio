@@ -1024,15 +1024,13 @@ else:
                                 
                                 best_labels = best_model.fit_predict(X)
                                 df['Cluster_Labels'] = best_labels
-
-
-
-
                                 plt.figure(figsize=(8, 3))
                                 sns.scatterplot(x=X.iloc[:, 0], y=X.iloc[:, 1], hue=best_labels, palette="viridis")
                                 plt.title(f"Cluster plot for {best_model_clust}")
                                 plt.show()
                                 st.pyplot(plt,use_container_width = True)      
+
+                    st.divider()
 
                     if "KMeans" in clustering_algorithms:
                                     inertia_values = []
@@ -1059,6 +1057,8 @@ else:
                                                     plt.ylabel('Inertia')
                                                     plt.show()
                                                     st.pyplot(plt,use_container_width = True)
+
+                    st.divider()
 
                     if best_model_clust == "KMeans":  
                         sample_silhouette_values = silhouette_samples(X, best_labels)
@@ -1194,3 +1194,35 @@ else:
                             st.download_button(label="Download predicted data as CSV",data=X_test_results_reg.to_csv(index=False),file_name="regression_predictions.csv",mime="text/csv")
 
             #----------------------------------------  
+                if ml_type == 'Clustering':    
+                     
+                        best_metrics=results_df.loc[results_df["Model"] == best_model_clust].iloc[0].to_dict()
+                        final_results_df = pd.DataFrame({"Metric": ["Type of Problem",
+                                                    "Target Variable",
+                                                    "Scaling Method", 
+                                                    "Feature Selection",
+                                                    "Best Algorithm", 
+                                                    "Silhouette", 
+                                                    "Calinski-Harabasz", 
+                                                    "Davies-Bouldin", 
+                                                    "Homogeneity", 
+                                                    "Rand Index", 
+                                                    #"Best Feature(s)",
+                                                    ],
+                                            "Value": [ml_type,
+                                                    target_variable,
+                                                    scaling_method, 
+                                                    f_sel_method,
+                                                    best_model_clust, 
+                                                    round(best_metrics["Silhouette"],2), 
+                                                    round(best_metrics["Calinski-Harabasz"],2), 
+                                                    round(best_metrics["Davies-Bouldin"],2),
+                                                    round(best_metrics["Homogeneity"],2), 
+                                                    round(best_metrics["Rand Index"],2), 
+                                                    #', '.join(best_features), 
+                                                    ]})
+                        col1, col2 = st.columns((0.2,0.8))
+                        with col1:
+
+                            st.subheader("Output",divider='blue')                            
+                            st.dataframe(final_results_df, hide_index=True, use_container_width=True)
