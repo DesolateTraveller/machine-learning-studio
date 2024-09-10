@@ -86,7 +86,7 @@ from sklearn.metrics import accuracy_score, auc, roc_auc_score, recall_score, pr
 # Model Validation
 #----------------------------------------
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, mean_squared_log_error
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, learning_curve, validation_curve
 from sklearn.linear_model import (LinearRegression, Ridge, ElasticNet, Lasso, 
                                   BayesianRidge, OrthogonalMatchingPursuit, HuberRegressor)
 from sklearn.ensemble import (GradientBoostingRegressor, RandomForestRegressor, 
@@ -137,6 +137,7 @@ def load_file(file):
         df = pd.DataFrame()
     return df
 
+#----------------------------------------
 @st.cache_data(ttl="2h")
 def check_missing_values(data):
     missing_values = data.isnull().sum()
@@ -177,6 +178,7 @@ def label_encode(df, column):
     df[column] = le.fit_transform(df[column])
     return df
 
+#----------------------------------------
 @st.cache_data(ttl="2h")
 def onehot_encode(df, column):
     ohe = OneHotEncoder(sparse=False)
@@ -213,6 +215,7 @@ def drop_high_vif_variables(data, threshold):
     data = data.drop(columns=high_vif_variables)
     return data
 
+#----------------------------------------
 # Dictionary of metrics
 metrics_dict = {
     "Area Under the Curve": 'auc',
@@ -267,6 +270,7 @@ models = {
     #"SVM - Linear Kernel": SVC(kernel="linear", probability=True)
     }
 
+#----------------------------------------
 def calculate_metrics(y_true, y_pred):
     mae = mean_absolute_error(y_true, y_pred)
     mse = mean_squared_error(y_true, y_pred)
@@ -295,6 +299,32 @@ regressors = {
     "Extra Trees Regressor": ExtraTreesRegressor(),
     "Decision Tree Regressor": DecisionTreeRegressor()
 }
+
+def plot_learning_curve(model, X_train, y_train, title="Learning Curve"):
+    train_sizes, train_scores, val_scores = learning_curve(model, X_train, y_train, cv=5, scoring='neg_mean_squared_error', train_sizes=np.linspace(0.1, 1.0, 10))
+    train_scores_mean = np.mean(train_scores, axis=1)
+    val_scores_mean = np.mean(val_scores, axis=1)
+    plt.figure(figsize=(8, 5))
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r", label="Training Score")
+    plt.plot(train_sizes, val_scores_mean, 'o-', color="g", label="Cross-Validation Score")
+    plt.title(title)
+    plt.xlabel("Training Examples")
+    plt.ylabel("Score (Negative MSE)")
+    plt.legend(loc="best")
+    st.pyplot(plt, use_container_width=True)
+
+def plot_validation_curve(model, X_train, y_train, param_name, param_range, title="Validation Curve"):
+    train_scores, val_scores = validation_curve(model, X_train, y_train, param_name=param_name, param_range=param_range, cv=5, scoring='neg_mean_squared_error')
+    train_scores_mean = np.mean(train_scores, axis=1)
+    val_scores_mean = np.mean(val_scores, axis=1)
+    plt.figure(figsize=(8, 5))
+    plt.plot(param_range, train_scores_mean, 'o-', color="r", label="Training Score")
+    plt.plot(param_range, val_scores_mean, 'o-', color="g", label="Cross-Validation Score")
+    plt.title(title)
+    plt.xlabel(f"Values of {param_name}")
+    plt.ylabel("Score (Negative MSE)")
+    plt.legend(loc="best")
+    st.pyplot(plt, use_container_width=True)
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -872,7 +902,7 @@ else:
                                 y_pred_best = best_model.predict(X_test)
                                 residuals = y_test - y_pred_best          
 
-                                analysis_option = st.sidebar.selectbox("**:blue[Choose analysis metrices]**", ["Residual Plot", "Prediction Error Plot"])
+                                analysis_option = st.sidebar.selectbox("**:blue[Choose analysis metrices]**", ["Residual Plot", "Prediction Error Plot", "Learning Curve", "Validation Curve"])
 
                                 if analysis_option == "Residual Plot":     
                                     plt.figure(figsize=(8, 3))
@@ -891,6 +921,13 @@ else:
                                     plt.ylabel('Predicted')
                                     st.pyplot(plt,use_container_width=True) 
 
+                                if analysis_option == "Learning Curve":
+                                    plot_learning_curve(best_model, X_train, y_train)  
+
+                                if analysis_option == "Validation Curve":
+                                    param_name = 'alpha'  
+                                    param_range = np.logspace(-3, 3, 10)
+                                    plot_validation_curve(best_model, X_train, y_train, param_name, param_range)
                     #----------------------------------------  
                     st.subheader("Importance",divider='blue')
 
