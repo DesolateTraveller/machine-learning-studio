@@ -1196,7 +1196,7 @@ else:
             #----------------------------------------  
                 if ml_type == 'Clustering':    
                      
-                        best_metrics=results_df.loc[results_df["Model"] == best_model_clust].iloc[0].to_dict()
+                        best_metrics=results_df.loc[results_df["Algorithm"] == best_model_clust].iloc[0].to_dict()
                         final_results_df = pd.DataFrame({"Metric": ["Type of Problem",
                                                     "Target Variable",
                                                     "Scaling Method", 
