@@ -894,7 +894,7 @@ else:
                     #----------------------------------------  
                     st.subheader("Importance",divider='blue')
 
-                    if best_model_clf == "Linear Regression":
+                    if best_model_reg == "Linear Regression":
                         feature_importance = pd.DataFrame({'Feature': X.columns, 'Coefficient': best_model.coef_[0]})
                     else:
                         importance = best_model.feature_importances_
