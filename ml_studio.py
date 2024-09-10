@@ -253,13 +253,13 @@ models = {
     "Ridge Classifier": RidgeClassifier(),
     "Linear Discriminant Analysis": LinearDiscriminantAnalysis(),
     "Random Forest Classifier": RandomForestClassifier(),
-    "Naive Bayes": GaussianNB(),
+    #"Naive Bayes": GaussianNB(),
     #"CatBoost Classifier": CatBoostClassifier(verbose=0),
     "Gradient Boosting Classifier": GradientBoostingClassifier(),
     "Ada Boost Classifier": AdaBoostClassifier(),
     "Extra Trees Classifier": ExtraTreesClassifier(),
     #"Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis(),
-    #"Light Gradient Boosting Machine": LGBMClassifier(),
+    "Light Gradient Boosting Machine": LGBMClassifier(),
     "K Neighbors Classifier": KNeighborsClassifier(),
     "Decision Tree Classifier": DecisionTreeClassifier(),
     #"Extreme Gradient Boosting": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
@@ -685,15 +685,15 @@ else:
 
                                         st.divider()
 
-                                        best_model_acc = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
-                                        st.info(f"The best model is (accuracy): **{best_model_acc}**")
+                                        best_model_clf = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+                                        st.info(f"The best model is: **{best_model_clf}**")
 
                             with col2:
 
                                 with st.container():  
 
                                     st.subheader("Graph",divider='blue')
-                                    best_model = models[best_model_acc]
+                                    best_model = models[best_model_clf]
                                     best_model.fit(X_train, y_train)
                                     y_pred_best = best_model.predict(X_test)
                                     y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None
@@ -705,7 +705,7 @@ else:
                                         cm = confusion_matrix(y_test, y_pred_best)
                                         plt.figure(figsize=(8,3))
                                         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-                                        plt.title(f"Confusion Matrix for {best_model_acc}", fontsize=8)
+                                        plt.title(f"Confusion Matrix for {best_model_clf}", fontsize=8)
                                         plt.xlabel("Predicted")
                                         plt.ylabel("Actual")
                                         st.pyplot(plt,use_container_width=True)
@@ -717,7 +717,7 @@ else:
                                         plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
                                         plt.xlabel("False Positive Rate")
                                         plt.ylabel("True Positive Rate")
-                                        plt.title(f"AUC Curve for {best_model_acc}", fontsize=8)
+                                        plt.title(f"AUC Curve for {best_model_clf}", fontsize=8)
                                         plt.legend(loc="lower right")
                                         st.pyplot(plt,use_container_width=True)
 
@@ -727,7 +727,7 @@ else:
                                         plt.plot(thresholds, precisions[:-1], "b--", label="Precision")
                                         plt.plot(thresholds, recalls[:-1], "g-", label="Recall")
                                         plt.xlabel("Threshold")
-                                        plt.title(f"Discrimination Threshold for {best_model_acc}", fontsize=8)
+                                        plt.title(f"Discrimination Threshold for {best_model_clf}", fontsize=8)
                                         plt.legend(loc="best")
                                         st.pyplot(plt,use_container_width=True)
 
@@ -737,7 +737,7 @@ else:
                                         plt.plot(recalls, precisions, color="purple", lw=2)
                                         plt.xlabel("Recall")
                                         plt.ylabel("Precision")
-                                        plt.title(f"Precision-Recall Curve for {best_model_acc}", fontsize=8)
+                                        plt.title(f"Precision-Recall Curve for {best_model_clf}", fontsize=8)
                                         st.pyplot(plt,use_container_width=True)
 
                                     if analysis_option == "Classification Report":
@@ -747,12 +747,12 @@ else:
 
                                     if analysis_option == "Lift Curve" and y_proba_best is not None:
                                         skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
-                                        plt.title(f"Lift Curve for {best_model_acc}", fontsize=8)
+                                        plt.title(f"Lift Curve for {best_model_clf}", fontsize=8)
                                         st.pyplot(plt,use_container_width=True)
 
                                     if analysis_option == "Gain Curve" and y_proba_best is not None:
                                         skplt.metrics.plot_cumulative_gain(y_test, best_model.predict_proba(X_test))
-                                        plt.title(f"Gain Curve for {best_model_acc}", fontsize=8)
+                                        plt.title(f"Gain Curve for {best_model_clf}", fontsize=8)
                                         st.pyplot(plt,use_container_width=True) 
 
                     #----------------------------------------
@@ -777,15 +777,15 @@ else:
 
                                         st.divider()
 
-                                        best_model_acc = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
-                                        st.info(f"The best model is (accuracy): **{best_model_acc}**")
+                                        best_model_clf = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+                                        st.info(f"The best model is : **{best_model_clf}**")
 
                             with col2:
             
                                 with st.container():  
                 
                                     st.subheader("Graph",divider='blue')
-                                    best_model = models[best_model_acc]
+                                    best_model = models[best_model_clf]
                                     best_model.fit(X_train, y_train)
                                     y_pred_best = best_model.predict(X_test)
                                     y_proba_best = best_model.predict_proba(X_test) if hasattr(best_model, "predict_proba") else None
@@ -796,7 +796,7 @@ else:
                                         cm = confusion_matrix(y_test, y_pred_best)
                                         plt.figure(figsize=(8,3))
                                         sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-                                        plt.title(f"Confusion Matrix for {best_model_acc}", fontsize=8)
+                                        plt.title(f"Confusion Matrix for {best_model_clf}", fontsize=8)
                                         plt.xlabel("Predicted")
                                         plt.ylabel("Actual")
                                         st.pyplot(plt,use_container_width=True)
@@ -810,7 +810,7 @@ else:
                 #----------------------------------------                    
                     st.subheader("Importance",divider='blue')
 
-                    if best_model_acc == "Logistic Regression":
+                    if best_model_clf == "Logistic Regression":
                         importance = best_model.coef_.flatten()
                     else:
                         importance = best_model.feature_importances_
@@ -833,13 +833,21 @@ else:
                 #----------------------------------------                 
                 if ml_type == 'Regression': 
 
-                        results = []
-                        for name, model in regressors.items():
-                            model.fit(X_train, y_train)
-                            y_pred = model.predict(X_test)
-                            mae, mse, rmse, r2, rmsle, mape_value = calculate_metrics(y_test, y_pred)
+                    col1, col2 = st.columns((0.4,0.6))  
+                    with col1:
+                                
+                        with st.container():
+                                    
+                            st.subheader("Comparison",divider='blue')
+                            with st.spinner("Setting up and comparing models..."):
+
+                                results = []
+                                for name, model in regressors.items():
+                                    model.fit(X_train, y_train)
+                                    y_pred = model.predict(X_test)
+                                    mae, mse, rmse, r2, rmsle, mape_value = calculate_metrics(y_test, y_pred)
     
-                            results.append({"Model": name,
+                                    results.append({"Model": name,
                                             "MAE": round(mae, 2),
                                             "MSE": round(mse, 2),
                                             "RMSE": round(rmse, 2),
@@ -847,14 +855,49 @@ else:
                                             "RMSLE": round(rmsle, 2) if rmsle else "N/A",
                                             "MAPE": round(mape_value, 2)})
                             
-                            results_df = pd.DataFrame(results)
-                            st.dataframe(results_df,hide_index=True, use_container_width=True)
+                                results_df = pd.DataFrame(results)
+                                st.dataframe(results_df,hide_index=True, use_container_width=True)
 
+                                st.divider()
+                                
+                                best_model_reg = results_df.loc[results_df['R2'].idxmax(), 'Model']
+                                st.info(f"The best model is : **{best_model_reg}**")
+                                best_model = regressors[best_model_clf]
+
+                    with col2:
+            
+                        with st.container():       
+
+                                st.subheader("Graph",divider='blue')       
+                                y_pred_best = best_model.predict(X_test)
+                                residuals = y_test - y_pred_best          
+
+                                analysis_option = st.sidebar.selectbox("**:blue[Choose analysis metrices]**", ["Residual Plot", "Prediction Error Plot"])
+
+                                if analysis_option == "Residual Plot":     
+                                    plt.figure(figsize=(8, 3))
+                                    sns.residplot(x=y_pred_best, y=residuals, lowess=True)
+                                    plt.title(f"Residual Plot for {best_model_reg}")
+                                    plt.xlabel('Predicted')
+                                    plt.ylabel('Residuals')
+                                    st.pyplot(plt,use_container_width=True)
+
+                                if analysis_option == "Prediction Error Plot":      
+                                    plt.figure(figsize=(8, 3))
+                                    sns.scatterplot(x=y_test, y=y_pred_best)
+                                    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--', color='red')
+                                    plt.title(f"Prediction Error Plot for {best_model_reg}")
+                                    plt.xlabel('Actual')
+                                    plt.ylabel('Predicted')
+                                    st.pyplot(plt,use_container_width=True) 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
+
+                #----------------------------------------                 
+                if ml_type == 'Classification':        
                         
                         #st.info(f"**Selected Algorithm: {ml_type}**")
-                        best_metrics=results_df.loc[results_df["Model"] == best_model_acc].iloc[0].to_dict()
+                        best_metrics=results_df.loc[results_df["Model"] == best_model_clf].iloc[0].to_dict()
                         final_results_df = pd.DataFrame({"Metric": ["Type of Problem",
                                                     "Target Variable",
                                                     "Type of Target",
@@ -873,7 +916,7 @@ else:
                                                     clf_typ,
                                                     scaling_method, 
                                                     f_sel_method,
-                                                    best_model_acc, 
+                                                    best_model_clf, 
                                                     round(best_metrics["Accuracy"],2), 
                                                     round(best_metrics["AUC"],2), 
                                                     round(best_metrics["Precision"],2),
