@@ -807,7 +807,7 @@ else:
                                         st.dataframe(report_df,use_container_width=True)
 
 
-                #----------------------------------------                    
+                    #----------------------------------------                    
                     st.subheader("Importance",divider='blue')
 
                     if best_model_clf == "Logistic Regression":
@@ -890,10 +890,32 @@ else:
                                     plt.xlabel('Actual')
                                     plt.ylabel('Predicted')
                                     st.pyplot(plt,use_container_width=True) 
+
+                    #----------------------------------------  
+                    st.subheader("Importance",divider='blue')
+
+                    if best_model_clf == "Linear Regression":
+                        feature_importance = pd.DataFrame({'Feature': X.columns, 'Coefficient': best_model.coef_[0]})
+                    else:
+                        importance = best_model.feature_importances_
+
+                    col1, col2 = st.columns((0.15,0.85))
+                    with col1:
+                        with st.container():
+
+                            importance_df = pd.DataFrame({"Feature": selected_features,"Importance": importance})
+                            st.dataframe(importance_df, hide_index=True, use_container_width=True)
+
+                    with col2:
+                        with st.container():
+                                        
+                            plot_data_imp = [go.Bar(x = importance_df['Feature'],y = importance_df['Importance'])]
+                            plot_layout_imp = go.Layout(xaxis = {"title": "Feature"},yaxis = {"title": "Importance"},title = 'Feature Importance',)
+                            fig = go.Figure(data = plot_data_imp, layout = plot_layout_imp)
+                            st.plotly_chart(fig,use_container_width = True)
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
-
-                #----------------------------------------                 
+               
                 if ml_type == 'Classification':        
                         
                         #st.info(f"**Selected Algorithm: {ml_type}**")
@@ -929,7 +951,35 @@ else:
                             st.dataframe(final_results_df, hide_index=True, use_container_width=True)
 
                                        
+                if ml_type == 'Regression':  
 
-
+                        best_metrics=results_df.loc[results_df["Model"] == best_model_reg].iloc[0].to_dict()
+                        final_results_df = pd.DataFrame({"Metric": ["Type of Problem",
+                                                    "Target Variable",
+                                                    "Scaling Method", 
+                                                    "Feature Selection",
+                                                    "Best Algorithm", 
+                                                    "MAE", 
+                                                    "MSE", 
+                                                    "RMSE", 
+                                                    "R2", 
+                                                    "MAPE", 
+                                                    #"Best Feature(s)",
+                                                    ],
+                                            "Value": [ml_type,
+                                                    target_variable,
+                                                    scaling_method, 
+                                                    f_sel_method,
+                                                    best_model_reg, 
+                                                    round(best_metrics["MAE"],2), 
+                                                    round(best_metrics["MSE"],2), 
+                                                    round(best_metrics["RMSE"],2),
+                                                    round(best_metrics["R2"],2), 
+                                                    round(best_metrics["MAPE"],2), 
+                                                    #', '.join(best_features), 
+                                                    ]})
+                        col1, col2 = st.columns((0.4,0.6))
+                        with col1:
+                            st.dataframe(final_results_df, hide_index=True, use_container_width=True)
 
 
