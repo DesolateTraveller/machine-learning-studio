@@ -862,7 +862,7 @@ else:
                                 
                                 best_model_reg = results_df.loc[results_df['R2'].idxmax(), 'Model']
                                 st.info(f"The best model is : **{best_model_reg}**")
-                                best_model = regressors[best_model_clf]
+                                best_model = regressors[best_model_reg]
 
                     with col2:
             
