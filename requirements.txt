@@ -29,3 +29,4 @@ keras
 pycaret==3.3.2
 catboost
 scikit-plot
+kmodes
