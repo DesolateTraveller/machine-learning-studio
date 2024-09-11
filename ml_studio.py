@@ -766,33 +766,11 @@ else:
                                         st.divider()
 
                                         best_model_clf = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+                                        best_model = models[best_model_clf]
+                                        best_model.fit(X_train, y_train)
+                                        y_pred_best = best_model.predict(X_test)
+                                        y_proba_best = best_model.predict_proba(X_test) if hasattr(best_model, "predict_proba") else None
                                         st.info(f"The best model is : **{best_model_clf}**")
-
-                            with col2:
-            
-                                with st.container():  
-                
-                                    st.subheader("Graph",divider='blue')
-                                    best_model = models[best_model_clf]
-                                    best_model.fit(X_train, y_train)
-                                    y_pred_best = best_model.predict(X_test)
-                                    y_proba_best = best_model.predict_proba(X_test) if hasattr(best_model, "predict_proba") else None
-
-                                    analysis_option = st.sidebar.selectbox("**:blue[Choose analysis metrices]**", ["Confusion Matrix", "Classification Report"])
-
-                                    if analysis_option == "Confusion Matrix":
-                                        cm = confusion_matrix(y_test, y_pred_best)
-                                        plt.figure(figsize=(8,3))
-                                        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-                                        plt.title(f"Confusion Matrix for {best_model_clf}", fontsize=8)
-                                        plt.xlabel("Predicted")
-                                        plt.ylabel("Actual")
-                                        st.pyplot(plt,use_container_width=True)
-
-                                    if analysis_option == "Classification Report":
-                                        report = classification_report(y_test, y_pred_best, output_dict=True)
-                                        report_df = pd.DataFrame(report).transpose()
-                                        st.dataframe(report_df,use_container_width=True)
 
                     #----------------------------------------                    
                     st.subheader("Importance",divider='blue')
@@ -850,41 +828,8 @@ else:
                                 best_model_reg = results_df.loc[results_df['R2'].idxmax(), 'Model']
                                 st.info(f"The best model is : **{best_model_reg}**")
                                 best_model = regressors[best_model_reg]
-
-                    with col2:
-            
-                        with st.container():       
-
-                                st.subheader("Graph",divider='blue')       
                                 y_pred_best = best_model.predict(X_test)
-                                residuals = y_test - y_pred_best          
-
-                                analysis_option = st.sidebar.selectbox("**:blue[Choose analysis metrices]**", ["Residual Plot", "Prediction Error Plot", "Learning Curve", "Validation Curve"])
-
-                                if analysis_option == "Residual Plot":     
-                                    plt.figure(figsize=(8, 3))
-                                    sns.residplot(x=y_pred_best, y=residuals, lowess=True)
-                                    plt.title(f"Residual Plot for {best_model_reg}")
-                                    plt.xlabel('Predicted')
-                                    plt.ylabel('Residuals')
-                                    st.pyplot(plt,use_container_width=True)
-
-                                if analysis_option == "Prediction Error Plot":      
-                                    plt.figure(figsize=(8, 3))
-                                    sns.scatterplot(x=y_test, y=y_pred_best)
-                                    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--', color='red')
-                                    plt.title(f"Prediction Error Plot for {best_model_reg}")
-                                    plt.xlabel('Actual')
-                                    plt.ylabel('Predicted')
-                                    st.pyplot(plt,use_container_width=True) 
-
-                                if analysis_option == "Learning Curve":
-                                    plot_learning_curve(best_model, X_train, y_train)  
-
-                                if analysis_option == "Validation Curve":
-                                    param_name = 'alpha'  
-                                    param_range = np.logspace(-3, 3, 10)
-                                    plot_validation_curve(best_model, X_train, y_train, param_name, param_range)
+                                residuals = y_test - y_pred_best    
 
                     #----------------------------------------  
                     st.subheader("Importance",divider='blue')
@@ -1103,6 +1048,58 @@ else:
                                     skplt.metrics.plot_cumulative_gain(y_test, best_model.predict_proba(X_test))
                                     plt.title(f"Gain Curve for {best_model_clf}", fontsize=8)
                                     st.pyplot(plt,use_container_width=True) 
+
+                    if clf_typ == 'MultiClass':
+
+                        col1, col2 = st.columns(2)  
+                        with col1:
+                            with st.container():  
+
+                                    report = classification_report(y_test, y_pred_best, output_dict=True)
+                                    report_df = pd.DataFrame(report).transpose()
+                                    st.dataframe(report_df,use_container_width=True)  
+
+                        with col2:
+                            with st.container():  
+
+                                    cm = confusion_matrix(y_test, y_pred_best)
+                                    plt.figure(figsize=(8,3))
+                                    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+                                    plt.title(f"Confusion Matrix for {best_model_clf}", fontsize=8)
+                                    plt.xlabel("Predicted")
+                                    plt.ylabel("Actual")
+                                    st.pyplot(plt,use_container_width=True)
+
+            #----------------------------------------                
+                if ml_type == 'Regression': 
+
+                        col1, col2 = st.columns(2)  
+                        with col1:
+                            with st.container():                     
+                                                      
+                                    plt.figure(figsize=(8, 3))
+                                    sns.residplot(x=y_pred_best, y=residuals, lowess=True)
+                                    plt.title(f"Residual Plot for {best_model_reg}")
+                                    plt.xlabel('Predicted')
+                                    plt.ylabel('Residuals')
+                                    st.pyplot(plt,use_container_width=True)
+    
+                                    plt.figure(figsize=(8, 3))
+                                    sns.scatterplot(x=y_test, y=y_pred_best)
+                                    plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--', color='red')
+                                    plt.title(f"Prediction Error Plot for {best_model_reg}")
+                                    plt.xlabel('Actual')
+                                    plt.ylabel('Predicted')
+                                    st.pyplot(plt,use_container_width=True) 
+
+                        with col2:
+                            with st.container(): 
+
+                                    plot_learning_curve(best_model, X_train, y_train)  
+
+                                    param_name = 'alpha'  
+                                    param_range = np.logspace(-3, 3, 10)
+                                    plot_validation_curve(best_model, X_train, y_train, param_name, param_range)
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab7:
