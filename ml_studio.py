@@ -1088,12 +1088,12 @@ else:
                                     st.pyplot(plt,use_container_width=True)
 
                                     skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
-                                    plt.figure(figsize=(8,3))
+                                    #plt.figure(figsize=(8,3))
                                     plt.title(f"Lift Curve for {best_model_clf}", fontsize=8)
                                     st.pyplot(plt,use_container_width=True)
 
                                     skplt.metrics.plot_cumulative_gain(y_test, best_model.predict_proba(X_test))
-                                    plt.figure(figsize=(8,3))
+                                    #plt.figure(figsize=(8,3))
                                     plt.title(f"Gain Curve for {best_model_clf}", fontsize=8)
                                     st.pyplot(plt,use_container_width=True) 
 
