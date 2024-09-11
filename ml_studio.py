@@ -899,84 +899,6 @@ else:
                                 st.info(f"The best model is : **{best_model_clust}**")
                                 best_model = clustering_algorithms[best_model_clust]
 
-                    with col2:
-            
-                        with st.container(): 
-
-                                st.subheader("Graph",divider='blue')   
-                                
-                                best_labels = best_model.fit_predict(X)
-                                df['Cluster_Labels'] = best_labels
-                                plt.figure(figsize=(8, 3))
-                                sns.scatterplot(x=X.iloc[:, 0], y=X.iloc[:, 1], hue=best_labels, palette="viridis")
-                                plt.title(f"Cluster plot for {best_model_clust}")
-                                plt.show()
-                                st.pyplot(plt,use_container_width = True)      
-
-                    st.divider()
-
-                    if "KMeans" in clustering_algorithms:
-                                    inertia_values = []
-                                    K_range = range(1, 11)
-                                    for k in K_range:
-                                        kmeans = KMeans(n_clusters=k)
-                                        kmeans.fit(X)
-                                        inertia_values.append(kmeans.inertia_)
-
-                                    col1, col2 = st.columns((0.2,0.8))  
-                                    with col1:  
-                                        with st.container(): 
-
-                                            elbow_df = pd.DataFrame({'K': K_range,'Inertia': inertia_values})  
-                                            st.dataframe(elbow_df,hide_index=True, use_container_width=True)
-
-                                            with col2:  
-                                                with st.container(): 
-                                                    
-                                                    plt.figure(figsize=(8,3))
-                                                    plt.plot(K_range, inertia_values, marker='o', linestyle='--')
-                                                    plt.title('Elbow Method for KMeans')
-                                                    plt.xlabel('Number of clusters')
-                                                    plt.ylabel('Inertia')
-                                                    plt.show()
-                                                    st.pyplot(plt,use_container_width = True)
-
-                    st.divider()
-
-                    if best_model_clust == "KMeans":  
-                        sample_silhouette_values = silhouette_samples(X, best_labels)
-
-                        col1, col2 = st.columns((0.2,0.8))  
-                        with col1:  
-                            with st.container(): 
-                        
-                                silhouette_df = pd.DataFrame({'Data Point Index': np.arange(len(X)),'Cluster': best_labels,'Silhouette Coefficient': sample_silhouette_values})
-                                st.dataframe(silhouette_df,hide_index=True, use_container_width=True)
-
-                                with col2:  
-                                    with st.container(): 
-
-                                        y_lower = 10
-                                        plt.figure(figsize=(8,3))
-
-                                        for i in range(3):  
-                                            ith_cluster_silhouette_values = sample_silhouette_values[best_labels == i]
-                                            ith_cluster_silhouette_values.sort()
-                                            size_cluster_i = ith_cluster_silhouette_values.shape[0]
-                                            y_upper = y_lower + size_cluster_i
-
-                                            color = plt.cm.nipy_spectral(float(i) / 3)
-                                            plt.fill_betweenx(np.arange(y_lower, y_upper), 0, ith_cluster_silhouette_values, facecolor=color, edgecolor=color, alpha=0.7)
-                                            plt.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
-                                            y_lower = y_upper + 10
-
-                                        plt.axvline(x=silhouette_score(X, best_labels), color="red", linestyle="--")
-                                        plt.title("Silhouette plot for the best model (KMeans)")
-                                        plt.xlabel("Silhouette coefficient")
-                                        plt.ylabel("Cluster")
-                                        plt.show()
-                                        st.pyplot(plt,use_container_width = True)        
-
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
                
@@ -1100,6 +1022,81 @@ else:
                                     param_name = 'alpha'  
                                     param_range = np.logspace(-3, 3, 10)
                                     plot_validation_curve(best_model, X_train, y_train, param_name, param_range)
+
+            #----------------------------------------                
+                if ml_type == 'Clustering': 
+                                
+                    best_labels = best_model.fit_predict(X)
+                    df['Cluster_Labels'] = best_labels
+                    plt.figure(figsize=(8, 3))
+                    sns.scatterplot(x=X.iloc[:, 0], y=X.iloc[:, 1], hue=best_labels, palette="viridis")
+                    plt.title(f"Cluster plot for {best_model_clust}")
+                    plt.show()
+                    st.pyplot(plt,use_container_width = True)      
+
+                    st.divider()
+
+                    if "KMeans" in clustering_algorithms:
+                                    inertia_values = []
+                                    K_range = range(1, 11)
+                                    for k in K_range:
+                                        kmeans = KMeans(n_clusters=k)
+                                        kmeans.fit(X)
+                                        inertia_values.append(kmeans.inertia_)
+
+                                    col1, col2 = st.columns((0.2,0.8))  
+                                    with col1:  
+                                        with st.container(): 
+
+                                            elbow_df = pd.DataFrame({'K': K_range,'Inertia': inertia_values})  
+                                            st.dataframe(elbow_df,hide_index=True, use_container_width=True)
+
+                                            with col2:  
+                                                with st.container(): 
+                                                    
+                                                    plt.figure(figsize=(8,3))
+                                                    plt.plot(K_range, inertia_values, marker='o', linestyle='--')
+                                                    plt.title('Elbow Method for KMeans')
+                                                    plt.xlabel('Number of clusters')
+                                                    plt.ylabel('Inertia')
+                                                    plt.show()
+                                                    st.pyplot(plt,use_container_width = True)
+
+                    st.divider()
+
+                    if best_model_clust == "KMeans":  
+                        sample_silhouette_values = silhouette_samples(X, best_labels)
+
+                        col1, col2 = st.columns((0.2,0.8))  
+                        with col1:  
+                            with st.container(): 
+                        
+                                silhouette_df = pd.DataFrame({'Data Point Index': np.arange(len(X)),'Cluster': best_labels,'Silhouette Coefficient': sample_silhouette_values})
+                                st.dataframe(silhouette_df,hide_index=True, use_container_width=True)
+
+                                with col2:  
+                                    with st.container(): 
+
+                                        y_lower = 10
+                                        plt.figure(figsize=(8,3))
+
+                                        for i in range(3):  
+                                            ith_cluster_silhouette_values = sample_silhouette_values[best_labels == i]
+                                            ith_cluster_silhouette_values.sort()
+                                            size_cluster_i = ith_cluster_silhouette_values.shape[0]
+                                            y_upper = y_lower + size_cluster_i
+
+                                            color = plt.cm.nipy_spectral(float(i) / 3)
+                                            plt.fill_betweenx(np.arange(y_lower, y_upper), 0, ith_cluster_silhouette_values, facecolor=color, edgecolor=color, alpha=0.7)
+                                            plt.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+                                            y_lower = y_upper + 10
+
+                                        plt.axvline(x=silhouette_score(X, best_labels), color="red", linestyle="--")
+                                        plt.title("Silhouette plot for the best model (KMeans)")
+                                        plt.xlabel("Silhouette coefficient")
+                                        plt.ylabel("Cluster")
+                                        plt.show()
+                                        st.pyplot(plt,use_container_width = True)        
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab7:
