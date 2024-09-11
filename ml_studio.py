@@ -1042,6 +1042,8 @@ else:
                         report = classification_report(y_test, y_pred_best, output_dict=True)
                         report_df = pd.DataFrame(report).transpose()
                         st.dataframe(report_df,use_container_width=True)
+
+                        st.divider()
                         
                         col1, col2 = st.columns(2)  
                         with col1:
@@ -1087,13 +1089,13 @@ else:
                                     plt.title(f"Precision-Recall Curve for {best_model_clf}", fontsize=8)
                                     st.pyplot(plt,use_container_width=True)
 
+                                    plt.figure(figsize=(8,3))
                                     skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
-                                    #plt.figure(figsize=(8,3))
                                     plt.title(f"Lift Curve for {best_model_clf}", fontsize=8)
                                     st.pyplot(plt,use_container_width=True)
-
+                                    
+                                    plt.figure(figsize=(8,3))
                                     skplt.metrics.plot_cumulative_gain(y_test, best_model.predict_proba(X_test))
-                                    #plt.figure(figsize=(8,3))
                                     plt.title(f"Gain Curve for {best_model_clf}", fontsize=8)
                                     st.pyplot(plt,use_container_width=True) 
 
