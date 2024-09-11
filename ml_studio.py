@@ -377,7 +377,7 @@ else:
 
 #---------------------------------------------------------------------------------------------------------------------------------
         else:  
-            tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["**Information**","**Visualizations**","**Cleaning**","**Transformation**","**Performance**","**Results**",])
+            tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["**Information**","**Visualizations**","**Cleaning**","**Transformation**","**Performance**","**Graph**","**Results**",])
             
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab1:
@@ -737,74 +737,11 @@ else:
                                         st.divider()
 
                                         best_model_clf = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
+                                        best_model = models[best_model_clf]
+                                        best_model.fit(X_train, y_train)
+                                        y_pred_best = best_model.predict(X_test)
+                                        y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None                                        
                                         st.info(f"The best model is: **{best_model_clf}**")
-
-                            with col2:
-
-                                with st.container():  
-
-                                    st.subheader("Graph",divider='blue')
-                                    best_model = models[best_model_clf]
-                                    best_model.fit(X_train, y_train)
-                                    y_pred_best = best_model.predict(X_test)
-                                    y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None
-
-                                    analysis_option = st.sidebar.selectbox("**:blue[Choose analysis metrices]**", ["Confusion Matrix", "AUC Curve", "Discrimination Threshold", 
-                                                                                                    "Precision-Recall Curve","Classification Report", "Lift Curve", "Gain Curve"])
-
-                                    if analysis_option == "Confusion Matrix":
-                                        cm = confusion_matrix(y_test, y_pred_best)
-                                        plt.figure(figsize=(8,3))
-                                        sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-                                        plt.title(f"Confusion Matrix for {best_model_clf}", fontsize=8)
-                                        plt.xlabel("Predicted")
-                                        plt.ylabel("Actual")
-                                        st.pyplot(plt,use_container_width=True)
-
-                                    if analysis_option == "AUC Curve" and y_proba_best is not None:
-                                        fpr, tpr, _ = roc_curve(y_test, y_proba_best)
-                                        plt.figure(figsize=(8,3))
-                                        plt.plot(fpr, tpr, color="blue", lw=2, label=f"AUC = {auc(fpr, tpr):.2f}")
-                                        plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
-                                        plt.xlabel("False Positive Rate")
-                                        plt.ylabel("True Positive Rate")
-                                        plt.title(f"AUC Curve for {best_model_clf}", fontsize=8)
-                                        plt.legend(loc="lower right")
-                                        st.pyplot(plt,use_container_width=True)
-
-                                    if analysis_option == "Discrimination Threshold" and y_proba_best is not None:
-                                        precisions, recalls, thresholds = precision_recall_curve(y_test, y_proba_best)
-                                        plt.figure(figsize=(8,3))
-                                        plt.plot(thresholds, precisions[:-1], "b--", label="Precision")
-                                        plt.plot(thresholds, recalls[:-1], "g-", label="Recall")
-                                        plt.xlabel("Threshold")
-                                        plt.title(f"Discrimination Threshold for {best_model_clf}", fontsize=8)
-                                        plt.legend(loc="best")
-                                        st.pyplot(plt,use_container_width=True)
-
-                                    if analysis_option == "Precision-Recall Curve" and y_proba_best is not None:
-                                        precisions, recalls, _ = precision_recall_curve(y_test, y_proba_best)
-                                        plt.figure(figsize=(8,3))
-                                        plt.plot(recalls, precisions, color="purple", lw=2)
-                                        plt.xlabel("Recall")
-                                        plt.ylabel("Precision")
-                                        plt.title(f"Precision-Recall Curve for {best_model_clf}", fontsize=8)
-                                        st.pyplot(plt,use_container_width=True)
-
-                                    if analysis_option == "Classification Report":
-                                        report = classification_report(y_test, y_pred_best, output_dict=True)
-                                        report_df = pd.DataFrame(report).transpose()
-                                        st.dataframe(report_df,use_container_width=True)
-
-                                    if analysis_option == "Lift Curve" and y_proba_best is not None:
-                                        skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
-                                        plt.title(f"Lift Curve for {best_model_clf}", fontsize=8)
-                                        st.pyplot(plt,use_container_width=True)
-
-                                    if analysis_option == "Gain Curve" and y_proba_best is not None:
-                                        skplt.metrics.plot_cumulative_gain(y_test, best_model.predict_proba(X_test))
-                                        plt.title(f"Gain Curve for {best_model_clf}", fontsize=8)
-                                        st.pyplot(plt,use_container_width=True) 
 
                     #----------------------------------------
                     elif clf_typ == 'MultiClass':
@@ -1097,6 +1034,68 @@ else:
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab6:
+               
+                if ml_type == 'Classification':        
+                    
+                    if clf_typ == 'Binary':
+                        col1, col2 = st.columns(2)  
+                        with col1:
+                                    
+                            with st.container():
+                                 
+                                    cm = confusion_matrix(y_test, y_pred_best)
+                                    plt.figure(figsize=(8,3))
+                                    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+                                    plt.title(f"Confusion Matrix for {best_model_clf}", fontsize=8)
+                                    plt.xlabel("Predicted")
+                                    plt.ylabel("Actual")
+                                    st.pyplot(plt,use_container_width=True)
+
+                                    fpr, tpr, _ = roc_curve(y_test, y_proba_best)
+                                    plt.figure(figsize=(8,3))
+                                    plt.plot(fpr, tpr, color="blue", lw=2, label=f"AUC = {auc(fpr, tpr):.2f}")
+                                    plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
+                                    plt.xlabel("False Positive Rate")
+                                    plt.ylabel("True Positive Rate")
+                                    plt.title(f"AUC Curve for {best_model_clf}", fontsize=8)
+                                    plt.legend(loc="lower right")
+                                    st.pyplot(plt,use_container_width=True)
+
+                                    precisions, recalls, thresholds = precision_recall_curve(y_test, y_proba_best)
+                                    plt.figure(figsize=(8,3))
+                                    plt.plot(thresholds, precisions[:-1], "b--", label="Precision")
+                                    plt.plot(thresholds, recalls[:-1], "g-", label="Recall")
+                                    plt.xlabel("Threshold")
+                                    plt.title(f"Discrimination Threshold for {best_model_clf}", fontsize=8)
+                                    plt.legend(loc="best")
+                                    st.pyplot(plt,use_container_width=True)
+
+                        with col2:
+                                    
+                            with st.container():
+                                    
+                                    precisions, recalls, _ = precision_recall_curve(y_test, y_proba_best)
+                                    plt.figure(figsize=(8,3))
+                                    plt.plot(recalls, precisions, color="purple", lw=2)
+                                    plt.xlabel("Recall")
+                                    plt.ylabel("Precision")
+                                    plt.title(f"Precision-Recall Curve for {best_model_clf}", fontsize=8)
+                                    st.pyplot(plt,use_container_width=True)
+
+                                    report = classification_report(y_test, y_pred_best, output_dict=True)
+                                    report_df = pd.DataFrame(report).transpose()
+                                    st.dataframe(report_df,use_container_width=True)
+
+                                    skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
+                                    plt.title(f"Lift Curve for {best_model_clf}", fontsize=8)
+                                    st.pyplot(plt,use_container_width=True)
+
+                                    skplt.metrics.plot_cumulative_gain(y_test, best_model.predict_proba(X_test))
+                                    plt.title(f"Gain Curve for {best_model_clf}", fontsize=8)
+                                    st.pyplot(plt,use_container_width=True) 
+
+#---------------------------------------------------------------------------------------------------------------------------------
+            with tab7:
                
                 if ml_type == 'Classification':        
                         
