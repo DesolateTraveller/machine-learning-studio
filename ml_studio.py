@@ -1068,6 +1068,14 @@ else:
                                     plt.legend(loc="lower right")
                                     st.pyplot(plt,use_container_width=True)
 
+                                    precisions, recalls, _ = precision_recall_curve(y_test, y_proba_best)
+                                    plt.figure(figsize=(8,3))
+                                    plt.plot(recalls, precisions, color="purple", lw=2)
+                                    plt.xlabel("Recall")
+                                    plt.ylabel("Precision")
+                                    plt.title(f"Precision-Recall Curve for {best_model_clf}", fontsize=8)
+                                    st.pyplot(plt,use_container_width=True)
+
                                     precisions, recalls, thresholds = precision_recall_curve(y_test, y_proba_best)
                                     plt.figure(figsize=(8,3))
                                     plt.plot(thresholds, precisions[:-1], "b--", label="Precision")
@@ -1081,14 +1089,6 @@ else:
                                     
                             with st.container():
                                     
-                                    precisions, recalls, _ = precision_recall_curve(y_test, y_proba_best)
-                                    plt.figure(figsize=(8,3))
-                                    plt.plot(recalls, precisions, color="purple", lw=2)
-                                    plt.xlabel("Recall")
-                                    plt.ylabel("Precision")
-                                    plt.title(f"Precision-Recall Curve for {best_model_clf}", fontsize=8)
-                                    st.pyplot(plt,use_container_width=True)
-
                                     plt.figure(figsize=(8,3))
                                     skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
                                     plt.title(f"Lift Curve for {best_model_clf}", fontsize=8)
