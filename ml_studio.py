@@ -1038,16 +1038,31 @@ else:
                 if ml_type == 'Classification':        
                     
                     if clf_typ == 'Binary':
-                        #st.divider()
-                        
+
                         col1, col2 = st.columns(2)  
                         with col1:
-                                    
-                            with st.container():
-                                    
+                            with st.container():     
+                                                           
                                     report = classification_report(y_test, y_pred_best, output_dict=True)
                                     report_df = pd.DataFrame(report).transpose()
                                     st.dataframe(report_df,use_container_width=True)
+
+                        with col2:
+                            with st.container():  
+
+                                    cm = confusion_matrix(y_test, y_pred_best)
+                                    plt.figure(figsize=(8,3))
+                                    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
+                                    plt.title(f"Confusion Matrix for {best_model_clf}", fontsize=8)
+                                    plt.xlabel("Predicted")
+                                    plt.ylabel("Actual")
+                                    st.pyplot(plt,use_container_width=True)
+
+                        st.divider()           
+                        
+                        col1, col2 = st.columns(2)  
+                        with col1: 
+                            with st.container():
                                     
                                     fpr, tpr, _ = roc_curve(y_test, y_proba_best)
                                     plt.figure(figsize=(8,3))
@@ -1077,16 +1092,7 @@ else:
                                     st.pyplot(plt,use_container_width=True)
 
                         with col2:
-                                    
                             with st.container():
-
-                                    cm = confusion_matrix(y_test, y_pred_best)
-                                    plt.figure(figsize=(8,3))
-                                    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-                                    plt.title(f"Confusion Matrix for {best_model_clf}", fontsize=8)
-                                    plt.xlabel("Predicted")
-                                    plt.ylabel("Actual")
-                                    st.pyplot(plt,use_container_width=True)
 
                                     plt.figure(figsize=(8,3))
                                     skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
