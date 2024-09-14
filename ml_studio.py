@@ -391,7 +391,16 @@ else:
                 col4.metric('**categorical variables**', len(df.select_dtypes(include=['object']).columns), help='number of categorical variables')
                 
                 col5.metric('**Missing values**', df.isnull().sum().sum(), help='Total missing values in the dataset')
-                col6.metric('**Unique categorical values**', sum(df.select_dtypes(include=['object']).nunique()), help='Sum of unique values in categorical variables')
+                #col6.metric('**Unique categorical values**', sum(df.select_dtypes(include=['object']).nunique()), help='Sum of unique values in categorical variables')
+                col6.metric('**Target Variable**', target_variable, help='Selected target variable')
+
+                # Determine if it's a binary or multiclass classification
+                unique_vals = df[target_variable].nunique()
+                if unique_vals == 2:
+                    target_type = "Binary"
+                else:
+                    target_type = "Multiclass"
+                col7.metric('**Type of Target Variable**', target_type, help='Classification problem type (binary/multiclass)')
                 
                 #st.divider()           
 
