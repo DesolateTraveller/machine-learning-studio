@@ -755,7 +755,7 @@ else:
                                         st.info(f"The best model is: **{best_model_clf}**")
 
                     #----------------------------------------
-                    elif clf_typ == 'MultiClass':
+                    elif clf_typ == target_type:
                             
                             col1, col2 = st.columns((0.4,0.6))  
                             with col1:
