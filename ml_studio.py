@@ -722,10 +722,10 @@ else:
             #----------------------------------------                 
                 if ml_type == 'Classification': 
 
-                    clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
+                    #clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
 
                     #----------------------------------------
-                    if clf_typ == target_type:
+                    if target_type == "Binary":
                         #if st.sidebar.button("Submit"):
 
                             col1, col2 = st.columns((0.4,0.6))  
@@ -755,7 +755,7 @@ else:
                                         st.info(f"The best model is: **{best_model_clf}**")
 
                     #----------------------------------------
-                    elif clf_typ == target_type:
+                    elif target_type == "MultiClass":
                             
                             col1, col2 = st.columns((0.4,0.6))  
                             with col1:
@@ -915,7 +915,7 @@ else:
                
                 if ml_type == 'Classification':        
                     
-                    if clf_typ == 'Binary':
+                    if target_type == 'Binary':
 
                         col1, col2 = st.columns(2)  
                         with col1:
@@ -982,7 +982,7 @@ else:
                                     plt.title(f"Gain Curve for {best_model_clf}", fontsize=8)
                                     st.pyplot(plt,use_container_width=True) 
 
-                    if clf_typ == 'MultiClass':
+                    if target_type == 'MultiClass':
 
                         col1, col2 = st.columns(2)  
                         with col1:
