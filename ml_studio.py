@@ -752,7 +752,7 @@ else:
                                         best_model.fit(X_train, y_train)
                                         y_pred_best = best_model.predict(X_test)
                                         y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None                                        
-                                        st.info(f"The best model is: **{best_model_clf}**")
+                                        st.sidebar.info(f"The best model is: **{best_model_clf}**")
 
                     #----------------------------------------
                     elif target_type == "MultiClass":
@@ -781,7 +781,7 @@ else:
                                         best_model.fit(X_train, y_train)
                                         y_pred_best = best_model.predict(X_test)
                                         y_proba_best = best_model.predict_proba(X_test) if hasattr(best_model, "predict_proba") else None
-                                        st.info(f"The best model is : **{best_model_clf}**")
+                                        st.sidebar.info(f"The best model is : **{best_model_clf}**")
 
                     #----------------------------------------                    
                     st.subheader("Importance",divider='blue')
@@ -837,7 +837,7 @@ else:
                                 st.divider()
                                 
                                 best_model_reg = results_df.loc[results_df['R2'].idxmax(), 'Model']
-                                st.info(f"The best model is : **{best_model_reg}**")
+                                st.sidebar.info(f"The best model is : **{best_model_reg}**")
                                 best_model = regressors[best_model_reg]
                                 y_pred_best = best_model.predict(X_test)
                                 residuals = y_test - y_pred_best    
@@ -907,7 +907,7 @@ else:
                                 st.divider()
                                 
                                 best_model_clust = results_df.loc[results_df['Silhouette'].idxmax(), 'Algorithm']
-                                st.info(f"The best model is : **{best_model_clust}**")
+                                st.sidebar.info(f"The best model is : **{best_model_clust}**")
                                 best_model = clustering_algorithms[best_model_clust]
 
 #---------------------------------------------------------------------------------------------------------------------------------
@@ -1130,7 +1130,7 @@ else:
                                                     ],
                                             "Value": [ml_type,
                                                     target_variable,
-                                                    clf_typ,
+                                                    target_type,
                                                     scaling_method, 
                                                     f_sel_method,
                                                     best_model_clf, 
@@ -1152,7 +1152,7 @@ else:
                             X_test_results["Actual"] = y_test
                             X_test_results["Predicted Label"] = y_pred_best
                             if y_proba_best is not None:
-                                if clf_typ == "Binary":
+                                if target_type == "Binary":
                                     X_test_results["Prediction Score"] = y_proba_best  # For binary classification, use the second column of predict_proba
                                 else:
                                     for i in range(y_proba_best.shape[1]):
