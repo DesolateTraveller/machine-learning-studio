@@ -395,13 +395,15 @@ else:
                 col6.metric('**Target Variable**', target_variable, help='Selected target variable')
 
                 # Determine if it's a binary or multiclass classification
-                unique_vals = df[target_variable].nunique()
-                if unique_vals == 2:
-                    target_type = "Binary"
+                if ml_type == 'Classification':
+                    unique_vals = df[target_variable].nunique()
+                    if unique_vals == 2:
+                        target_type = "Binary"
+                    else:
+                        target_type = "Multiclass"
+                    col7.metric('**Type of Target Variable**', target_type, help='Classification problem type (binary/multiclass)')
                 else:
-                    target_type = "Multiclass"
-                col7.metric('**Type of Target Variable**', target_type, help='Classification problem type (binary/multiclass)')
-                
+                    None
                 #st.divider()           
 
                 stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
