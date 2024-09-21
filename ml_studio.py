@@ -278,9 +278,10 @@ def calculate_metrics(y_true, y_pred):
     mse = mean_squared_error(y_true, y_pred)
     rmse = np.sqrt(mse)
     r2 = r2_score(y_true, y_pred)
-    rmsle = np.sqrt(mean_squared_log_error(y_true, y_pred)) if np.all(y_pred > 0) else None
+    #rmsle = np.sqrt(mean_squared_log_error(y_true, y_pred)) if np.all(y_pred > 0) else None
     mape_value = mape(y_true, y_pred)
-    return mae, mse, rmse, r2, rmsle, mape_value
+    return mae, mse, rmse, r2,  mape_value
+    #rmsle,
 
 # Define regressors
 regressors = {
