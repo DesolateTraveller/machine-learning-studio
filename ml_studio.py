@@ -829,7 +829,7 @@ else:
                                             "MSE": round(mse, 2),
                                             "RMSE": round(rmse, 2),
                                             "R2": round(r2, 2),
-                                            "RMSLE": round(rmsle, 2) if rmsle else "N/A",
+                                            #"RMSLE": round(rmsle, 2) if rmsle else "N/A",
                                             "MAPE": round(mape_value, 2)})
                             
                                 results_df = pd.DataFrame(results)
