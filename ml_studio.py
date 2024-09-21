@@ -404,7 +404,7 @@ else:
                         target_type = "Multiclass"
                     col7.metric('**Type of Target Variable**', target_type, help='Classification problem type (binary/multiclass)')
                 else:
-                    col7.metric('**Type of Target Variable**', "None",)
+                    col7.metric('**Type of Target Variable**', "N/A",)
                 #st.divider()           
 
                 stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
