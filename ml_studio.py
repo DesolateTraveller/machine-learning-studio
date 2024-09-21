@@ -822,7 +822,7 @@ else:
                                 for name, model in regressors.items():
                                     model.fit(X_train, y_train)
                                     y_pred = model.predict(X_test)
-                                    mae, mse, rmse, r2, rmsle, mape_value = calculate_metrics(y_test, y_pred)
+                                    mae, mse, rmse, r2, mape_value = calculate_metrics(y_test, y_pred) #rmsle
     
                                     results.append({"Model": name,
                                             "MAE": round(mae, 2),
