@@ -710,7 +710,7 @@ else:
 
                 stats_expander = st.sidebar.expander("**:blue[Dataset Splitting Criteria]**", expanded=False)
                 with stats_expander:
-                        train_size = st.slider("**Test Size (as %)**", 10, 90, 70, 5)
+                        train_size = st.slider("**Train Size (as %)**", 10, 90, 70, 5)
                         test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
