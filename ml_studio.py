@@ -253,24 +253,6 @@ def evaluate_model(model, X_train, X_test, y_train, y_test):
         "Kappa": cohen_kappa_score(y_test, y_pred),
         "MCC": matthews_corrcoef(y_test, y_pred)
     }
-models = {
-    "Logistic Regression": LogisticRegression(),
-    "Ridge Classifier": RidgeClassifier(),
-    "Linear Discriminant Analysis": LinearDiscriminantAnalysis(),
-    "Random Forest Classifier": RandomForestClassifier(),
-    #"Naive Bayes": GaussianNB(),
-    #"CatBoost Classifier": CatBoostClassifier(verbose=0),
-    "Gradient Boosting Classifier": GradientBoostingClassifier(),
-    "Ada Boost Classifier": AdaBoostClassifier(),
-    "Extra Trees Classifier": ExtraTreesClassifier(),
-    #"Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis(),
-    "Light Gradient Boosting Machine": LGBMClassifier(),
-    "K Neighbors Classifier": KNeighborsClassifier(),
-    "Decision Tree Classifier": DecisionTreeClassifier(),
-    #"Extreme Gradient Boosting": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
-    "Dummy Classifier": DummyClassifier(strategy="most_frequent"),
-    #"SVM - Linear Kernel": SVC(kernel="linear", probability=True)
-    }
 
 #----------------------------------------
 def calculate_metrics(y_true, y_pred):
@@ -278,10 +260,9 @@ def calculate_metrics(y_true, y_pred):
     mse = mean_squared_error(y_true, y_pred)
     rmse = np.sqrt(mse)
     r2 = r2_score(y_true, y_pred)
-    #rmsle = np.sqrt(mean_squared_log_error(y_true, y_pred)) if np.all(y_pred > 0) else None
+    rmsle = np.sqrt(mean_squared_log_error(y_true, y_pred)) if np.all(y_pred > 0) else None
     mape_value = mape(y_true, y_pred)
-    return mae, mse, rmse, r2,  mape_value
-    #rmsle,
+    return mae, mse, rmse, r2, rmsle, mape_value
 
 # Define regressors
 regressors = {
@@ -404,7 +385,7 @@ else:
                         target_type = "Multiclass"
                     col7.metric('**Type of Target Variable**', target_type, help='Classification problem type (binary/multiclass)')
                 else:
-                    col7.metric('**Type of Target Variable**', "N/A",)
+                    col7.metric('**Type of Target Variable**', "None",)
                 #st.divider()           
 
                 stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
@@ -711,7 +692,7 @@ else:
 
                 stats_expander = st.sidebar.expander("**:blue[Dataset Splitting Criteria]**", expanded=False)
                 with stats_expander:
-                        train_size = st.slider("**Train Size (as %)**", 10, 90, 70, 5)
+                        train_size = st.slider("**Test Size (as %)**", 10, 90, 70, 5)
                         test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
@@ -724,7 +705,34 @@ else:
                 if ml_type == 'Classification': 
 
                     #clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
+                    stats_expander = st.sidebar.expander("**:blue[Hyperparameters]**", expanded=False)
+                    with stats_expander:
+                        n_estimators = st.slider("Number of Estimators", min_value=10, max_value=200, step=10, value=100)
+                        max_depth = st.slider("Max Depth", min_value=1, max_value=20, step=1, value=10)    
+                        min_samples_split = st.slider("Min Samples Split", min_value=2, max_value=10, step=1, value=2)
+                        learning_rate = st.number_input("**Learning rate**", .01, .1, step =.01, key ='learning_rate')
+                        C = st.slider("C (Regularization)", min_value=0.01, max_value=10.0, step=0.01, value=1.0)   
+                        kernel = st.selectbox("Kernel", ["linear", "poly", "rbf", "sigmoid"])
+                        gamma = st.selectbox("Gamma", ["scale", "auto"])
 
+                    models = {
+                        "Logistic Regression": LogisticRegression(),
+                        "Ridge Classifier": RidgeClassifier(),
+                        "Linear Discriminant Analysis": LinearDiscriminantAnalysis(),
+                        "Random Forest Classifier": RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, min_samples_split=min_samples_split),
+                        #"Naive Bayes": GaussianNB(),
+                        #"CatBoost Classifier": CatBoostClassifier(verbose=0),
+                        "Gradient Boosting Classifier": GradientBoostingClassifier(n_estimators=n_estimators, learning_rate=learning_rate),
+                        "Ada Boost Classifier": AdaBoostClassifier(),
+                        "Extra Trees Classifier": ExtraTreesClassifier(),
+                        #"Quadratic Discriminant Analysis": QuadraticDiscriminantAnalysis(),
+                        "Light Gradient Boosting Machine": LGBMClassifier(),
+                        "K Neighbors Classifier": KNeighborsClassifier(),
+                        "Decision Tree Classifier": DecisionTreeClassifier(),
+                        #"Extreme Gradient Boosting": XGBClassifier(use_label_encoder=False, eval_metric='logloss'),
+                        "Dummy Classifier": DummyClassifier(strategy="most_frequent"),
+                        #"SVM - Linear Kernel": SVC(kernel="linear", probability=True)
+                        }
                     #----------------------------------------
                     if target_type == "Binary":
                         #if st.sidebar.button("Submit"):
@@ -822,14 +830,14 @@ else:
                                 for name, model in regressors.items():
                                     model.fit(X_train, y_train)
                                     y_pred = model.predict(X_test)
-                                    mae, mse, rmse, r2, mape_value = calculate_metrics(y_test, y_pred) #rmsle
+                                    mae, mse, rmse, r2, rmsle, mape_value = calculate_metrics(y_test, y_pred)
     
                                     results.append({"Model": name,
                                             "MAE": round(mae, 2),
                                             "MSE": round(mse, 2),
                                             "RMSE": round(rmse, 2),
                                             "R2": round(r2, 2),
-                                            #"RMSLE": round(rmsle, 2) if rmsle else "N/A",
+                                            "RMSLE": round(rmsle, 2) if rmsle else "N/A",
                                             "MAPE": round(mape_value, 2)})
                             
                                 results_df = pd.DataFrame(results)
