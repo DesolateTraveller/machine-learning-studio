@@ -710,7 +710,7 @@ else:
                         n_estimators = st.slider("Number of Estimators", min_value=10, max_value=200, step=10, value=100)
                         max_depth = st.slider("Max Depth", min_value=1, max_value=20, step=1, value=10)    
                         min_samples_split = st.slider("Min Samples Split", min_value=2, max_value=10, step=1, value=2)
-                        learning_rate = st.number_input("**Learning rate**", .01, .1, step =.01, key ='learning_rate')
+                        learning_rate = st.number_input("Learning rate", .01, .1, step =.01, key ='learning_rate')
                         C = st.slider("C (Regularization)", min_value=0.01, max_value=10.0, step=0.01, value=1.0)   
                         kernel = st.selectbox("Kernel", ["linear", "poly", "rbf", "sigmoid"])
                         gamma = st.selectbox("Gamma", ["scale", "auto"])
@@ -754,14 +754,28 @@ else:
                                         best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
                                         st.dataframe(results_df,hide_index=True, use_container_width=True)
 
-                                        st.divider()
-
                                         best_model_clf = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
                                         best_model = models[best_model_clf]
                                         best_model.fit(X_train, y_train)
                                         y_pred_best = best_model.predict(X_test)
                                         y_proba_best = best_model.predict_proba(X_test)[:, 1] if hasattr(best_model, "predict_proba") else None                                        
                                         st.sidebar.info(f"Best model : **{best_model_clf}**")
+
+                            with col2:
+                                    
+                                    st.subheader("Selected Hyperparameters for Best Model",divider='blue')
+                                    if isinstance(best_model, LogisticRegression):
+                                        st.write(f"**C**: {C}")
+                                    elif isinstance(best_model, RandomForestClassifier):
+                                        st.write(f"**n_estimators**: {n_estimators}")
+                                        st.write(f"**max_depth**: {max_depth}")
+                                        st.write(f"**min_samples_split**: {min_samples_split}")
+                                    elif isinstance(best_model, GradientBoostingClassifier):
+                                        st.write(f"**n_estimators**: {n_estimators}")
+                                        st.write(f"**learning_rate**: {learning_rate}")
+                                    elif isinstance(best_model, LGBMClassifier):
+                                        st.write(f"**n_estimators**: {n_estimators}")
+                                        st.write(f"**learning_rate**: {learning_rate}")
 
                     #----------------------------------------
                     elif target_type == "MultiClass":
@@ -783,8 +797,6 @@ else:
                                         best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
                                         st.dataframe(results_df,hide_index=True, use_container_width=True)
 
-                                        st.divider()
-
                                         best_model_clf = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
                                         best_model = models[best_model_clf]
                                         best_model.fit(X_train, y_train)
@@ -793,6 +805,7 @@ else:
                                         st.sidebar.info(f"Best model : **{best_model_clf}**")
 
                     #----------------------------------------                    
+                    st.divider()
                     st.subheader("Importance",divider='blue')
 
                     if best_model_clf == "Logistic Regression":
