@@ -714,9 +714,11 @@ else:
                         C = st.slider("C (Regularization)", min_value=0.01, max_value=10.0, step=0.01, value=1.0)   
                         kernel = st.selectbox("Kernel", ["linear", "poly", "rbf", "sigmoid"])
                         gamma = st.selectbox("Gamma", ["scale", "auto"])
+                        solver= st.radio("**Solver**", ('liblinear', 'lbfgs'))
+                        penalty = st.selectbox("Penalty", ["l1", "l2", "elasticnet"])
 
                     models = {
-                        "Logistic Regression": LogisticRegression(),
+                        "Logistic Regression": LogisticRegression(penalty=penalty, C=C, solver=solver),
                         "Ridge Classifier": RidgeClassifier(),
                         "Linear Discriminant Analysis": LinearDiscriminantAnalysis(),
                         "Random Forest Classifier": RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, min_samples_split=min_samples_split),
@@ -763,7 +765,7 @@ else:
 
                             with col2:
                                     
-                                    st.subheader("Selected Hyperparameters for Best Model",divider='blue')
+                                    st.subheader("Hyperparameters",divider='blue')
                                     if isinstance(best_model, LogisticRegression):
                                         st.write(f"**C**: {C}")
                                     elif isinstance(best_model, RandomForestClassifier):
