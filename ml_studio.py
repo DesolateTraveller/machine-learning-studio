@@ -697,16 +697,8 @@ else:
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
 
-                X = df[selected_features]
-                y = df[target_variable]
-                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
-
-            #----------------------------------------                 
-                if ml_type == 'Classification': 
-
-                    #clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
-                    stats_expander = st.sidebar.expander("**:blue[Hyperparameters]**", expanded=False)
-                    with stats_expander:
+                stats_expander = st.sidebar.expander("**:blue[Hyperparameters]**", expanded=False)
+                with stats_expander:
                         n_estimators = st.slider("Number of Estimators", min_value=10, max_value=200, step=10, value=100)
                         max_depth = st.slider("Max Depth", min_value=1, max_value=20, step=1, value=10)    
                         min_samples_split = st.slider("Min Samples Split", min_value=2, max_value=10, step=1, value=2)
@@ -717,6 +709,14 @@ else:
                         solver= st.radio("**Solver**", ('liblinear', 'lbfgs'))
                         penalty = st.selectbox("Penalty", ["l1", "l2", "elasticnet"])
 
+                X = df[selected_features]
+                y = df[target_variable]
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=random_state)
+
+            #----------------------------------------                 
+                if ml_type == 'Classification': 
+
+                    #clf_typ = st.sidebar.selectbox("**:blue[Choose the type of target]**", ["Binary", "MultiClass"]) 
                     models = {
                         "Logistic Regression": LogisticRegression(penalty=penalty, C=C, solver=solver),
                         "Ridge Classifier": RidgeClassifier(),
@@ -805,6 +805,22 @@ else:
                                         y_pred_best = best_model.predict(X_test)
                                         y_proba_best = best_model.predict_proba(X_test) if hasattr(best_model, "predict_proba") else None
                                         st.sidebar.info(f"Best model : **{best_model_clf}**")
+
+                            with col2:
+                                    
+                                    st.subheader("Hyperparameters",divider='blue')
+                                    if isinstance(best_model, LogisticRegression):
+                                        st.write(f"**C**: {C}")
+                                    elif isinstance(best_model, RandomForestClassifier):
+                                        st.write(f"**n_estimators**: {n_estimators}")
+                                        st.write(f"**max_depth**: {max_depth}")
+                                        st.write(f"**min_samples_split**: {min_samples_split}")
+                                    elif isinstance(best_model, GradientBoostingClassifier):
+                                        st.write(f"**n_estimators**: {n_estimators}")
+                                        st.write(f"**learning_rate**: {learning_rate}")
+                                    elif isinstance(best_model, LGBMClassifier):
+                                        st.write(f"**n_estimators**: {n_estimators}")
+                                        st.write(f"**learning_rate**: {learning_rate}")
 
                     #----------------------------------------                    
                     st.divider()
