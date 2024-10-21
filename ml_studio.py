@@ -474,6 +474,8 @@ else:
                         categorical_strategies = ['constant','most_frequent']
                         selected_numerical_strategy = st.selectbox("**Missing value treatment : Numerical**", numerical_strategies)
                         selected_categorical_strategy = st.selectbox("**Missing value treatment : Categorical**", categorical_strategies) 
+                        st.divider() 
+                        treatment_option = st.selectbox("**:blue[Select a outlier treatment option:]**", ["Cap Outliers","Drop Outliers", ])
 
                     st.subheader("Missing Values",divider='blue')
                     col1, col2 = st.columns((0.2,0.8))
@@ -505,7 +507,6 @@ else:
                             st.table(cleaned_df[cleaned_df.duplicated()].head(2))
 
                     st.subheader("Outliers",divider='blue')
-                
                     if missing_values.empty:
                         df = df.copy()
                     else:
@@ -514,10 +515,7 @@ else:
                     col1, col2 = st.columns((0.2,0.8))
 
                     with col1:
-                        # Check for outliers
                         outliers = check_outliers(df)
-
-                        # Display results
                         if outliers.empty:
                             st.success("No outliers found!")
                         else:
@@ -526,14 +524,10 @@ else:
                             st.table(outliers)
                     
                     with col2:
-                        # Treatment options
-                        treatment_option = st.sidebar.selectbox("**:blue[Select a treatment option:]**", ["Cap Outliers","Drop Outliers", ])
-                            # Perform treatment based on user selection
                         if treatment_option == "Drop Outliers":
                                 df = df[~outliers['Column'].isin(outliers[outliers['Number of Outliers'] > 0]['Column'])]
                                 st.success("Outliers dropped. Preview of the cleaned dataset:")
                                 st.write(df.head())
-
                         elif treatment_option == "Cap Outliers":
                                 df = df.copy()
                                 for column in outliers['Column'].unique():
@@ -541,25 +535,37 @@ else:
                                     Q3 = df[column].quantile(0.75)
                                     IQR = Q3 - Q1
                                     threshold = 1.5
-
-                                    # Cap outliers
                                     df[column] = np.where(df[column] < Q1 - threshold * IQR, Q1 - threshold * IQR, df[column])
                                     df[column] = np.where(df[column] > Q3 + threshold * IQR, Q3 + threshold * IQR, df[column])
-
                                     st.success("Outliers capped. Preview of the capped dataset:")
                                     st.write(df.head())
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab4:
 
-                    #st.sidebar.info(":blue-background[Feature Engineering]")
+                    stats_expander = st.sidebar.expander("**:blue[Transformation Criteria]**", expanded=False)
+                    with stats_expander: 
+                        scaling_reqd = st.selectbox("**:blue[Requirement of scalling]**", ["no", "yes"])
+                        if scaling_reqd == 'yes':                       
+                            scaling_method = st.selectbox("**:blue[Choose a scaling method]**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
+                        if scaling_reqd == 'no':   
+                            scaling_method = 'N/A'
+                        st.divider()
+                        f_sel_method = ['VIF', 'Selectkbest','VarianceThreshold']
+                        f_sel_method = st.selectbox("**:blue[Choose a feature selection method]**", f_sel_method)
+                        if f_sel_method == 'Selectkbest':
+                            method = st.selectbox("**Select kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
+                            num_features_to_select = st.slider("**Select Number of Independent Features**", min_value=1, max_value=len(df.columns), value=5)
+                        if f_sel_method == 'VarianceThreshold':
+                            threshold = st.number_input("Variance Threshold", min_value=0.0, step=0.01, value=0.0)  
+
                     col1, col2 = st.columns((0.3,0.7))  
 
                     with col1:
                         
                         st.subheader("Feature Encoding",divider='blue') 
-                        categorical_columns = df.select_dtypes(include=['object']).columns
 
+                        categorical_columns = df.select_dtypes(include=['object']).columns
                         if len(categorical_columns) == 0:
                             st.info("There are no categorical variables in the dataset.Proceed with the original DataFrame")
                             df = df.copy()
@@ -572,33 +578,26 @@ else:
                                     print(pd.Categorical(df[feature].unique()).codes)
                                     df[feature] = pd.Categorical(df[feature]).codes
                             st.info("Categorical variables are encoded")
-
                         csv = df.to_csv(index=False).encode('utf-8')
                         st.download_button(label="📥 Download Encoded Data (for review)", data=csv, file_name='encoded_data.csv', mime='text/csv')
 
                         st.divider()
 
                         st.subheader("Feature Scaling",divider='blue')
-
-                        scaling_method = st.sidebar.selectbox("**:blue[Choose a scaling method]**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
-                        df = scale_features(df,scaling_method)
-                        st.info("Data is scaled for further treatment")
+                        if scaling_reqd == 'yes':     
+                            df = scale_features(df,scaling_method)
+                            st.info("Data is scaled for further treatment")
+                            csv = df.to_csv(index=False).encode('utf-8')
+                            st.download_button(label="📥 Download Scaled Data (for review)", data=csv, file_name='scaled_data.csv', mime='text/csv')
+                        else:
+                            st.info("Data is not scaled, orginal data is considered for further treatment")
                         #st.dataframe(df.head())
-
-                        csv = df.to_csv(index=False).encode('utf-8')
-                        st.download_button(label="📥 Download Scaled Data (for review)", data=csv, file_name='scaled_data.csv', mime='text/csv')
 
                     #----------------------------------------
 
                     with col2:   
 
-                        st.subheader("Feature Selection",divider='blue')
-
-                        f_sel_method = ['VIF', 
-                                        'Selectkbest',
-                                        'VarianceThreshold']
-                        f_sel_method = st.sidebar.selectbox("**:blue[Choose a feature selection method]**", f_sel_method)
-                        #st.divider()                    
+                        st.subheader("Feature Selection",divider='blue')                                         
 
                         if f_sel_method == 'VIF':
 
@@ -619,22 +618,15 @@ else:
                         if f_sel_method == 'Selectkbest':
                   
                             st.markdown("**Method 2 : Selectkbest**")          
-                            method = st.selectbox("**Select kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
-                            num_features_to_select = st.slider("**Select Number of Independent Features**", min_value=1, max_value=len(df.columns), value=5)
-
+                            
                             if "f_classif" in method:
                                 feature_selector = SelectKBest(score_func=f_classif, k=num_features_to_select)
-
                             elif "f_regression" in method:
                                 feature_selector = SelectKBest(score_func=f_regression, k=num_features_to_select)
-
                             elif "chi2" in method:
-                                # Make sure the data is non-negative for chi2
                                 df[df < 0] = 0
                                 feature_selector = SelectKBest(score_func=chi2, k=num_features_to_select)
-
                             elif "mutual_info_classif" in method:
-                                # Make sure the data is non-negative for chi2
                                 df[df < 0] = 0
                                 feature_selector = SelectKBest(score_func=mutual_info_classif, k=num_features_to_select)
 
@@ -646,14 +638,13 @@ else:
                             selected_features_kbest = X.columns[selected_feature_indices]
                             st.markdown("**Selected Features (considering values in 'recursive feature elimination' method)**")
                             st.write("No of features before feature-selection :",df.shape[1])
-                            st.write("No of features after feature-selection :",len(selected_features))
+                            st.write("No of features after feature-selection :",len(selected_features_kbest))
                             st.table(selected_features_kbest)
                             selected_features = selected_features_kbest.copy()
 
                         if f_sel_method == 'VarianceThreshold':
 
                             st.markdown("**Method 3 : VarianceThreshold**")  
-                            threshold = st.number_input("Variance Threshold", min_value=0.0, step=0.01, value=0.0)  
 
                             X = df.drop(columns = target_variable)  
                             y = df[target_variable]
@@ -664,14 +655,11 @@ else:
                             selected_features_vth = X.columns[selected_feature_indices]          
                             st.markdown("**Selected Features (considering values in 'variance threshold' method)**") 
                             st.write("No of features before feature-selection :",df.shape[1])
-                            st.write("No of features after feature-selection :",len(selected_features))                   
+                            st.write("No of features after feature-selection :",len(selected_features_vth))                   
                             st.table(selected_features_vth)
                             selected_features = selected_features_vth.copy()
 
                     #----------------------------------------
-
-                    #with col3:                
-                    #st.subheader("Dataset Splitting Criteria",divider='blue')
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab5:
@@ -681,7 +669,7 @@ else:
 
                 stats_expander = st.sidebar.expander("**:blue[Dataset Splitting Criteria]**", expanded=False)
                 with stats_expander:
-                        train_size = st.slider("**Test Size (as %)**", 10, 90, 70, 5)
+                        train_size = st.slider("**Train Size (as %)**", 10, 90, 70, 5)
                         test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
