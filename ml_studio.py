@@ -552,6 +552,8 @@ else:
                             scaling_method = 'N/A'
                         st.divider()
                         f_sel_method = ['VIF', 'Selectkbest','VarianceThreshold']
+                        if f_sel_method == 'VIF':
+                            vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)
                         f_sel_method = st.selectbox("**Choose a feature selection method**", f_sel_method)
                         if f_sel_method == 'Selectkbest':
                             method = st.selectbox("**Select kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
@@ -602,7 +604,6 @@ else:
                         if f_sel_method == 'VIF':
 
                             st.markdown("**Method 1 : VIF**")
-                            vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)
 
                             st.markdown(f"Iterative VIF Thresholding (Threshold: {vif_threshold})")
                             X = df.drop(columns = target_variable)
@@ -740,19 +741,33 @@ else:
 
                             with col2:
                                     
-                                    st.subheader("Hyperparameters",divider='blue')
-                                    if isinstance(best_model, LogisticRegression):
-                                        st.write(f"**C**: {C}")
-                                    elif isinstance(best_model, RandomForestClassifier):
-                                        st.write(f"**n_estimators**: {n_estimators}")
-                                        st.write(f"**max_depth**: {max_depth}")
-                                        st.write(f"**min_samples_split**: {min_samples_split}")
-                                    elif isinstance(best_model, GradientBoostingClassifier):
-                                        st.write(f"**n_estimators**: {n_estimators}")
-                                        st.write(f"**learning_rate**: {learning_rate}")
-                                    elif isinstance(best_model, LGBMClassifier):
-                                        st.write(f"**n_estimators**: {n_estimators}")
-                                        st.write(f"**learning_rate**: {learning_rate}")
+                                with st.container():
+
+                                    st.subheader("Graph",divider='blue')
+                                    metrics_df = results_df.melt(id_vars="Model", value_vars=["Accuracy", "AUC", "Recall", "Precision", "F1 Score", "Kappa", "MCC"], var_name="Metric", value_name="Value")
+                                    plt.figure(figsize=(10,6))
+                                    sns.barplot(x="Metric", y="Value", hue="Model", data=metrics_df, palette="rocket")
+                                    plt.title("Comparison of Classification Metrics Across Models", fontsize=16)
+                                    plt.xlabel("Metric", fontsize=12)
+                                    plt.ylabel("Value", fontsize=12)
+                                    plt.xticks(rotation=45)
+                                    plt.legend(title="Model", bbox_to_anchor=(1.05,1), loc='upper left')
+                                    st.pyplot(plt, use_container_width=True)
+    
+
+                                    #st.subheader("Hyperparameters",divider='blue')
+                                    #if isinstance(best_model, LogisticRegression):
+                                        #st.write(f"**C**: {C}")
+                                    #elif isinstance(best_model, RandomForestClassifier):
+                                        #st.write(f"**n_estimators**: {n_estimators}")
+                                        #st.write(f"**max_depth**: {max_depth}")
+                                        #st.write(f"**min_samples_split**: {min_samples_split}")
+                                    #elif isinstance(best_model, GradientBoostingClassifier):
+                                        #st.write(f"**n_estimators**: {n_estimators}")
+                                        #st.write(f"**learning_rate**: {learning_rate}")
+                                    #elif isinstance(best_model, LGBMClassifier):
+                                        #st.write(f"**n_estimators**: {n_estimators}")
+                                        #st.write(f"**learning_rate**: {learning_rate}")
 
                     #----------------------------------------
                     elif target_type == "MultiClass":
@@ -782,20 +797,33 @@ else:
                                         st.sidebar.info(f"Best model : **{best_model_clf}**")
 
                             with col2:
-                                    
-                                    st.subheader("Hyperparameters",divider='blue')
-                                    if isinstance(best_model, LogisticRegression):
-                                        st.write(f"**C**: {C}")
-                                    elif isinstance(best_model, RandomForestClassifier):
-                                        st.write(f"**n_estimators**: {n_estimators}")
-                                        st.write(f"**max_depth**: {max_depth}")
-                                        st.write(f"**min_samples_split**: {min_samples_split}")
-                                    elif isinstance(best_model, GradientBoostingClassifier):
-                                        st.write(f"**n_estimators**: {n_estimators}")
-                                        st.write(f"**learning_rate**: {learning_rate}")
-                                    elif isinstance(best_model, LGBMClassifier):
-                                        st.write(f"**n_estimators**: {n_estimators}")
-                                        st.write(f"**learning_rate**: {learning_rate}")
+
+                                with st.container():
+
+                                    st.subheader("Graph",divider='blue')
+                                    metrics_df = results_df.melt(id_vars="Model", value_vars=["Accuracy", "AUC", "Recall", "Precision", "F1 Score", "Kappa", "MCC"], var_name="Metric", value_name="Value")
+                                    plt.figure(figsize=(10,6))
+                                    sns.barplot(x="Metric", y="Value", hue="Model", data=metrics_df, palette="rocket")
+                                    plt.title("Comparison of Classification Metrics Across Models", fontsize=16)
+                                    plt.xlabel("Metric", fontsize=12)
+                                    plt.ylabel("Value", fontsize=12)
+                                    plt.xticks(rotation=45)
+                                    plt.legend(title="Model", bbox_to_anchor=(1.05,1), loc='upper left')
+                                    st.pyplot(plt, use_container_width=True)
+
+                                    #st.subheader("Hyperparameters",divider='blue')
+                                    #if isinstance(best_model, LogisticRegression):
+                                        #st.write(f"**C**: {C}")
+                                    #elif isinstance(best_model, RandomForestClassifier):
+                                        #st.write(f"**n_estimators**: {n_estimators}")
+                                        #st.write(f"**max_depth**: {max_depth}")
+                                        #st.write(f"**min_samples_split**: {min_samples_split}")
+                                    #elif isinstance(best_model, GradientBoostingClassifier):
+                                        #st.write(f"**n_estimators**: {n_estimators}")
+                                        #st.write(f"**learning_rate**: {learning_rate}")
+                                    #elif isinstance(best_model, LGBMClassifier):
+                                        #st.write(f"**n_estimators**: {n_estimators}")
+                                        #st.write(f"**learning_rate**: {learning_rate}")
 
                     #----------------------------------------                    
                     st.divider()
@@ -857,6 +885,22 @@ else:
                                 y_pred_best = best_model.predict(X_test)
                                 residuals = y_test - y_pred_best    
 
+                    with col2:
+                                
+                        with st.container():
+
+                            st.subheader("Graph",divider='blue')
+                            metrics_df = results_df.melt(id_vars="Model", value_vars=["MAE", "MSE", "RMSE", "R2", "RMSLE", "MAPE"], 
+                                                        var_name="Metric", value_name="Value")
+                            plt.figure(figsize=(10,6))
+                            sns.barplot(x="Metric", y="Value", hue="Model", data=metrics_df, palette="rocket")
+                            plt.title("Comparison of Regression Metrics Across Models", fontsize=16)
+                            plt.xlabel("Metric", fontsize=12)
+                            plt.ylabel("Value", fontsize=12)
+                            plt.xticks(rotation=45)
+                            plt.legend(title="Model", bbox_to_anchor=(1.05,1), loc='upper left')
+                            st.pyplot(plt, use_container_width=True)
+                            
                     #----------------------------------------  
                     st.subheader("Importance",divider='blue')
 
