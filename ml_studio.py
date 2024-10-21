@@ -552,9 +552,9 @@ else:
                             scaling_method = 'N/A'
                         st.divider()
                         f_sel_method = ['VIF', 'Selectkbest','VarianceThreshold']
-                        if f_sel_method == 'VIF':
-                            vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)
                         f_sel_method = st.selectbox("**Choose a feature selection method**", f_sel_method)
+                        if f_sel_method == 'VIF':
+                            vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)                        
                         if f_sel_method == 'Selectkbest':
                             method = st.selectbox("**Select kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
                             num_features_to_select = st.slider("**Select Number of Independent Features**", min_value=1, max_value=len(df.columns), value=5)
@@ -900,7 +900,7 @@ else:
                             plt.xticks(rotation=45)
                             plt.legend(title="Model", bbox_to_anchor=(1.05,1), loc='upper left')
                             st.pyplot(plt, use_container_width=True)
-                            
+
                     #----------------------------------------  
                     st.subheader("Importance",divider='blue')
 
