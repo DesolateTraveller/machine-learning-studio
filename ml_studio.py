@@ -475,7 +475,7 @@ else:
                         selected_numerical_strategy = st.selectbox("**Missing value treatment : Numerical**", numerical_strategies)
                         selected_categorical_strategy = st.selectbox("**Missing value treatment : Categorical**", categorical_strategies) 
                         st.divider() 
-                        treatment_option = st.selectbox("**:blue[Select a outlier treatment option:]**", ["Cap Outliers","Drop Outliers", ])
+                        treatment_option = st.selectbox("**Select a outlier treatment option**", ["Cap Outliers","Drop Outliers", ])
 
                     st.subheader("Missing Values",divider='blue')
                     col1, col2 = st.columns((0.2,0.8))
@@ -545,14 +545,14 @@ else:
 
                     stats_expander = st.sidebar.expander("**:blue[Transformation Criteria]**", expanded=False)
                     with stats_expander: 
-                        scaling_reqd = st.selectbox("**:blue[Requirement of scalling]**", ["no", "yes"])
+                        scaling_reqd = st.selectbox("**Requirement of scalling**", ["no", "yes"])
                         if scaling_reqd == 'yes':                       
-                            scaling_method = st.selectbox("**:blue[Choose a scaling method]**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
+                            scaling_method = st.selectbox("**Choose a scaling method**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
                         if scaling_reqd == 'no':   
                             scaling_method = 'N/A'
                         st.divider()
                         f_sel_method = ['VIF', 'Selectkbest','VarianceThreshold']
-                        f_sel_method = st.selectbox("**:blue[Choose a feature selection method]**", f_sel_method)
+                        f_sel_method = st.selectbox("**Choose a feature selection method**", f_sel_method)
                         if f_sel_method == 'Selectkbest':
                             method = st.selectbox("**Select kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
                             num_features_to_select = st.slider("**Select Number of Independent Features**", min_value=1, max_value=len(df.columns), value=5)
@@ -658,8 +658,6 @@ else:
                             st.write("No of features after feature-selection :",len(selected_features_vth))                   
                             st.table(selected_features_vth)
                             selected_features = selected_features_vth.copy()
-
-                    #----------------------------------------
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab5:
