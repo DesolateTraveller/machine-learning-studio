@@ -467,8 +467,15 @@ else:
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab3:
-                
-                    st.subheader("Missing Values Check & Treatment",divider='blue')
+
+                    stats_expander = st.sidebar.expander("**:blue[Cleaning Criteria]**", expanded=False)
+                    with stats_expander:                
+                        numerical_strategies = ['mean', 'median', 'most_frequent']
+                        categorical_strategies = ['constant','most_frequent']
+                        selected_numerical_strategy = st.selectbox("**Missing value treatment : Numerical**", numerical_strategies)
+                        selected_categorical_strategy = st.selectbox("**Missing value treatment : Categorical**", categorical_strategies) 
+
+                    st.subheader("Missing Values",divider='blue')
                     col1, col2 = st.columns((0.2,0.8))
 
                     with col1:
@@ -482,40 +489,22 @@ else:
                             st.table(missing_values)
 
                             with col2:                 
-                                numerical_strategies = ['mean', 'median', 'most_frequent']
-                                categorical_strategies = ['constant','most_frequent']
-                                st.write("**Missing Values Treatment:**")
-                                col1, col2 = st.columns(2)
-                                with col1:
-                                    selected_numerical_strategy = st.selectbox("**Select a strategy for treatment : Numerical variables**", numerical_strategies)
-                                with col2:
-                                    selected_categorical_strategy = st.selectbox("**Select a strategy for treatment : Categorical variables**", categorical_strategies)  
-                                
-                                #if st.button("**Apply Missing Values Treatment**"):
+                                st.write("**Missing Values Treatment:**")                  
                                 cleaned_df = handle_numerical_missing_values(df, selected_numerical_strategy)
                                 cleaned_df = handle_categorical_missing_values(cleaned_df, selected_categorical_strategy)   
                                 st.table(cleaned_df.head(2))
-
-                                # Download link for treated data
                                 st.download_button("**Download Treated Data**", cleaned_df.to_csv(index=False), file_name="treated_data.csv")
 
                     #with col2:
 
-                    st.subheader("Duplicate Values Check",divider='blue') 
+                    st.subheader("Duplicate Values",divider='blue') 
                     if st.checkbox("Show Duplicate Values"):
                         if missing_values.empty:
                             st.table(df[df.duplicated()].head(2))
                         else:
                             st.table(cleaned_df[cleaned_df.duplicated()].head(2))
 
-                    #with col4:
-
-                        #x_column = st.selectbox("Select x-axis column:", options = df.columns.tolist()[0:], index = 0)
-                        #y_column = st.selectbox("Select y-axis column:", options = df.columns.tolist()[0:], index = 1)
-                        #chart = alt.Chart(df).mark_boxplot(extent='min-max').encode(x=x_column,y=y_column)
-                        #st.altair_chart(chart, theme=None, use_container_width=True)  
-
-                    st.subheader("Outliers Check & Treatment",divider='blue')
+                    st.subheader("Outliers",divider='blue')
                 
                     if missing_values.empty:
                         df = df.copy()
