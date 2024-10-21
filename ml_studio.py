@@ -981,8 +981,9 @@ else:
                                                            
                                     report = classification_report(y_test, y_pred_best, output_dict=True)
                                     report_df = pd.DataFrame(report).transpose()
-                                    st.dataframe(report_df,use_container_width=True)
-
+                                    #st.dataframe(report_df,use_container_width=True)
+                                    st.table(report_df)
+                        
                         with col2:
                             with st.container():  
 
@@ -1048,7 +1049,8 @@ else:
 
                                     report = classification_report(y_test, y_pred_best, output_dict=True)
                                     report_df = pd.DataFrame(report).transpose()
-                                    st.dataframe(report_df,use_container_width=True)  
+                                    #st.dataframe(report_df,use_container_width=True)  
+                                    st.table(report_df)
 
                         with col2:
                             with st.container():  
@@ -1203,7 +1205,8 @@ else:
                         with col1:
 
                             st.subheader("Output",divider='blue')
-                            st.dataframe(final_results_df, hide_index=True, use_container_width=True)
+                            #st.dataframe(final_results_df, hide_index=True, use_container_width=True)
+                            st.table(final_results_df)
 
                         with col2:
                             X_test_results = X_test.copy()  
@@ -1252,7 +1255,8 @@ else:
                         with col1:
 
                             st.subheader("Output",divider='blue')                            
-                            st.dataframe(final_results_df, hide_index=True, use_container_width=True)
+                            #st.dataframe(final_results_df, hide_index=True, use_container_width=True)
+                            st.table(final_results_df)
 
                         with col2:
                              
@@ -1298,4 +1302,5 @@ else:
                         with col1:
 
                             st.subheader("Output",divider='blue')                            
-                            st.dataframe(final_results_df, hide_index=True, use_container_width=True)
+                            #st.dataframe(final_results_df, hide_index=True, use_container_width=True)
+                            st.table(final_results_df)
