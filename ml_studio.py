@@ -1221,7 +1221,7 @@ else:
 
                             st.subheader("Prediction & Score",divider='blue')
                             st.dataframe(X_test_results, use_container_width=True)
-                            st.download_button(label="Download predicted data as CSV",data=X_test_results.to_csv(index=False),file_name="classification_predictions.csv",mime="text/csv")
+                            st.download_button(label="📥 Download predicted data as CSV",data=X_test_results.to_csv(index=False),file_name="classification_predictions.csv",mime="text/csv")
 
             #----------------------------------------  
                 if ml_type == 'Regression':  
@@ -1268,7 +1268,7 @@ else:
 
                             st.subheader("Prediction & Score",divider='blue')
                             st.dataframe(X_test_results_reg, use_container_width=True)
-                            st.download_button(label="Download predicted data as CSV",data=X_test_results_reg.to_csv(index=False),file_name="regression_predictions.csv",mime="text/csv")
+                            st.download_button(label="📥 Download predicted data as CSV",data=X_test_results_reg.to_csv(index=False),file_name="regression_predictions.csv",mime="text/csv")
 
             #----------------------------------------  
                 if ml_type == 'Clustering':    
