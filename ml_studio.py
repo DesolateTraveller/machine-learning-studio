@@ -547,17 +547,17 @@ else:
                     with stats_expander: 
                         scaling_reqd = st.selectbox("**Requirement of scalling**", ["no", "yes"])
                         if scaling_reqd == 'yes':                       
-                            scaling_method = st.selectbox("**Choose a scaling method**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
+                            scaling_method = st.selectbox("**Scaling method**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
                         if scaling_reqd == 'no':   
                             scaling_method = 'N/A'
                         st.divider()
                         f_sel_method = ['VIF', 'Selectkbest','VarianceThreshold']
-                        f_sel_method = st.selectbox("**Choose a feature selection method**", f_sel_method)
+                        f_sel_method = st.selectbox("**Feature selection method**", f_sel_method)
                         if f_sel_method == 'VIF':
                             vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)                        
                         if f_sel_method == 'Selectkbest':
-                            method = st.selectbox("**Select kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
-                            num_features_to_select = st.slider("**Select Number of Independent Features**", min_value=1, max_value=len(df.columns), value=5)
+                            method = st.selectbox("**kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
+                            num_features_to_select = st.slider("**Number of Independent Features**", min_value=1, max_value=len(df.columns), value=5)
                         if f_sel_method == 'VarianceThreshold':
                             threshold = st.number_input("Variance Threshold", min_value=0.0, step=0.01, value=0.0)  
 
@@ -730,7 +730,8 @@ else:
                                             results.append(metrics)
                                         results_df = pd.DataFrame(results)
                                         best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
-                                        st.dataframe(results_df,hide_index=True, use_container_width=True)
+                                        #st.dataframe(results_df,hide_index=True, use_container_width=True)
+                                        st.table(results_df)
 
                                         best_model_clf = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
                                         best_model = models[best_model_clf]
@@ -787,7 +788,8 @@ else:
                                             results.append(metrics)
                                         results_df = pd.DataFrame(results)
                                         best_metrics = results_df.loc[:, results_df.columns != "Model"].idxmax()
-                                        st.dataframe(results_df,hide_index=True, use_container_width=True)
+                                        #st.dataframe(results_df,hide_index=True, use_container_width=True)
+                                        st.table(results_df)
 
                                         best_model_clf = results_df.loc[results_df["Accuracy"].idxmax(), "Model"]
                                         best_model = models[best_model_clf]
@@ -865,7 +867,6 @@ else:
                                     model.fit(X_train, y_train)
                                     y_pred = model.predict(X_test)
                                     mae, mse, rmse, r2, rmsle, mape_value = calculate_metrics(y_test, y_pred)
-    
                                     results.append({"Model": name,
                                             "MAE": round(mae, 2),
                                             "MSE": round(mse, 2),
@@ -873,9 +874,9 @@ else:
                                             "R2": round(r2, 2),
                                             "RMSLE": round(rmsle, 2) if rmsle else "N/A",
                                             "MAPE": round(mape_value, 2)})
-                            
                                 results_df = pd.DataFrame(results)
-                                st.dataframe(results_df,hide_index=True, use_container_width=True)
+                                #st.dataframe(results_df,hide_index=True, use_container_width=True)
+                                st.table(results_df)
                                 
                                 best_model_reg = results_df.loc[results_df['R2'].idxmax(), 'Model']
                                 st.sidebar.info(f"Best model : **{best_model_reg}**")
