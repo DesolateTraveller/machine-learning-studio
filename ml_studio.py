@@ -876,8 +876,6 @@ else:
                             
                                 results_df = pd.DataFrame(results)
                                 st.dataframe(results_df,hide_index=True, use_container_width=True)
-
-                                st.divider()
                                 
                                 best_model_reg = results_df.loc[results_df['R2'].idxmax(), 'Model']
                                 st.sidebar.info(f"Best model : **{best_model_reg}**")
