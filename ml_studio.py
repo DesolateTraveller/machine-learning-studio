@@ -990,7 +990,7 @@ else:
                                     cm = confusion_matrix(y_test, y_pred_best)
                                     plt.figure(figsize=(8,3))
                                     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
-                                    plt.title(f"Confusion Matrix for {best_model_clf}", fontsize=8)
+                                    plt.title(f"Confusion Matrix", fontsize=8)
                                     plt.xlabel("Predicted")
                                     plt.ylabel("Actual")
                                     st.pyplot(plt,use_container_width=True)
@@ -1007,7 +1007,7 @@ else:
                                     plt.plot([0, 1], [0, 1], color="gray", linestyle="--")
                                     plt.xlabel("False Positive Rate")
                                     plt.ylabel("True Positive Rate")
-                                    plt.title(f"AUC Curve for {best_model_clf}", fontsize=8)
+                                    plt.title(f"AUC Curve", fontsize=8)
                                     plt.legend(loc="lower right")
                                     st.pyplot(plt,use_container_width=True)
 
@@ -1016,7 +1016,7 @@ else:
                                     plt.plot(recalls, precisions, color="purple", lw=2)
                                     plt.xlabel("Recall")
                                     plt.ylabel("Precision")
-                                    plt.title(f"Precision-Recall Curve for {best_model_clf}", fontsize=8)
+                                    plt.title(f"Precision-Recall Curve", fontsize=8)
                                     st.pyplot(plt,use_container_width=True)
 
                                     precisions, recalls, thresholds = precision_recall_curve(y_test, y_proba_best)
@@ -1024,7 +1024,7 @@ else:
                                     plt.plot(thresholds, precisions[:-1], "b--", label="Precision")
                                     plt.plot(thresholds, recalls[:-1], "g-", label="Recall")
                                     plt.xlabel("Threshold")
-                                    plt.title(f"Discrimination Threshold for {best_model_clf}", fontsize=8)
+                                    plt.title(f"Discrimination Threshold", fontsize=8)
                                     plt.legend(loc="best")
                                     st.pyplot(plt,use_container_width=True)
 
@@ -1033,12 +1033,12 @@ else:
 
                                     plt.figure(figsize=(8,3))
                                     skplt.metrics.plot_lift_curve(y_test, best_model.predict_proba(X_test))
-                                    plt.title(f"Lift Curve for {best_model_clf}", fontsize=8)
+                                    plt.title(f"Lift Curve", fontsize=8)
                                     st.pyplot(plt,use_container_width=True)
                                     
                                     plt.figure(figsize=(8,3))
                                     skplt.metrics.plot_cumulative_gain(y_test, best_model.predict_proba(X_test))
-                                    plt.title(f"Gain Curve for {best_model_clf}", fontsize=8)
+                                    plt.title(f"Gain Curve", fontsize=8)
                                     st.pyplot(plt,use_container_width=True) 
 
                     if target_type == 'MultiClass':
@@ -1072,7 +1072,7 @@ else:
                                                       
                                     plt.figure(figsize=(8, 3))
                                     sns.residplot(x=y_pred_best, y=residuals, lowess=True)
-                                    plt.title(f"Residual Plot for {best_model_reg}")
+                                    plt.title(f"Residual Plot")
                                     plt.xlabel('Predicted')
                                     plt.ylabel('Residuals')
                                     st.pyplot(plt,use_container_width=True)
@@ -1080,7 +1080,7 @@ else:
                                     plt.figure(figsize=(8, 3))
                                     sns.scatterplot(x=y_test, y=y_pred_best)
                                     plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--', color='red')
-                                    plt.title(f"Prediction Error Plot for {best_model_reg}")
+                                    plt.title(f"Prediction Error Plot")
                                     plt.xlabel('Actual')
                                     plt.ylabel('Predicted')
                                     st.pyplot(plt,use_container_width=True) 
