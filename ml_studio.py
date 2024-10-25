@@ -148,7 +148,7 @@ st.sidebar.markdown(
     </style>
 
     <div class="footer">
-        <p>© 2024 | Created by : <span class="highlight">Avijit Chakraborty</span> | :envelope: <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a></p> <span class="highlight">Thank you for visiting the app | This app is created for internal use, unauthorized uses or copying is strictly prohibited</span>
+        <p>© 2024 | Created by : <span class="highlight">Avijit Chakraborty</span> | :envelope: <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a></p> <span class="highlight">Thank you for visiting the app | This app is created for internal use, unauthorized uses or copying is strictly prohibited | For best view of the app, please zoom out the browser to 75%.</span>
     </div>
     """,
     unsafe_allow_html=True)
