@@ -112,12 +112,12 @@ st.set_page_config(page_title="ML Studio | v0.1",
                    initial_sidebar_state="auto")
 #----------------------------------------
 st.title(f""":rainbow[Machine Learning (ML) Studio]""")
-st.markdown(
-    '''
-    Created by | <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a> ( :envelope: [Email](mailto:avijit.mba18@gmail.com) | :bust_in_silhouette: [LinkedIn](https://www.linkedin.com/in/avijit2403/) | :computer: [GitHub](https://github.com/DesolateTraveller) ) |
-    for best view of the app, please **zoom-out** the browser to **75%**.
-    ''',
-    unsafe_allow_html=True)
+#st.markdown(
+    #'''
+    #Created by | <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a> ( :envelope: [Email](mailto:avijit.mba18@gmail.com) | :bust_in_silhouette: [LinkedIn](https://www.linkedin.com/in/avijit2403/) | :computer: [GitHub](https://github.com/DesolateTraveller) ) |
+    #for best view of the app, please **zoom-out** the browser to **75%**.
+    #''',
+    #unsafe_allow_html=True)
 #st.info('**A lightweight Machine Learning (ML) streamlit app that help to analyse different kind machine learning problems**', icon="ℹ️")
 #----------------------------------------
 # Set the background image
@@ -148,7 +148,7 @@ st.sidebar.markdown(
     </style>
 
     <div class="footer">
-        <p>© 2024 | Created by : <span class="highlight">Avijit Chakraborty</span> | :envelope: <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a></p> <span class="highlight">Thank you for visiting the app | This app is created for internal use, unauthorized uses or copying is strictly prohibited | For best view of the app, please zoom out the browser to 75%.</span>
+        <p>© 2024 | Created by : <span class="highlight">Avijit Chakraborty</span> | Prepared by: <a href="mailto:avijit.mba18@gmail.com">Avijit Chakraborty</a></p> <span class="highlight">Thank you for visiting the app | This app is created for internal use, unauthorized uses or copying is strictly prohibited | For best view of the app, please zoom out the browser to 75%.</span>
     </div>
     """,
     unsafe_allow_html=True)
