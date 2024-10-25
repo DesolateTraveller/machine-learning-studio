@@ -908,7 +908,7 @@ else:
                                 st.table(results_df)
                                 
                                 best_model_reg = results_df.loc[results_df['R2'].idxmax(), 'Model']
-                                st.sidebar.info(f"Best model : **{best_model_reg}**")
+                                #st.sidebar.info(f"Best model : **{best_model_reg}**")
                                 best_model = regressors[best_model_reg]
                                 y_pred_best = best_model.predict(X_test)
                                 residuals = y_test - y_pred_best    
@@ -933,15 +933,21 @@ else:
                     st.subheader("Importance",divider='blue')
 
                     if best_model_reg == "Linear Regression":
-                        feature_importance = pd.DataFrame({'Feature': X.columns, 'Coefficient': best_model.coef_[0]})
+                        importance_df = pd.DataFrame({'Feature': X.columns, 'Coefficient': best_model.coef_[0]})
+                        importance_df['Percentage'] = (abs(importance_df['Coefficient']) / abs(importance_df['Coefficient']).sum()) * 100
+                        importance_df = importance_df.sort_values(by='Coefficient', ascending=False)
+
                     else:
-                        importance = best_model.feature_importances_
+                        #importance = best_model.feature_importances_
+                        importance_df = pd.DataFrame({"Feature": selected_features, "Importance": best_model.feature_importances_})
+                        importance_df['Percentage'] = (importance_df['Importance'] / importance_df['Importance'].sum()) * 100
+                        importance_df = importance_df.sort_values(by='Importance', ascending=False)
 
                     col1, col2 = st.columns((0.15,0.85))
                     with col1:
                         with st.container():
 
-                            importance_df = pd.DataFrame({"Feature": selected_features,"Importance": importance})
+                            #importance_df = pd.DataFrame({"Feature": selected_features,"Importance": importance})
                             st.dataframe(importance_df, hide_index=True, use_container_width=True)
 
                     with col2:
@@ -952,6 +958,30 @@ else:
                             fig = go.Figure(data = plot_data_imp, layout = plot_layout_imp)
                             st.plotly_chart(fig,use_container_width = True)
 
+                    st.sidebar.divider()
+                    st.sidebar.info(f"Best model : **{best_model_reg}**")
+                    if best_model_reg == "Linear Regression":
+                        stats_expander = st.sidebar.expander("**:blue[Important features]**", expanded=False)
+                        with stats_expander:
+                            #st.info(f"**Top Features based on Importance:**\n1. {importance_df.iloc[0]['Feature']}\n2. {importance_df.iloc[1]['Feature']}\n3. {importance_df.iloc[2]['Feature']}\n4. {importance_df.iloc[3]['Feature']}\n5. {importance_df.iloc[4]['Feature']}")
+                            st.info(f"**Top Features based on Importance:**\n"
+                                    f"1. {importance_df.iloc[0]['Feature']} ({importance_df.iloc[0]['Percentage']:.2f}%)\n"
+                                    f"2. {importance_df.iloc[1]['Feature']} ({importance_df.iloc[1]['Percentage']:.2f}%)\n"
+                                    f"3. {importance_df.iloc[2]['Feature']} ({importance_df.iloc[2]['Percentage']:.2f}%)\n"
+                                    f"4. {importance_df.iloc[3]['Feature']} ({importance_df.iloc[3]['Percentage']:.2f}%)\n"
+                                    f"5. {importance_df.iloc[4]['Feature']} ({importance_df.iloc[4]['Percentage']:.2f}%)"
+                                        )           
+                    else:
+                        stats_expander = st.sidebar.expander("**:blue[Important features]**", expanded=False)
+                        with stats_expander:
+                            #st.info(f"**Top Features based on Importance:**\n1. {importance_df.iloc[0]['Feature']}\n2. {importance_df.iloc[1]['Feature']}\n3. {importance_df.iloc[2]['Feature']}\n4. {importance_df.iloc[3]['Feature']}\n5. {importance_df.iloc[4]['Feature']}")
+                            st.info(f"**Top Features based on Importance:**\n"
+                                    f"1. {importance_df.iloc[0]['Feature']} ({importance_df.iloc[0]['Percentage']:.2f}%)\n"
+                                    f"2. {importance_df.iloc[1]['Feature']} ({importance_df.iloc[1]['Percentage']:.2f}%)\n"
+                                    f"3. {importance_df.iloc[2]['Feature']} ({importance_df.iloc[2]['Percentage']:.2f}%)\n"
+                                    f"4. {importance_df.iloc[3]['Feature']} ({importance_df.iloc[3]['Percentage']:.2f}%)\n"
+                                    f"5. {importance_df.iloc[4]['Feature']} ({importance_df.iloc[4]['Percentage']:.2f}%)"
+                                        )
             #----------------------------------------              
                 if ml_type == 'Clustering': 
 
