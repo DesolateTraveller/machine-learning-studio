@@ -702,7 +702,7 @@ else:
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
 
-                stats_expander = st.sidebar.expander("**:blue[Hyperparameters]**", expanded=False)
+                stats_expander = st.sidebar.expander("**:blue[:hammer_and_wrench: Hyperparameters]**", expanded=False)
                 with stats_expander:
                         n_estimators = st.slider("Number of Estimators", min_value=10, max_value=200, step=10, value=100)
                         max_depth = st.slider("Max Depth", min_value=1, max_value=20, step=1, value=10)    
