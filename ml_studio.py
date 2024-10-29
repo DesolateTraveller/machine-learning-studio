@@ -870,7 +870,7 @@ else:
                         importance_df['Percentage'] = (importance_df['Importance'] / importance_df['Importance'].sum()) * 100
                         importance_df = importance_df.sort_values(by='Importance', ascending=False)
 
-                    col1, col2 = st.columns((0.15,0.85))
+                    col1, col2 = st.columns((0.25,0.75))
                     with col1:
                         with st.container():
 
@@ -972,7 +972,7 @@ else:
                         importance_df['Percentage'] = (importance_df['Importance'] / importance_df['Importance'].sum()) * 100
                         importance_df = importance_df.sort_values(by='Importance', ascending=False)
 
-                    col1, col2 = st.columns((0.15,0.85))
+                    col1, col2 = st.columns((0.25,0.75))
                     with col1:
                         with st.container():
 
