@@ -693,7 +693,7 @@ else:
             with tab5:
 
                 st.info("Please note that there may be some processing delay during the AutoML execution.")
-                st.sidebar.divider()
+                #st.sidebar.divider()
 
                 stats_expander = st.sidebar.expander("**:blue[Dataset Splitting Criteria]**", expanded=False)
                 with stats_expander:
