@@ -694,15 +694,17 @@ else:
                 st.info("Please note that there may be some processing delay during the AutoML execution.")
                 #st.sidebar.divider()
 
-                stats_expander = st.sidebar.expander("**:blue[Dataset Splitting Criteria]**", expanded=False)
-                with stats_expander:
+                #stats_expander = st.sidebar.expander("**:blue[Dataset Splitting Criteria]**", expanded=False)
+                #with stats_expander:
+                with st.sidebar.popover("**:blue[Dataset Splitting Criteria]**", help="Tune the hyperparameters whenever required"):   
                         train_size = st.slider("**Train Size (as %)**", 10, 90, 70, 5)
                         test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
                         random_state = st.number_input("**Random State**", 0, 100, 42)
                         n_jobs = st.number_input("**Parallel Processing (n_jobs)**", -10, 10, 1)    
 
-                stats_expander = st.sidebar.expander("**:blue[:hammer_and_wrench: Hyperparameters]**", expanded=False)
-                with stats_expander:
+                #stats_expander = st.sidebar.expander("**:blue[:hammer_and_wrench: Hyperparameters]**", expanded=False)
+                #with stats_expander:
+                with st.sidebar.popover("**:blue[:hammer_and_wrench: Hyperparameters]**", help="Tune the hyperparameters whenever required"):
                         n_estimators = st.slider("Number of Estimators", min_value=10, max_value=200, step=10, value=100)
                         max_depth = st.slider("Max Depth", min_value=1, max_value=20, step=1, value=10)    
                         min_samples_split = st.slider("Min Samples Split", min_value=2, max_value=10, step=1, value=2)
