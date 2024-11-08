@@ -122,7 +122,7 @@ st.title(f""":rainbow[Machine Learning (ML) Studio]""")
 #----------------------------------------
 # Set the background image
 #st.divider()
-st.sidebar.info('**A lightweight Machine Learning (ML) streamlit app that help to analyse different kind machine learning problems**', icon="ℹ️")
+st.info('**A lightweight Machine Learning (ML) streamlit app that help to analyse different kind machine learning problems**', icon="ℹ️")
 #----------------------------------------
 st.sidebar.markdown(
     """
