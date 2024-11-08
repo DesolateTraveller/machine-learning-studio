@@ -106,7 +106,7 @@ from sklearn.metrics import silhouette_score, calinski_harabasz_score, davies_bo
 ### Title and description for your Streamlit app
 #---------------------------------------------------------------------------------------------------------------------------------
 #import custom_style()
-st.set_page_config(page_title="ML Studio | v0.1",
+st.set_page_config(page_title="ML Studio | v0.2",
                    layout="wide",
                    page_icon="💻",              
                    initial_sidebar_state="auto")
@@ -570,8 +570,9 @@ else:
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab4:
 
-                    stats_expander = st.sidebar.expander("**:blue[Transformation Criteria]**", expanded=False)
-                    with stats_expander: 
+                    #stats_expander = st.sidebar.expander("**:blue[Transformation Criteria]**", expanded=False)
+                    #with stats_expander: 
+                    with st.sidebar.popover("**:blue[:hammer_and_wrench: Transformation Criteria]**", help="Tune the hyperparameters whenever required"):
                         scaling_reqd = st.selectbox("**Requirement of scalling**", ["no", "yes"])
                         if scaling_reqd == 'yes':                       
                             scaling_method = st.selectbox("**Scaling method**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
