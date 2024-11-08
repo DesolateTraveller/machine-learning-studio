@@ -121,7 +121,8 @@ st.title(f""":rainbow[Machine Learning (ML) Studio]""")
 #st.info('**A lightweight Machine Learning (ML) streamlit app that help to analyse different kind machine learning problems**', icon="ℹ️")
 #----------------------------------------
 # Set the background image
-st.divider()
+#st.divider()
+st.sidebar.info('**A lightweight Machine Learning (ML) streamlit app that help to analyse different kind machine learning problems**', icon="ℹ️")
 #----------------------------------------
 st.sidebar.markdown(
     """
@@ -354,13 +355,9 @@ clustering_algorithms = {
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
-
 #st.sidebar.header("Input", divider='blue')
 #st.sidebar.info('Please choose from the following options to start the application.', icon="ℹ️")
-
-st.sidebar.info('**A lightweight Machine Learning (ML) streamlit app that help to analyse different kind machine learning problems**', icon="ℹ️")
 ml_type = st.sidebar.selectbox("**:blue[Pick your Problem Type]**", ["None", "Classification", "Clustering", "Regression",])
-
 #---------------------------------------------------------------------------------------------------------------------------------
 #---------------------------------------------------------------------------------------------------------------------------------                                                   
 if ml_type == "None":
