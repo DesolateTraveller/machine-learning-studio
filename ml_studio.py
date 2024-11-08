@@ -494,8 +494,9 @@ else:
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab3:
 
-                    stats_expander = st.sidebar.expander("**:blue[Cleaning Criteria]**", expanded=False)
-                    with stats_expander:                
+                    #stats_expander = st.sidebar.expander("**:blue[Cleaning Criteria]**", expanded=False)
+                    #with stats_expander:       
+                    with st.sidebar.popover("**:blue[:hammer_and_wrench: Cleaning Criteria]**", help="Tune the hyperparameters whenever required"):          
                         numerical_strategies = ['mean', 'median', 'most_frequent']
                         categorical_strategies = ['constant','most_frequent']
                         selected_numerical_strategy = st.selectbox("**Missing value treatment : Numerical**", numerical_strategies)
