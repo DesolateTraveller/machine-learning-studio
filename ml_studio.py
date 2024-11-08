@@ -696,7 +696,7 @@ else:
 
                 #stats_expander = st.sidebar.expander("**:blue[Dataset Splitting Criteria]**", expanded=False)
                 #with stats_expander:
-                with st.sidebar.popover("**:blue[Dataset Splitting Criteria]**", help="Tune the hyperparameters whenever required"):   
+                with st.sidebar.popover("**:blue[:hammer_and_wrench: Dataset Splitting Criteria]**", help="Tune the hyperparameters whenever required"):   
                         train_size = st.slider("**Train Size (as %)**", 10, 90, 70, 5)
                         test_size = st.slider("**Test Size (as %)**", 10, 50, 30, 5)    
                         random_state = st.number_input("**Random State**", 0, 100, 42)
