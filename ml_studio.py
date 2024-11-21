@@ -441,8 +441,11 @@ else:
                 with stats_expander:        
                     #pr = df.profile_report()
                     #st_profile_report(pr)
-                    st.table(df.head()) 
+                    st.table(df.head(3)) 
 
+                    st.divider()
+
+                    plot_histograms_with_kde(df)
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab2:
 
