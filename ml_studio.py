@@ -45,6 +45,7 @@ import scikitplot as skplt
 import shutil
 import sweetviz as sv
 import pygwalker as pyg
+from scipy.stats import gaussian_kde
 #----------------------------------------
 # Model Building
 import xgboost as xgb
