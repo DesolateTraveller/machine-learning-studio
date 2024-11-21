@@ -171,6 +171,28 @@ def load_file(file):
 
 #----------------------------------------
 @st.cache_data(ttl="2h")
+def plot_histograms_with_kde(df):
+    numerical_columns = df.select_dtypes(include=['float64', 'int64']).columns
+    if len(numerical_columns) == 0:
+        st.warning("No numerical columns found in the dataset to plot.")
+        return
+    n_cols = len(numerical_columns) 
+    n_rows = (len(numerical_columns) + n_cols - 1) // n_cols  
+    plt.figure(figsize=(15, 5 * n_rows))
+    for i, col in enumerate(numerical_columns, 1):
+        with st.container():
+            fig, ax = plt.subplots(figsize=(25,5)) 
+            ax.hist(df[col].dropna(), bins=20, color='skyblue', edgecolor='black', alpha=0.6, density=True)
+            kde = gaussian_kde(df[col].dropna())
+            x_vals = np.linspace(df[col].min(), df[col].max(), 1000)
+            ax.plot(x_vals, kde(x_vals), color='red', lw=2)
+            ax.set_title(f'Distribution of {col}')
+            ax.set_xlabel(col)
+            ax.set_ylabel('Density')
+            st.pyplot(plt,use_container_width=True)
+
+#----------------------------------------
+@st.cache_data(ttl="2h")
 def check_missing_values(data):
     missing_values = data.isnull().sum()
     missing_values = missing_values[missing_values > 0]
@@ -423,73 +445,7 @@ else:
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab2:
 
-                plot_option = st.selectbox("**Choose Plot**", ["Line Chart", "Histogram", "Scatter Plot", "Bar Chart", "Box Plot"])
-                columns = list(df.columns)
-                col1, col2 = st.columns((0.1,0.9))
-                    
-                if plot_option == "Line Chart":
-
-                    with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="date_1", )
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="values_1")
-                        
-                    with col2:
-                            line_chart = alt.Chart(df).mark_line().encode(
-                            x=alt.X(x_column, type='temporal' if pd.api.types.is_datetime64_any_dtype(df[x_column]) else 'ordinal'),
-                            y=alt.Y(y_column, type='quantitative'),
-                            tooltip=[x_column, y_column]).interactive()
-                            st.altair_chart(line_chart, use_container_width=True)
-
-                elif plot_option == "Histogram":
-                        
-                    with col1:
-                            x_column = st.selectbox("**:blue[Select column for histogram]**", options=columns, key="hist_1",)
-                        
-                    with col2:
-                            histogram = alt.Chart(df).mark_bar().encode(
-                            x=alt.X(x_column, bin=True),
-                            y=alt.Y('count()', type='quantitative'),
-                            tooltip=[x_column, 'count()']).interactive()
-                            st.altair_chart(histogram, use_container_width=True)
-
-                elif plot_option == "Scatter Plot":
-                        
-                    with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="scatter_x", )
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="scatter_y", )
-                        
-                    with col2:
-                            scatter_plot = alt.Chart(df).mark_point().encode(
-                            x=alt.X(x_column, type='quantitative' if pd.api.types.is_numeric_dtype(df[x_column]) else 'ordinal'),
-                            y=alt.Y(y_column, type='quantitative'),
-                            tooltip=[x_column, y_column]).interactive()
-                            st.altair_chart(scatter_plot, use_container_width=True)
-
-                elif plot_option == "Bar Chart":
-                    
-                    with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="bar_x", )
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="bar_y", )
-                        
-                    with col2:
-                            bar_chart = alt.Chart(df).mark_bar().encode(
-                            x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
-                            y=alt.Y(y_column, type='quantitative'),
-                            tooltip=[x_column, y_column]).interactive()
-                            st.altair_chart(bar_chart, use_container_width=True)
-
-                elif plot_option == "Box Plot":
-                    
-                    with col1:
-                            x_column = st.selectbox("**:blue[Select X column]**", options=columns, key="box_x",)
-                            y_column = st.selectbox("**:blue[Select Y column]**", options=columns, key="box_y", )
-                        
-                    with col2:
-                            box_plot = alt.Chart(df).mark_boxplot().encode(
-                            x=alt.X(x_column, type='ordinal' if not pd.api.types.is_numeric_dtype(df[x_column]) else 'quantitative'),
-                            y=alt.Y(y_column, type='quantitative'),
-                            tooltip=[x_column, y_column]).interactive()
-                            st.altair_chart(box_plot, use_container_width=True)
+                plot_histograms_with_kde(df)
 
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab3:
