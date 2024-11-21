@@ -192,6 +192,28 @@ def plot_histograms_with_kde(df):
             ax.set_ylabel('Density')
             st.pyplot(plt,use_container_width=True)
 
+@st.cache_data(ttl="2h")
+def plot_scatter(df, target_column):
+    numerical_columns = df.select_dtypes(include=['float64', 'int64']).columns
+    if len(numerical_columns) == 0:
+        st.warning("No numerical columns found in the dataset to plot.")
+        return
+    if target_column not in df.columns:
+        st.warning(f"The target column '{target_column}' is not in the dataset.")
+        return
+    if target_column not in numerical_columns:
+        st.warning(f"The target column '{target_column}' is not numerical.")
+        return
+    numerical_columns = [col for col in numerical_columns if col != target_column]
+    for col in numerical_columns:
+        with st.container():
+            fig, ax = plt.subplots(figsize=(25,5)) 
+            ax.scatter(df[col], df[target_column], color='purple', alpha=0.7)
+            ax.set_title(f'{target_column} vs {col}')
+            ax.set_xlabel(col)
+            ax.set_ylabel(target_column)
+            ax.grid(True)  
+            st.pyplot(plt,use_container_width=True)
 #----------------------------------------
 @st.cache_data(ttl="2h")
 def check_missing_values(data):
@@ -446,8 +468,10 @@ else:
                     st.table(df.head(3)) 
 
                     st.divider()
-
                     plot_histograms_with_kde(df)
+
+                    st.divider()
+                    plot_scatter(df, target_variable)                    
 #---------------------------------------------------------------------------------------------------------------------------------
             with tab2:
 
