@@ -437,7 +437,9 @@ else:
                     col7.metric('**Type of Target Variable**', "None",)
                 #st.divider()           
 
-                stats_expander = st.expander("**Exploratory Data Analysis (EDA)**", expanded=False)
+                st.divider()
+
+                stats_expander = st.expander("**:blue[Exploratory Data Analysis (EDA)]**", expanded=False)
                 with stats_expander:        
                     #pr = df.profile_report()
                     #st_profile_report(pr)
