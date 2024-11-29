@@ -125,7 +125,7 @@ st.title(f""":rainbow[Machine Learning (ML) Studio]""")
 #st.divider()
 st.info('**A lightweight Machine Learning (ML) streamlit app that help to analyse different kind machine learning problems**', icon="ℹ️")
 #----------------------------------------
-st.sidebar.markdown(
+st.markdown(
     """
     <style>
     .footer {
