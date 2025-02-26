@@ -466,7 +466,24 @@ else:
                         selected_categorical_strategy = st.selectbox("**Missing value treatment : Categorical**", categorical_strategies) 
                         st.divider() 
                         treatment_option = st.selectbox("**Select a outlier treatment option**", ["Cap Outliers","Drop Outliers", ])
-                
+
+                with st.popover("**:blue[:hammer_and_wrench: Transformation Criteria]**",disabled=False, use_container_width=True,help="Tune the hyperparameters whenever required"):
+                        scaling_reqd = st.selectbox("**Requirement of scalling**", ["no", "yes"])
+                        if scaling_reqd == 'yes':                       
+                            scaling_method = st.selectbox("**Scaling method**", ["Standard Scaling", "Min-Max Scaling", "Robust Scaling"])
+                        if scaling_reqd == 'no':   
+                            scaling_method = 'N/A'
+                        st.divider()
+                        f_sel_method = ['VIF', 'Selectkbest','VarianceThreshold']
+                        f_sel_method = st.selectbox("**Feature selection method**", f_sel_method)
+                        if f_sel_method == 'VIF':
+                            vif_threshold = st.number_input("**VIF Threshold**", 1.5, 10.0, 5.0)                        
+                        if f_sel_method == 'Selectkbest':
+                            method = st.selectbox("**kBest Method**", ["f_classif", "f_regression", "chi2", "mutual_info_classif"])
+                            num_features_to_select = st.slider("**Number of Independent Features**", min_value=1, max_value=len(df.columns), value=5)
+                        if f_sel_method == 'VarianceThreshold':
+                            threshold = st.number_input("Variance Threshold", min_value=0.0, step=0.01, value=0.0)      
+                                       
                 st.divider()
                 target_variable = st.selectbox("**:blue[Choose Target Variable]**", options=["None"] + list(df.columns), key="target_variable")
                 if target_variable == "None":
@@ -593,3 +610,107 @@ else:
                                             df[column] = np.where(df[column] > Q3 + threshold * IQR, Q3 + threshold * IQR, df[column])
                                             st.success("Outliers capped. Preview of the capped dataset:")
                                             st.write(df.head())
+                                            
+                        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                        with tab4:
+                            with st.container(border=True):
+                                
+                                col1, col2 = st.columns((0.3,0.7))  
+                                with col1:
+                        
+                                    #--------------------------------------------
+                                    st.markdown('<div class="centered-info"><span style="margin-left: 10px;">Feature Encoding</span></div>',unsafe_allow_html=True,)
+                                    #--------------------------------------------
+
+                                    categorical_columns = df.select_dtypes(include=['object']).columns
+                                    if len(categorical_columns) == 0:
+                                        st.info("There are no categorical variables in the dataset.Proceed with the original DataFrame")
+                                        df = df.copy()
+                                    else:
+                                        for feature in df.columns: 
+                                            if df[feature].dtype == 'object': 
+                                                print('\n')
+                                                print('feature:',feature)
+                                                print(pd.Categorical(df[feature].unique()))
+                                                print(pd.Categorical(df[feature].unique()).codes)
+                                                df[feature] = pd.Categorical(df[feature]).codes
+                                        st.info("Categorical variables are encoded")
+                                    csv = df.to_csv(index=False).encode('utf-8')
+                                    st.download_button(label="📥 Download Encoded Data (for review)", data=csv, file_name='encoded_data.csv', mime='text/csv')
+
+                                    #--------------------------------------------
+                                    st.markdown('<div class="centered-info"><span style="margin-left: 10px;">Feature Scalling</span></div>',unsafe_allow_html=True,)
+                                    #--------------------------------------------
+                                    if scaling_reqd == 'yes':     
+                                        df = scale_features(df,scaling_method)
+                                        st.info("Data is scaled for further treatment")
+                                        csv = df.to_csv(index=False).encode('utf-8')
+                                        st.download_button(label="📥 Download Scaled Data (for review)", data=csv, file_name='scaled_data.csv', mime='text/csv')
+                                    else:
+                                        st.info("Data is not scaled, orginal data is considered for further treatment")
+                                    #st.dataframe(df.head())
+                                    
+                                with col2:   
+
+                                    #--------------------------------------------
+                                    st.markdown('<div class="centered-info"><span style="margin-left: 10px;">Feature Selection</span></div>',unsafe_allow_html=True,)
+                                    #--------------------------------------------                                       
+
+                                    if f_sel_method == 'VIF':
+
+                                        st.markdown("**Method 1 : VIF**")
+
+                                        st.markdown(f"Iterative VIF Thresholding (Threshold: {vif_threshold})")
+                                        X = df.drop(columns = target_variable)
+                                        vif_data = drop_high_vif_variables(df, vif_threshold)
+                                        vif_data = vif_data.drop(columns = target_variable)
+                                        selected_features = vif_data.columns
+                                        st.markdown("**Selected Features (considering VIF values in ascending orders)**")
+                                        st.write("No of features before feature-selection :",df.shape[1])
+                                        st.write("No of features after feature-selection :",len(selected_features))
+                                        st.dataframe(selected_features, hide_index=True)
+                                        #st.table(vif_data)
+
+                                    if f_sel_method == 'Selectkbest':
+                  
+                                        st.markdown("**Method 2 : Selectkbest**")          
+                            
+                                        if "f_classif" in method:
+                                            feature_selector = SelectKBest(score_func=f_classif, k=num_features_to_select)
+                                        elif "f_regression" in method:
+                                            feature_selector = SelectKBest(score_func=f_regression, k=num_features_to_select)
+                                        elif "chi2" in method:
+                                            df[df < 0] = 0
+                                            feature_selector = SelectKBest(score_func=chi2, k=num_features_to_select)
+                                        elif "mutual_info_classif" in method:
+                                            df[df < 0] = 0
+                                            feature_selector = SelectKBest(score_func=mutual_info_classif, k=num_features_to_select)
+
+                                        X = df.drop(columns = target_variable)  
+                                        y = df[target_variable]  
+                                        X_selected = feature_selector.fit_transform(X, y)
+
+                                        selected_feature_indices = feature_selector.get_support(indices=True)
+                                        selected_features_kbest = X.columns[selected_feature_indices]
+                                        st.markdown("**Selected Features (considering values in 'recursive feature elimination' method)**")
+                                        st.write("No of features before feature-selection :",df.shape[1])
+                                        st.write("No of features after feature-selection :",len(selected_features_kbest))
+                                        st.dataframe(selected_features_kbest, hide_index=True)
+                                        selected_features = selected_features_kbest.copy()
+
+                                    if f_sel_method == 'VarianceThreshold':
+
+                                        st.markdown("**Method 3 : VarianceThreshold**")  
+
+                                        X = df.drop(columns = target_variable)  
+                                        y = df[target_variable]
+                                        selector = VarianceThreshold(threshold=threshold)
+                                        X_selected = selector.fit_transform(X)
+
+                                        selected_feature_indices = selector.get_support(indices=True)
+                                        selected_features_vth = X.columns[selected_feature_indices]          
+                                        st.markdown("**Selected Features (considering values in 'variance threshold' method)**") 
+                                        st.write("No of features before feature-selection :",df.shape[1])
+                                        st.write("No of features after feature-selection :",len(selected_features_vth))                   
+                                        st.dataframe(selected_features_vth, hide_index=True)
+                                        selected_features = selected_features_vth.copy()
