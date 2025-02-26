@@ -458,6 +458,16 @@ else:
                 df = load_file(file)
                 
                 st.divider()
+                
+                with st.popover("**:blue[:hammer_and_wrench: Cleaning Criteria]**",disabled=False, use_container_width=True,help="Tune the hyperparameters whenever required"):          
+                        numerical_strategies = ['mean', 'median', 'most_frequent']
+                        categorical_strategies = ['constant','most_frequent']
+                        selected_numerical_strategy = st.selectbox("**Missing value treatment : Numerical**", numerical_strategies)
+                        selected_categorical_strategy = st.selectbox("**Missing value treatment : Categorical**", categorical_strategies) 
+                        st.divider() 
+                        treatment_option = st.selectbox("**Select a outlier treatment option**", ["Cap Outliers","Drop Outliers", ])
+                
+                st.divider()
                 target_variable = st.selectbox("**:blue[Choose Target Variable]**", options=["None"] + list(df.columns), key="target_variable")
                 if target_variable == "None":
                     st.warning("Please choose a target variable to proceed with the analysis.")                
@@ -502,8 +512,84 @@ else:
                                 st.divider()
                                 
                                 plot_scatter(df, target_variable) 
+                                
                         #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                         with tab2:
                             with st.container(border=True):
                                 
                                 st.write("xx")
+
+                        #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                        with tab3:
+                            with st.container(border=True):
+                                
+                                #--------------------------------------------
+                                st.markdown('<div class="centered-info"><span style="margin-left: 10px;">Missing Values</span></div>',unsafe_allow_html=True,)
+                                #--------------------------------------------
+                                col1, col2 = st.columns((0.2,0.8))
+                                with col1:
+                        
+                                    missing_values = check_missing_values(df)
+                                    if missing_values.empty:
+                                        st.success("**No missing values found!**")
+                                    else:
+                                        st.warning("**Missing values found!**")
+                                        st.write("**Number of missing values:**")
+                                        st.table(missing_values)
+
+                                        with col2:   
+                                                          
+                                            st.write("**Missing Values Treatment:**")                  
+                                            cleaned_df = handle_numerical_missing_values(df, selected_numerical_strategy)
+                                            cleaned_df = handle_categorical_missing_values(cleaned_df, selected_categorical_strategy)   
+                                            st.table(cleaned_df.head(2))
+                                            st.download_button("**Download Treated Data**", cleaned_df.to_csv(index=False), file_name="treated_data.csv")
+
+                                #with col2:
+
+                                #--------------------------------------------
+                                st.markdown('<div class="centered-info"><span style="margin-left: 10px;">Duplicate Values</span></div>',unsafe_allow_html=True,)
+                                #--------------------------------------------
+                                if st.checkbox("Show Duplicate Values"):
+                                        if missing_values.empty:
+                                            st.table(df[df.duplicated()].head(2))
+                                        else:
+                                            st.table(cleaned_df[cleaned_df.duplicated()].head(2))
+
+                                #--------------------------------------------
+                                st.markdown('<div class="centered-info"><span style="margin-left: 10px;">Outliers</span></div>',unsafe_allow_html=True,)
+                                #--------------------------------------------
+                                if missing_values.empty:
+                                    df = df.copy()
+                                else:
+                                    df = cleaned_df.copy()
+
+                                col1, col2 = st.columns((0.2,0.8))
+                                with col1:
+                        
+                                    outliers = check_outliers(df)
+                                    if outliers.empty:
+                                        st.success("No outliers found!")
+                                    else:
+                                        st.warning("**Outliers found!**")
+                                        st.write("**Number of outliers:**")
+                                        st.table(outliers)
+                    
+                                with col2:
+                                    
+                                    if treatment_option == "Drop Outliers":
+                                        df = df[~outliers['Column'].isin(outliers[outliers['Number of Outliers'] > 0]['Column'])]
+                                        st.success("Outliers dropped. Preview of the cleaned dataset:")
+                                        st.write(df.head())
+                                    
+                                    elif treatment_option == "Cap Outliers":
+                                        df = df.copy()
+                                        for column in outliers['Column'].unique():
+                                            Q1 = df[column].quantile(0.25)
+                                            Q3 = df[column].quantile(0.75)
+                                            IQR = Q3 - Q1
+                                            threshold = 1.5
+                                            df[column] = np.where(df[column] < Q1 - threshold * IQR, Q1 - threshold * IQR, df[column])
+                                            df[column] = np.where(df[column] > Q3 + threshold * IQR, Q3 + threshold * IQR, df[column])
+                                            st.success("Outliers capped. Preview of the capped dataset:")
+                                            st.write(df.head())
