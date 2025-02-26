@@ -138,8 +138,25 @@ st.markdown(
     unsafe_allow_html=True
 )
 #----------------------------------------
-# Set the background image
-#st.info('**A lightweight Machine Learning (ML) streamlit app that help to analyse different kind machine learning problems**', icon="ℹ️")
+st.markdown(
+            """
+            <style>
+                .centered-info {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: bold;
+                font-size: 15px;
+                color: #007BFF; 
+                padding: 5px;
+                background-color: #E8F4FF; 
+                border-radius: 5px;
+                border: 1px solid #007BFF;
+                margin-top: 5px;
+                }
+            </style>
+            """,unsafe_allow_html=True,)
+st.markdown('<div class="centered-info"><span style="margin-left: 10px;">A lightweight Machine Learning (ML) streamlit app that help to analyse different types machine learning problems</span></div>',unsafe_allow_html=True,)
 #----------------------------------------
 st.markdown(
     """
@@ -173,26 +190,6 @@ st.markdown(
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Functions & Definitions
 #---------------------------------------------------------------------------------------------------------------------------------
-
-st.markdown(
-            """
-            <style>
-                .centered-info {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-weight: bold;
-                font-size: 15px;
-                color: #007BFF; 
-                padding: 5px;
-                background-color: #E8F4FF; 
-                border-radius: 5px;
-                border: 1px solid #007BFF;
-                margin-top: 5px;
-                margin-bottom: 10px;
-                }
-            </style>
-            """,unsafe_allow_html=True,)
 
 @st.cache_data(ttl="2h")
 def load_file(file):
@@ -437,7 +434,6 @@ clustering_algorithms = {
 #---------------------------------------------------------------------------------------------------------------------------------
 ### Main App
 #---------------------------------------------------------------------------------------------------------------------------------
-
 ml_type = st.selectbox("", ["None", "Classification", "Clustering", "Regression",])                                                 
 if ml_type == "None":
     st.warning("Please choose an algorithm to proceed with the analysis.")
@@ -445,9 +441,7 @@ if ml_type == "None":
 #---------------------------------------------------------------------------------------------------------------------------------
 
 else:
-    
-    #st.info("""The **Classification** tab xx.""")
-    
+        
     col1, col2= st.columns((0.2,0.8))
     with col1:           
         with st.container(border=True):
