@@ -545,7 +545,75 @@ else:
                         with tab2:
                             with st.container(border=True):
                                 
-                                st.write("xx")
+                                num_plots = st.selectbox("**:blue[Select the number of plots to generate]**", [1, 2, 3, 4], index=0)
+
+                                for i in range(num_plots):
+                                    st.write(f"#### Plot {i + 1}")
+                                    left_col, right_col = st.columns((0.2,0.8))
+
+                                    with left_col:
+                                        with st.container(border=True):
+                
+                                            selected_var = st.selectbox("**:blue[Select X variable]**", df.columns, key=f"x_{i}")
+                                            secondary_var = st.selectbox("**:blue[Select Y variable (optional)]**", ["None"] + list(df.columns), key=f"y_{i}")
+                                            group_by_var = st.selectbox("**:blue[Select a grouping variable (optional)]**", ["None"] + list(df.columns), key=f"group_{i}")
+
+                                            if secondary_var == "None":
+                                                plot_options = ["Histogram Plot", "Bar Plot", "Box Plot"]  
+                                            else:
+                                                plot_options = ["Histogram Plot", "Scatter Plot", "Line Plot", "Regression Plot", "Bar Plot", "Box Plot"]
+
+                                            plot_type = st.radio("**:blue[Select Plot Type]**", plot_options, index=0, key=f"type_{i}")
+                                            if plot_type in ["Scatter Plot", "Line Plot", "Regression Plot"] and secondary_var == "None":
+                                                st.warning(f"{plot_type} requires both a Y and an X variable. Please select a secondary variable (X) for this plot type.")
+    
+                                            use_aggregation = st.checkbox(f"Apply Aggregation Function to Plot", key=f"agg_{i}")
+                                            if use_aggregation:
+                                                aggregation_function = st.selectbox(f"Select aggregation function for Plot", ["sum", "avg", "count", "min", "max"], key=f"agg_func_{i}")
+
+                                            default_title = f"{plot_type} of {selected_var}" + (f" vs {secondary_var}" if secondary_var != "None" else "") + (f" grouped by {group_by_var}" if group_by_var != "None" else "")
+                                            plot_title = st.text_input("**:blue[Set title for Plot]**", value=default_title, key=f"title_{i}")
+                                            plot_theme = st.selectbox("**:blue[Select Plot Theme]**", ["ggplot2", "seaborn", "simple_theme", "none"], key=f"theme_{i}")
+                                            theme = {"ggplot2": "ggplot2", "seaborn": "plotly_white", "simple_theme": "simple_white", "none": None}.get(plot_theme)
+
+                                            grouping_vars = [var for var in [secondary_var, group_by_var] if var != "None"]
+                                            aggregated_data = df  # Default to non-aggregated data
+                                            if use_aggregation:
+                                                if grouping_vars:
+
+                                                    if aggregation_function == "sum":
+                                                        aggregated_data = df.groupby(grouping_vars)[selected_var].sum().reset_index()
+                                                    elif aggregation_function == "avg":
+                                                        aggregated_data = df.groupby(grouping_vars)[selected_var].mean().reset_index()
+                                                    elif aggregation_function == "count":
+                                                        aggregated_data = df.groupby(grouping_vars)[selected_var].count().reset_index()
+                                                    elif aggregation_function == "min":
+                                                        aggregated_data = df.groupby(grouping_vars)[selected_var].min().reset_index()
+                                                    elif aggregation_function == "max":
+                                                        aggregated_data = df.groupby(grouping_vars)[selected_var].max().reset_index()
+                                                else:
+                                                    st.warning("To use an aggregation function, please select a secondary variable (X) or a grouping variable.")
+                                            else:
+                                                aggregated_data = df
+
+                                    with right_col:
+                
+                                        if plot_type == "Histogram Plot":
+                                            fig = px.histogram(aggregated_data, x=selected_var, color=group_by_var if group_by_var != "None" else None, nbins=30, template=theme,title=plot_title)
+                                        elif plot_type == "Scatter Plot" and secondary_var != "None":
+                                            fig = px.scatter(aggregated_data, x=secondary_var, y=selected_var, color=group_by_var if group_by_var != "None" else None, template=theme,title=plot_title)
+                                        elif plot_type == "Line Plot" and secondary_var != "None":
+                                            fig = px.line(aggregated_data, x=secondary_var, y=selected_var, color=group_by_var if group_by_var != "None" else None, template=theme,title=plot_title)
+                                        elif plot_type == "Regression Plot" and secondary_var != "None":
+                                            fig = px.scatter(aggregated_data, x=secondary_var, y=selected_var, color=group_by_var if group_by_var != "None" else None, trendline="ols", template=theme,title=plot_title)
+                                        elif plot_type == "Bar Plot":
+                                            fig = px.bar(aggregated_data, y=selected_var, x=secondary_var if secondary_var != "None" else None, color=group_by_var if group_by_var != "None" else None,template=theme, title=plot_title)
+                                            fig.update_layout(barmode='group' if group_by_var != "None" else 'relative')
+                                        elif plot_type == "Box Plot":
+                                            fig = px.box(aggregated_data, y=selected_var, x=secondary_var if secondary_var != "None" else None, color=group_by_var if group_by_var != "None" else None,
+                                            template=theme, title=plot_title)
+
+                                        st.plotly_chart(fig, use_container_width=True, key=f"plot_{i}")
 
                         #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
                         with tab3:
